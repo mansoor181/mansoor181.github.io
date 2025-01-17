@@ -34,6 +34,7 @@
         }
         .container {
             padding: 20px;
+            margin-bottom: 60px; /* Added margin to prevent overlap with footer */
         }
         .tab-content {
             display: none;
@@ -53,8 +54,7 @@
             padding: 10px;
             background-color: #333;
             color: #fff;
-            position: fixed;
-            bottom: 0;
+            position: relative; /* Changed from fixed to relative */
             width: 100%;
         }
         a {
@@ -73,10 +73,10 @@
         <p>PhD Computer Science at Georgia State University, Atlanta, GA</p>
     </header>
     <nav>
-        <a href="#home" onclick="showTab('home')">Home</a>
-        <a href="#research" onclick="showTab('research')">Research</a>
-        <a href="#teaching" onclick="showTab('teaching')">Teaching</a>
-        <a href="#certifications" onclick="showTab('certifications')">Certifications</a>
+        <a href="javascript:void(0)" onclick="showTab('home', event)">Home</a>
+        <a href="javascript:void(0)" onclick="showTab('research', event)">Research</a>
+        <a href="javascript:void(0)" onclick="showTab('teaching', event)">Teaching</a>
+        <a href="javascript:void(0)" onclick="showTab('certifications', event)">Certifications</a>
     </nav>
     <div class="container">
         <!-- Home Tab -->
@@ -161,7 +161,7 @@
             <h2>Teaching Experience</h2>
             <h3>Graduate Teaching Assistant<a href="https://neuroneural.net/posts/advancedml/" target="_blank"> - Advanced Machine Learning (CSC 8850)</a> - [<a href="https://mansoor181.github.io/aml25.html" target="_blank" style="color:Tomato;">Course page</a>]</h3>
             <ul>
-                <li><strong>Course description: </strong>This course offers an in-depth understanding of machine learning, with theoritcal and practical flavors. The course introduces learning theory and PAC learnability with key models such as linear models, PCA, Bayesian Decision Theory, and parameter estimation (MLE, MAP). Other advanced topics include logistic regression, SVMs, clustering (k-means, EM), and methods like matrix factorization, automatic differentiation, and CNNs.</li>
+                <li><strong>Course description: </strong>This course offers an in-depth understanding of machine learning, with theoretical and practical flavors. The course introduces learning theory and PAC learnability with key models such as linear models, PCA, Bayesian Decision Theory, and parameter estimation (MLE, MAP). Other advanced topics include logistic regression, SVMs, clustering (k-means, EM), and methods like matrix factorization, automatic differentiation, and CNNs.</li>
             </ul>
 
             <h3>Graduate Teaching Assistant - Spatial and Scientific Databases (CSC 8713)</h3>
@@ -170,7 +170,7 @@
                     The goal of this course is to present in detail a number of advanced concepts of database systems: spatial data storage and retrieval, multi-dimensional indexing techniques, advanced data modeling techniques, data warehouses, and a few areas of database-related research.</li>
             </ul>
 
-            <h3>Teaching Assistant<a href="https://www.zubairkhalid.org/ee212_2022.html" target="_blank"> - Mathematical Foundations for Machine Learning (EE 212)</a></h3>
+            <h3>Teaching Assistant - Mathematical Foundations for Machine Learning (EE 212) - [<a href="https://www.zubairkhalid.org/ee212_2022.html" target="_blank">Course page</a>]</h3>
             <ul>
                 <li>Topics covered are vectors and matrices, vector spaces, system of linear equations, eigen-value decomposition, singular value decomposition, regression, least-squares, regularization, 
                     multivariate calculus and differentials for optimization, gradient descent, 
@@ -217,9 +217,13 @@
     <footer>
         &copy; 2024 Mansoor Ahmed. All rights reserved.
     </footer>
+    
 
     <script>
-        function showTab(tabName) {
+
+        function showTab(tabName, event) {
+            // Prevent default behavior (page jump)
+            event.preventDefault();
             // Hide all tab contents
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -227,6 +231,15 @@
             // Show the selected tab content
             document.getElementById(tabName).classList.add('active');
         }
+
+        // function showTab(tabName) {
+        //     // Hide all tab contents
+        //     document.querySelectorAll('.tab-content').forEach(tab => {
+        //         tab.classList.remove('active');
+        //     });
+        //     // Show the selected tab content
+        //     document.getElementById(tabName).classList.add('active');
+        // }
     </script>
 </body>
 </html>
