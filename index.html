@@ -64,25 +64,7 @@
         a:hover {
             text-decoration: underline;
         }
-        /* Home Tab Layout */
-        #home {
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-        }
-        #home .text-content {
-            flex: 3;
-        }
-        #home .image-content {
-            flex: 1;
-            text-align: center;
-        }
-        #home img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+        
     </style>
 </head>
 <body>
@@ -99,48 +81,52 @@
     <div class="container">
         <!-- Home Tab -->
         <div id="home" class="tab-content active">
-            <div class="text-content">
-                <!-- <h2>Welcome to My Personal Webpage</h2> -->
-                <p>
-                    I am a graduate student pursuing a PhD in Computer Science at <a href="https://csds.gsu.edu/" target="_blank">Georgia State University</a>. My research interests include Neuroimaging, Bioinformatics, and Machine Learning. I am passionate about solving complex problems in brain disorder identification and computational antibody design.
-                </p>
-                <h3>Contact Information</h3>
-                <ul>
-                    <li><strong>Email:</strong> <a href="mailto:mahmed76@student.gsu.edu">mahmed76@student.gsu.edu</a></li>
-                    <li><strong>GitHub:</strong> <a href="https://github.com/mansoor181/" target="_blank">mansoor181</a></li>
-                    <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/mansoorahmed123/" target="_blank">mansoor-ahmed</a></li>
-                </ul>
-            </div>
-            <div class="image-content">
-                <!-- Replace 'your-picture.jpg' with the path to your picture -->
-                <img src="https://mansoor181.github.io/figures/profile.jpg" alt="Mansoor Ahmed">
-            </div>
+            <h2>Welcome to My Personal Webpage</h2>
+            <p>
+                I am a graduate student pursuing a PhD in Computer Science at <a href="https://csds.gsu.edu/" target="_blank">Georgia State University</a>. My research interests include Neuroimaging, Bioinformatics, and Machine Learning. I am passionate about solving complex problems in brain disorder identification and computational antibody design.
+            </p>
+            <h3>Contact Information</h3>
+            <ul>
+                <li><strong>Email:</strong> <a href="mailto:mahmed76@student.gsu.edu">mahmed76@student.gsu.edu</a></li>
+                <li><strong>Phone:</strong> <a href="tel:+14706524146">+1 (470) 652-4146</a></li>
+                <li><strong>GitHub:</strong> <a href="https://github.com/mansoor181/" target="_blank">mansoor181</a></li>
+                <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/mansoorahmed123/" target="_blank">mansoor-ahmed</a></li>
+            </ul>
         </div>
+
 
         <!-- Research Tab -->
         <div id="research" class="tab-content">
-            <h2>Research Projects and Publications</h2>
+            <h2 >Research Projects and Publications</h2>
+
             <h3>Exploring the Impact of Embedding Methods on Graph-based Antibody-aware Epitope Prediction (Presented at <a href="https://iccabs.engr.uconn.edu/home" target="_blank" style="color:Tomato;">ICCABS-2025</a>) - [<a href="https://mansoor181.github.io/docs/Epitope_Prediction_ICCABS_Mansoor.pdf" target="_blank"> Slides</a>, <a href="https://github.com/mansoor181/epitope-pred.git" target="_blank"> GitHub</a>]</h3>
             <ul>
                 <li>Designed and implemented a graph neural network (GCN) framework to predict antibody-antigen interactions using 3D structural data, leveraging protein language models (PLMs) like AntiBERTy, ESM2, and ProtBERT for residue embeddings. This approach significantly improved epitope prediction accuracy over traditional sequence-based methods.</li>
                 <li><strong>Contribution:</strong> Achieved state-of-the-art performance on the AsEP benchmark dataset, with a 0.263 MCC and 0.348 F1 score, outperforming existing methods like GraphBepi and EpiGraph.</li>
+                
+                <!-- <li><strong>Tool Integration:</strong> Integrated with <a href="https://github.com/trendscenter/coinstac" target="_blank">COINSTAC</a>.</li> -->
             </ul>
 
-            <h3>Robust Brain Age Estimation via Regression Models and MRI-derived Features <a href="https://iccci.pwr.edu.pl/2023/" target="_blank" style="color:Tomato;">(ICCCI-2023)</span></a> - [<a href="https://link.springer.com/chapter/10.1007/978-3-031-41774-0_52" target="_blank"> Paper</a>, <a href="https://mansoor181.github.io/docs/ICCCI_2023_Brain_Age_Paper_Presentation_Slides.pdf" target="_blank"> Slides</a>, <a href="https://github.com/mansoor181/Brain_Age_Estimation.git" target="_blank"> GitHub</a>] </h3>
+
+            <h3 >Robust Brain Age Estimation via Regression Models and MRI-derived Features <a href="https://iccci.pwr.edu.pl/2023/" target="_blank" style="color:Tomato;">(ICCCI-2023)</span></a> - [<a href="https://link.springer.com/chapter/10.1007/978-3-031-41774-0_52" target="_blank"> Paper</a>, <a href="https://mansoor181.github.io/docs/ICCCI_2023_Brain_Age_Paper_Presentation_Slides.pdf" target="_blank"> Slides</a>, <a href="https://github.com/mansoor181/Brain_Age_Estimation.git" target="_blank"> GitHub</a>] </h3>
             <ul>
                 <li>Integrated the region-wise volumetric measurements of 3965 healthy individuals derived from T1-weighted MRIs and trained regression models to estimate brain age.</li>
                 <li><strong>Result:</strong> Achieved an MAE of <strong>3.25 years</strong>.</li>
+                <!-- <li><strong>GitHub:</strong> <a href="https://github.com/mansoor181/Brain_Age_Estimation.git" target="_blank">Code Repository</a></li> -->
             </ul>
 
             <h3>Mitigating Covariance in MRI Site-effects in a Federated Learning Framework (ongoing) - [<a href="https://mansoor181.github.io/docs/FL_Based_MRI_Site_Effect_Removal.pdf" target="_blank"> Slides</a>, <a href="https://github.com/mansoor181/Fed-CovBat.git" target="_blank"> GitHub</a>]</h3>
             <ul>
                 <li>Developing a decentralized algorithm for harmonizing multi-site MRI data using region-based brain features of 4k healthy controls, collected across 64 sites.</li>
                 <li><strong>Contribution:</strong> The first MRI harmonizing approach in a federated setting that removes bias in covariance between features, achieving accuracy equivalent to centralized approaches.</li>
+                
+                <!-- <li><strong>Tool Integration:</strong> Integrated with <a href="https://github.com/trendscenter/coinstac" target="_blank">COINSTAC</a>.</li> -->
             </ul>
 
             <h3>A Data-driven Pipeline for Designing Antibodies (ongoing) - [<a href="https://mansoor181.github.io/docs/Antibody_design.pdf" target="_blank"> Slides</a>]</h3>
             <ul>
                 <li>Developing the first-of-its-kind end-to-end computational pipeline for designing antibodies for a given antigen sequence using advanced bioinformatics, machine learning, and NLP methods.</li>
+                <!-- <li>Currently building a robust antibody-aware epitope prediction model using the benchmark <a href="https://github.com/biochunan/AsEP-dataset/tree/main/asep" target="_blank">AsEP dataset</a>.</li> -->
             </ul>
 
             <h3>Deep Feature Ensemble-based Brain Age Estimation - [<a href="https://github.com/mansoor181/Deep-Feature-Ensemble-Based-BrainAGE.git" target="_blank">Github</a>] </h3>
@@ -167,6 +153,8 @@
                 <li>Developed a CNN-based model for detecting early-stage Alzheimer's Disease (AD) and interpreted the aging-related phenomenon using multimodal input data of 457 samples from the <a href="https://adni.loni.usc.edu/" target="_blank">ADNI dataset</a>.</li>
                 <li><strong>Contribution:</strong> The novel approach combines data from multiple modalities and provides explainability of the early-stage changes in the brain of AD patients.</li>
             </ul>
+
+
         </div>
 
         <!-- Teaching Tab -->
@@ -174,17 +162,26 @@
             <h2>Teaching Experience</h2>
             <h3>Graduate Teaching Assistant<a href="https://neuroneural.net/posts/advancedml/" target="_blank"> - Advanced Machine Learning (CSC 8850)</a> - [<a href="https://mansoor181.github.io/aml25.html" target="_blank" style="color:Tomato;">Course page</a>]</h3>
             <ul>
-                <li><strong>Course description: </strong>This course offers an in-depth understanding of machine learning, with theoretical and practical flavors. The course introduces learning theory and PAC learnability with key models such as linear models, PCA, Bayesian Decision Theory, and parameter estimation (MLE, MAP). Other advanced topics include logistic regression, SVMs, clustering (k-means, EM), and methods like matrix factorization, automatic differentiation, and CNNs.</li>
+                <li><strong>Course description: </strong>This course offers an in-depth understanding of machine learning, with theoritcal and practical flavors. The course introduces learning theory and PAC learnability with key models such as linear models, PCA, Bayesian Decision Theory, and parameter estimation (MLE, MAP). Other advanced topics include logistic regression, SVMs, clustering (k-means, EM), and methods like matrix factorization, automatic differentiation, and CNNs.</li>
             </ul>
 
             <h3>Graduate Teaching Assistant - Spatial and Scientific Databases (CSC 8713)</h3>
             <ul>
-                <li><strong>Course description: </strong>This course covers three major components: Part 1: Spatial Databases, Part 2: Data Warehousing & Scientific Databases (mainly from research papers), Part 3: Graduate research project. The goal of this course is to present in detail a number of advanced concepts of database systems: spatial data storage and retrieval, multi-dimensional indexing techniques, advanced data modeling techniques, data warehouses, and a few areas of database-related research.</li>
+                <li><strong>Course description: </strong>this course covers three major components: Part 1: Spatial Databases, Part 2: Data Warehousing & Scientific Databases (mainly from research papers), Part 3: Graduate research project. 
+                    The goal of this course is to present in detail a number of advanced concepts of database systems: spatial data storage and retrieval, multi-dimensional indexing techniques, advanced data modeling techniques, data warehouses, and a few areas of database-related research.</li>
             </ul>
 
             <h3>Teaching Assistant<a href="https://www.zubairkhalid.org/ee212_2022.html" target="_blank"> - Mathematical Foundations for Machine Learning (EE 212)</a></h3>
             <ul>
-                <li>Topics covered are vectors and matrices, vector spaces, system of linear equations, eigen-value decomposition, singular value decomposition, regression, least-squares, regularization, multivariate calculus and differentials for optimization, gradient descent, probability axioms, Bayes rule, random variable, probability distributions, descriptive stats, inferential stats, statistical tests, introduction to Neural Networks: single and multi-layer perceptron(s), feedforward and feedback networks, application to machine learning and data science: principal component analysis (PCA), time series forecasting, clustering etc, with hands-on exercises in Python.</li>
+                <li>Topics covered are vectors and matrices, vector spaces, system of linear equations, eigen-value decomposition, singular value decomposition, regression, least-squares, regularization, 
+                    multivariate calculus and differentials for optimization, gradient descent, 
+                    probability axioms, Bayes rule, random variable, probability distributions, descriptive stats, inferential stats, statistical tests
+                    
+                    introduction to Neural Networks: single and multi-layer perceptron(s), feedforward and feedback networks
+                    
+                    application to machine learning and data science: principal component analysis (PCA), time series forecasting, clustering etc, 
+                    
+                    with hands-on exercises in Python</li>
                 <li>Conducted bi-weekly tutorials and supervised students' semester projects.</li>
                 <li>Prepared and graded quizzes, homework, and programming assignments.</li>
             </ul>
@@ -196,13 +193,13 @@
             <h3><a href="https://www.fil.ion.ucl.ac.uk/spm/course/london/" target="_blank">Statistical Parametric Mapping (SPM) for fMRI/VBM</a></h3>
             <ul>
                 <li>Wellcome Centre for Human Neuroimaging, University College London (UCL), UK.</li>
-                <li><strong>Certificate:</strong> <a href="https://mansoor181.github.io/Mansoor-SPM-fMRI-Course-UCL.jpg" target="_blank">View Certificate</a></li>
+                <li><strong>Certificate:</strong> <a href="https://mansoor181.github.io/figures/Mansoor-SPM-fMRI-Course-UCL.jpg" target="_blank">View Certificate</a></li>
             </ul>
 
             <h3><a href="https://www.cbs.mpg.de/en/biomedical-engineering-sommer-school-2023.html" target="_blank">10th International Summer School in Biomedical Engineering</a></h3>
             <ul>
                 <li>Max Planck Institute for Human Cognitive and Brain Sciences, TU Ilmenau, Germany.</li>
-                <li><strong>Certificate:</strong> <a href="https://mansoor181.github.io/Mansoor_Ahmed_Geo_Summer_School_Cert.png" target="_blank">View Certificate</a></li>
+                <li><strong>Certificate:</strong> <a href="https://mansoor181.github.io/figures/Mansoor_Ahmed_Geo_Summer_School_Cert.png" target="_blank">View Certificate</a></li>
             </ul>
 
             <h3><a href="https://learn.nvidia.com/courses/course-detail?course_id=course-v1:DLI+C-DS-02+V1" target="_blank">Fundamentals of Accelerated Data Science with RAPIDS</a></h3>
@@ -214,7 +211,7 @@
             <h3><a href="http://www.lmars.whu.edu.cn/geosummerschool/index.jsp" target="_blank">International Geoinformatics Summer School</a></h3>
             <ul>
                 <li>State Key Lab of Information Engineering in Surveying, Mapping & Remote Sensing, Wuhan University, China.</li>
-                <li><strong>Certificate:</strong> <a href="https://mansoor181.github.io/Mansoor_Ahmed_Geo_Summer_School_Cert.png" target="_blank">View Certificate</a></li>
+                <li><strong>Certificate:</strong> <a href="https://mansoor181.github.io/figures/Mansoor_Ahmed_Geo_Summer_School_Cert.png" target="_blank">View Certificate</a></li>
             </ul>
         </div>
     </div>
