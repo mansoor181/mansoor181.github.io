@@ -2,133 +2,235 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
-    <title>Mansoor Ahmed</title>
+    <title>Mansoor Ahmed - Personal Webpage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #444;
+            padding: 10px;
+        }
+        nav a {
+            color: #fff;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            padding: 20px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        h2 {
+            color: #333;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        /* Home Tab Layout */
+        #home {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        #home .text-content {
+            flex: 3;
+        }
+        #home .image-content {
+            flex: 1;
+            text-align: center;
+        }
+        #home img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
 <body>
-
-<nav class="navbar navbar-dark navbar-expand-lg bg-dark ">
-    <div class="container-fluid">
-        <div class="mx-4">
-            <a class="navbar-brand" href="#">Mansoor Ahmed</a>
+    <header>
+        <h1>Mansoor Ahmed</h1>
+        <p>Graduate Student in Computer Science | Georgia State University</p>
+    </header>
+    <nav>
+        <a href="#home" onclick="showTab('home')">Home</a>
+        <a href="#research" onclick="showTab('research')">Research</a>
+        <a href="#teaching" onclick="showTab('teaching')">Teaching</a>
+        <a href="#certifications" onclick="showTab('certifications')">Certifications</a>
+    </nav>
+    <div class="container">
+        <!-- Home Tab -->
+        <div id="home" class="tab-content active">
+            <div class="text-content">
+                <h2>Welcome to My Personal Webpage</h2>
+                <p>
+                    I am a graduate student pursuing a PhD in Computer Science at <a href="https://csds.gsu.edu/" target="_blank">Georgia State University</a>. My research interests include Neuroimaging, Bioinformatics, and Machine Learning. I am passionate about solving complex problems in brain disorder identification and computational antibody design.
+                </p>
+                <h3>Contact Information</h3>
+                <ul>
+                    <li><strong>Email:</strong> <a href="mailto:mahmed76@student.gsu.edu">mahmed76@student.gsu.edu</a></li>
+                    <li><strong>GitHub:</strong> <a href="https://github.com/mansoor181/" target="_blank">mansoor181</a></li>
+                    <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/mansoorahmed123/" target="_blank">mansoor-ahmed</a></li>
+                </ul>
+            </div>
+            <div class="image-content">
+                <!-- Replace 'your-picture.jpg' with the path to your picture -->
+                <img src="https://mansoor181.github.io/docs/profile.jpg" alt="Mansoor Ahmed">
+            </div>
         </div>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false"
-            aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Projects</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Research Articles</a>
-                </li>
-                <li class="nav-item">
-                    <a  class="nav-link" href="#certificate" >Certifications</a>
-                </li>
-                
+
+        <!-- Research Tab -->
+        <div id="research" class="tab-content">
+            <h2>Research Projects and Publications</h2>
+            <h3>Exploring the Impact of Embedding Methods on Graph-based Antibody-aware Epitope Prediction (Presented at <a href="https://iccabs.engr.uconn.edu/home" target="_blank" style="color:Tomato;">ICCABS-2025</a>) - [<a href="https://mansoor181.github.io/docs/Epitope_Prediction_ICCABS_Mansoor.pdf" target="_blank"> Slides</a>, <a href="https://github.com/mansoor181/epitope-pred.git" target="_blank"> GitHub</a>]</h3>
+            <ul>
+                <li>Designed and implemented a graph neural network (GCN) framework to predict antibody-antigen interactions using 3D structural data, leveraging protein language models (PLMs) like AntiBERTy, ESM2, and ProtBERT for residue embeddings. This approach significantly improved epitope prediction accuracy over traditional sequence-based methods.</li>
+                <li><strong>Contribution:</strong> Achieved state-of-the-art performance on the AsEP benchmark dataset, with a 0.263 MCC and 0.348 F1 score, outperforming existing methods like GraphBepi and EpiGraph.</li>
+            </ul>
+
+            <h3>Robust Brain Age Estimation via Regression Models and MRI-derived Features <a href="https://iccci.pwr.edu.pl/2023/" target="_blank" style="color:Tomato;">(ICCCI-2023)</span></a> - [<a href="https://link.springer.com/chapter/10.1007/978-3-031-41774-0_52" target="_blank"> Paper</a>, <a href="https://mansoor181.github.io/docs/ICCCI_2023_Brain_Age_Paper_Presentation_Slides.pdf" target="_blank"> Slides</a>, <a href="https://github.com/mansoor181/Brain_Age_Estimation.git" target="_blank"> GitHub</a>] </h3>
+            <ul>
+                <li>Integrated the region-wise volumetric measurements of 3965 healthy individuals derived from T1-weighted MRIs and trained regression models to estimate brain age.</li>
+                <li><strong>Result:</strong> Achieved an MAE of <strong>3.25 years</strong>.</li>
+            </ul>
+
+            <h3>Mitigating Covariance in MRI Site-effects in a Federated Learning Framework (ongoing) - [<a href="https://mansoor181.github.io/docs/FL_Based_MRI_Site_Effect_Removal.pdf" target="_blank"> Slides</a>, <a href="https://github.com/mansoor181/Fed-CovBat.git" target="_blank"> GitHub</a>]</h3>
+            <ul>
+                <li>Developing a decentralized algorithm for harmonizing multi-site MRI data using region-based brain features of 4k healthy controls, collected across 64 sites.</li>
+                <li><strong>Contribution:</strong> The first MRI harmonizing approach in a federated setting that removes bias in covariance between features, achieving accuracy equivalent to centralized approaches.</li>
+            </ul>
+
+            <h3>A Data-driven Pipeline for Designing Antibodies (ongoing) - [<a href="https://mansoor181.github.io/docs/Antibody_design.pdf" target="_blank"> Slides</a>]</h3>
+            <ul>
+                <li>Developing the first-of-its-kind end-to-end computational pipeline for designing antibodies for a given antigen sequence using advanced bioinformatics, machine learning, and NLP methods.</li>
+            </ul>
+
+            <h3>Deep Feature Ensemble-based Brain Age Estimation - [<a href="https://github.com/mansoor181/Deep-Feature-Ensemble-Based-BrainAGE.git" target="_blank">Github</a>] </h3>
+            <ul>
+                <li>Developed a brain age estimation (BAE) framework by ensembling 3D CNN, ResNet, Vision Transformer, and AlexNet using the T1-weighted 3D MRI volumes of 3966 healthy controls.</li>
+                <li><strong>Result:</strong> Achieved state-of-the-art with an <strong>MAE of 2.05 years</strong>.</li>
+            </ul>
+
+            <h3>Liquidity is all you need: A decentralized approach to generative agentic AI systems with liquidity - [<a href="https://github.com/mansoor181/TBC-Agent-Based-Simulation.git" target="_blank">Github</a>] </h3>
+            <ul>
+                <li>Designed and implemented a simulation modeling the behavior of diverse platform participants (creators, buyers, investors, speculators) in a multi-token economy, incorporating heterogeneity, bounded rationality, learning, and network effects.</li>
+                <li>Conducted in-depth analysis of platform properties such as price discovery, supply-demand trends, volatility, and arbitrage opportunities, while investigating the impact of bonding curve shapes and agent behaviors on system dynamics.</li>
+                <li>Generated simulation outputs to support explanatory, exploratory, and predictive tasks, enabling the forecasting of platform behavior under varying parameters and agent strategies.</li>
+            </ul>
+
+            <h3>Quantifying the Impact of Brain Tumor on the Brain Age </h3>
+            <ul>
+                <li>Developed an improved brain age estimation (BAE) model using the region-wise, surface-wise, and voxel-wise features extracted from 757 healthy MRIs with an MAE of 3.1 years.</li>
+                <li><strong>Result:</strong> Predicted the brain age of brain tumor patients using our BAE model and observed an increased <strong>brain age gap of 10.3 years</strong> in tumor patients compared to healthy controls.</li>
+            </ul>
+
+            <h3>A Deep Learning-based Interpretable Framework for Early-stage Alzheimer's Disease Detection </h3>
+            <ul>
+                <li>Developed a CNN-based model for detecting early-stage Alzheimer's Disease (AD) and interpreted the aging-related phenomenon using multimodal input data of 457 samples from the <a href="https://adni.loni.usc.edu/" target="_blank">ADNI dataset</a>.</li>
+                <li><strong>Contribution:</strong> The novel approach combines data from multiple modalities and provides explainability of the early-stage changes in the brain of AD patients.</li>
+            </ul>
+        </div>
+
+        <!-- Teaching Tab -->
+        <div id="teaching" class="tab-content">
+            <h2>Teaching Experience</h2>
+            <h3>Graduate Teaching Assistant<a href="https://neuroneural.net/posts/advancedml/" target="_blank"> - Advanced Machine Learning (CSC 8850)</a> - [<a href="https://mansoor181.github.io/aml25.html" target="_blank" style="color:Tomato;">Course page</a>]</h3>
+            <ul>
+                <li><strong>Course description: </strong>This course offers an in-depth understanding of machine learning, with theoretical and practical flavors. The course introduces learning theory and PAC learnability with key models such as linear models, PCA, Bayesian Decision Theory, and parameter estimation (MLE, MAP). Other advanced topics include logistic regression, SVMs, clustering (k-means, EM), and methods like matrix factorization, automatic differentiation, and CNNs.</li>
+            </ul>
+
+            <h3>Graduate Teaching Assistant - Spatial and Scientific Databases (CSC 8713)</h3>
+            <ul>
+                <li><strong>Course description: </strong>This course covers three major components: Part 1: Spatial Databases, Part 2: Data Warehousing & Scientific Databases (mainly from research papers), Part 3: Graduate research project. The goal of this course is to present in detail a number of advanced concepts of database systems: spatial data storage and retrieval, multi-dimensional indexing techniques, advanced data modeling techniques, data warehouses, and a few areas of database-related research.</li>
+            </ul>
+
+            <h3>Teaching Assistant<a href="https://www.zubairkhalid.org/ee212_2022.html" target="_blank"> - Mathematical Foundations for Machine Learning (EE 212)</a></h3>
+            <ul>
+                <li>Topics covered are vectors and matrices, vector spaces, system of linear equations, eigen-value decomposition, singular value decomposition, regression, least-squares, regularization, multivariate calculus and differentials for optimization, gradient descent, probability axioms, Bayes rule, random variable, probability distributions, descriptive stats, inferential stats, statistical tests, introduction to Neural Networks: single and multi-layer perceptron(s), feedforward and feedback networks, application to machine learning and data science: principal component analysis (PCA), time series forecasting, clustering etc, with hands-on exercises in Python.</li>
+                <li>Conducted bi-weekly tutorials and supervised students' semester projects.</li>
+                <li>Prepared and graded quizzes, homework, and programming assignments.</li>
+            </ul>
+        </div>
+
+        <!-- Certifications Tab -->
+        <div id="certifications" class="tab-content">
+            <h2>Certifications</h2>
+            <h3><a href="https://www.fil.ion.ucl.ac.uk/spm/course/london/" target="_blank">Statistical Parametric Mapping (SPM) for fMRI/VBM</a></h3>
+            <ul>
+                <li>Wellcome Centre for Human Neuroimaging, University College London (UCL), UK.</li>
+                <li><strong>Certificate:</strong> <a href="https://mansoor181.github.io/Mansoor-SPM-fMRI-Course-UCL.jpg" target="_blank">View Certificate</a></li>
+            </ul>
+
+            <h3><a href="https://www.cbs.mpg.de/en/biomedical-engineering-sommer-school-2023.html" target="_blank">10th International Summer School in Biomedical Engineering</a></h3>
+            <ul>
+                <li>Max Planck Institute for Human Cognitive and Brain Sciences, TU Ilmenau, Germany.</li>
+                <li><strong>Certificate:</strong> <a href="https://mansoor181.github.io/Mansoor_Ahmed_Geo_Summer_School_Cert.png" target="_blank">View Certificate</a></li>
+            </ul>
+
+            <h3><a href="https://learn.nvidia.com/courses/course-detail?course_id=course-v1:DLI+C-DS-02+V1" target="_blank">Fundamentals of Accelerated Data Science with RAPIDS</a></h3>
+            <ul>
+                <li>NVIDIA Deep Learning Institute at LUMS, Pakistan.</li>
+                <li><strong>Certificate:</strong> <a href="https://courses.nvidia.com/certificates/3523e2a26d744c5faa997e34880dc3dd/" target="_blank">View Certificate</a></li>
+            </ul>
+
+            <h3><a href="http://www.lmars.whu.edu.cn/geosummerschool/index.jsp" target="_blank">International Geoinformatics Summer School</a></h3>
+            <ul>
+                <li>State Key Lab of Information Engineering in Surveying, Mapping & Remote Sensing, Wuhan University, China.</li>
+                <li><strong>Certificate:</strong> <a href="https://mansoor181.github.io/Mansoor_Ahmed_Geo_Summer_School_Cert.png" target="_blank">View Certificate</a></li>
             </ul>
         </div>
     </div>
-</nav>
+    <footer>
+        &copy; 2024 Mansoor Ahmed. All rights reserved.
+    </footer>
 
-<div class="container my-4 ">
-    <div class="row justify-content-center">
-        <div class="col-lg mb-lg-4">
-            <img src="image.jpg" class="img-fluid" alt="" srcset="">
-        </div>
-        <div class="col-lg mx-2 align-self-center">
-            <div class="my-3">
-                <h1 class="text-center">I'm Mansoor Ahmed</h1>
-                <p>I am passionate about data analytics, machine learning, and bioinformatics with a focus on neuroimaging. I currently work as a Research Assistant jointly at the Data Analytics lab (affilited with NCBC) and Smart Data Systems and Applications (SDSA) lab at LUMS. My broad research areas are the identification of biomarkers for neurological disorders and the computational design of antibodies using sequences. Specifically, my current research projects are related to the estimation of brain age using machine learning and deep learning techniques on a large collection of brain MRIs. I develop workflows for processing MRIs by applying image processing techniques using Neuroimaging tools such as FSL, FreeSurfer, and CAT12 and prepare the tabular data for subsequent analysis. I am ambitious to further advance my research capabilites in AI for medical-related application, specifically in medical imaging.
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-<div class="container my-4 ">
-    <div class="row justify-content-center">
-        <div class="col-lg mb-lg-4">
-            <img src="image.jpg" class="img-fluid" alt="" srcset="">
-        </div>
-        <div class="col-lg mx-2 align-self-center">
-            <div class="my-3">
-           	<a href="Mansoor_Ahmed_Geo_Summer_School_Cert.png"  target="_blank">
-                <img id="certificate" src="Mansoor_Ahmed_Geo_Summer_School_Cert.png" alt="alt-img" style="width:500px;height:600px;">
-                 </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container my-4 ">
-    <div class="row justify-content-center">
-        <div class="col-lg mb-lg-3">
-            <img src="image.jpg" class="img-fluid" alt="" srcset="">
-        </div>
-        <div class="col-lg mx-2 align-self-center">
-            <div class="my-3">
-           	<a href="Certifikate_of_attendance_Summerschool_BMT_2023 Mansoor Ahmed.png"  target="_blank">
-                <img id="certificate" src="Certifikate_of_attendance_Summerschool_BMT_2023 Mansoor Ahmed.png" alt="alt-img" style="width:500px;height:600px;">
-                 </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container my-4 ">
-    <div class="row justify-content-center">
-        <div class="col-lg mb-lg-3">
-            <img src="image.jpg" class="img-fluid" alt="" srcset="">
-        </div>
-        <div class="col-lg mx-2 align-self-center">
-            <div class="my-3">
-           	<a href="Survey-design-workshop-LUMS-2023-Mansoor-Ahmed.png"  target="_blank">
-                <img id="certificate" src="Survey-design-workshop-LUMS-2023-Mansoor-Ahmed.png" alt="alt-img" style="width:500px;height:600px;">
-                 </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container my-4 ">
-    <div class="row justify-content-center">
-        <div class="col-lg mb-lg-3">
-            <img src="image.jpg" class="img-fluid" alt="" srcset="">
-        </div>
-        <div class="col-lg mx-2 align-self-center">
-            <div class="my-3">
-           	<a href="Mansoor Ahmed - Course Craft - LUMS 2023.png"  target="_blank">
-                <img id="certificate" src="Mansoor Ahmed - Course Craft - LUMS 2023.png" alt="alt-img" style="width:500px;height:600px;">
-                 </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container my-4 ">
-    <div class="row justify-content-center">
-        <div class="col-lg mb-lg-3">
-            <img src="image.jpg" class="img-fluid" alt="" srcset="">
-        </div>
-        <div class="col-lg mx-2 align-self-center">
-            <div class="my-3">
-           	<a href="Mansoor-SPM-fMRI-Course-UCL.jpg"  target="_blank">
-                <img id="certificate" src="Mansoor-SPM-fMRI-Course-UCL.jpg" alt="alt-img" style="width:500px;height:600px;">
-                 </a>
-            </div>
-        </div>
-    </div>
-</div>
-    
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Show the selected tab content
+            document.getElementById(tabName).classList.add('active');
+        }
+    </script>
 </body>
 </html>
