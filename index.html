@@ -3,263 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mansoor Ahmed - Personal Webpage</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #444;
-            padding: 10px;
-        }
-        nav a {
-            color: #fff;
-            margin: 0 15px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        nav a:hover {
-            text-decoration: underline;
-        }
-        .container {
-            padding: 20px;
-            margin-bottom: 60px; /* Added margin to prevent overlap with footer */
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        h2 {
-            color: #333;
-        }
-        ul {
-            list-style-type: disc;
-            margin-left: 20px;
-        }
-        footer {
-            text-align: center;
-            padding: 10px;
-            background-color: #333;
-            color: #fff;
-            position: relative; /* Changed from fixed to relative */
-            width: 100%;
-        }
-        a {
-            color: #0066cc;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        /* Home Tab Layout */
-        #home {
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-        }
-        #home .home-text-content {
-            flex: 3;
-        }
-        #home .home-image-content {
-            flex: 1;
-            text-align: center;
-        }
-        #home img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-                
-    </style>
+    <title>Mansoor Ahmed</title>
+    <meta name="description" content="Mansoor Ahmed — Generative ML for Antibody Design. MS Computer Science, Georgia State University / Georgia Tech.">
+    <meta property="og:title" content="Mansoor Ahmed — Generative ML for Antibody Design">
+    <meta property="og:description" content="Building equivariant graph neural networks and protein language model-adapted architectures for computational antibody design.">
+    <meta property="og:image" content="figures/profile.jpg">
+    <meta property="og:type" content="website">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Slab:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Mansoor Ahmed</h1>
-        <p>Computer Science Graduate Student at Georgia State University, Atlanta, GA</p>
-    </header>
-    <nav>
-        <a href="javascript:void(0)" onclick="showTab('home', event)">Home</a>
-        <a href="javascript:void(0)" onclick="showTab('research', event)">Research</a>
-        <a href="javascript:void(0)" onclick="showTab('teaching', event)">Teaching</a>
-        <a href="javascript:void(0)" onclick="showTab('certifications', event)">Certifications</a>
-    </nav>
-    <div class="container">
-        <!-- Home Tab -->
 
-        <div id="home" class="tab-content active">
-            <h2>Welcome to My Personal Webpage</h2>
-            <p>
-                I am a graduate student in Computer Science at <a href="https://csds.gsu.edu/" target="_blank">Georgia State University</a>. My research interests include theoretical Machine Learning and Deep Learning, and their applications in Bioinformatics, Neuroimaging. I am passionate about computational antibody design, protein engineering, drug discovery, and finding biomarkers for brain disorder identification.
+<!-- Icon Sprite (hidden) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="i-email" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></symbol>
+    <symbol id="i-linkedin" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></symbol>
+    <symbol id="i-scholar" viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></symbol>
+    <symbol id="i-paper" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></symbol>
+</svg>
+
+<!-- Navigation -->
+<nav id="nav">
+    <div class="nav-inner">
+        <span class="nav-name">Mansoor Ahmed</span>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#publications">Publications</a>
+            <a href="#teaching">Teaching</a>
+            <a href="#honors">Honors</a>
+        </div>
+    </div>
+</nav>
+
+<main>
+
+<!-- About -->
+<section id="about">
+<div class="container">
+    <div class="about-grid">
+        <div class="about-text">
+            <h1>Mansoor Ahmed</h1>
+            <p class="about-subtitle">Computer Science Graduate Student &middot; Georgia State University / Georgia Tech</p>
+            <p class="about-bio">
+                I am a graduate student in Computer Science at
+                <a href="https://csds.gsu.edu/" target="_blank" rel="noopener">Georgia State University</a>
+                (joint with <a href="https://www.cc.gatech.edu/" target="_blank" rel="noopener">Georgia Tech</a>),
+                where I am advised by
+                <a href="https://murraypatterson.github.io/" target="_blank" rel="noopener">Prof. Murray Patterson</a>.
+                My research focuses on generative ML for antibody design. I develop ML methods, such as graph neural networks, flow matching, diffusion models, and
+                protein language models that condition on target antigens to design therapeutic antibodies.
+                I also recently completed a research fellowship at
+                <a href="https://www.cs.ucla.edu/" target="_blank" rel="noopener">UCLA</a>'s
+                LUNE Lab under <a href="https://jenniferwilsonlab.github.io/" target="_blank" rel="noopener">Prof. Jennifer Wilson</a>.
             </p>
-            <h3>Contact Information</h3>
-            <ul>
-                <li><strong>Email:</strong> <a href="mailto:mahmed76@student.gsu.edu">mahmed76@student.gsu.edu</a>, <a href="mailto:mahmed375@gatech.edu">mahmed375@gatech.edu</a></li>
-                <li><strong>GitHub:</strong> <a href="https://github.com/mansoor181/" target="_blank">mansoor181</a></li>
-                <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/mansoorahmed123/" target="_blank">mansoor-ahmed</a></li>
+            <p>
+                Previously, I worked as a research assistant for one year at the <a href="https://web.lums.edu.pk/~imdad/index.html" target="_blank" rel="noopener">Data Analytics lab at LUMS, Pakistan</a> where I developed graph and Physics-based methods for antigen-antibody interaction and preprocessing pipelines for multi-modal MRI and trained custom models for neurological disorders detection. Prior to that, I worked as a research assistant for one year at the <a href="https://sdsa.lums.edu.pk/" target="_blank" rel="noopener">Smart Data Systems & Applications (SDSA) lab</a> at LUMS, where I developed the software and computer vision models for <a href="https://www.vendingc.com/" target="_blank" rel="noopener">Vending Central</a> that is now a leading vending company in Pakistan.
+            </p>
+            <p class="about-interests">
+                <strong>Research Interests:</strong> Generative models for protein design, equivariant &amp; geometric deep learning, protein language models, antibody engineering, computational structural biology
+            </p>
+            <div class="social-links">
+                <a href="mailto:mahmed76@student.gsu.edu"><svg><use href="#i-email"></use></svg> Email</a>
+                <a href="https://github.com/mansoor181" target="_blank" rel="noopener"><svg><use href="#i-github"></use></svg> GitHub</a>
+                <a href="https://www.linkedin.com/in/mansoorahmed123/" target="_blank" rel="noopener"><svg><use href="#i-linkedin"></use></svg> LinkedIn</a>
+                <a href="https://scholar.google.com/citations?user=8Gfw6JwAAAAJ&hl=en" target="_blank" rel="noopener"><svg><use href="#i-scholar"></use></svg> Scholar</a>
+            </div>
+        </div>
+        <img src="figures/profile.jpg" alt="Mansoor Ahmed" class="profile-photo">
+    </div>
+</div>
+</section>
+
+<!-- Publications -->
+<section id="publications">
+<div class="container">
+    <h2 class="section-heading"><a href="#publications">Publications/Preprints</a></h2>
+
+    <!-- AgForce -->
+    <div class="pub-card" data-animate>
+        <div class="pub-header">
+            <h3 class="pub-title">AgForce Enables Antigen-Conditioned Generative Antibody Design</h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Murray Patterson</p>
+            <div class="pub-meta">
+                <span class="pub-venue preprint">Preprint, 2026</span>
+                <div class="pub-links">
+                    <a href="#" class="btn-sm"><svg><use href="#i-paper"></use></svg> Paper</a>
+                    <a href="https://github.com/mansoor181/ag-force.git" class="btn-sm"><svg><use href="#i-code"></use></svg> Code</a>
+                </div>
+            </div>
+        </div>
+        <div class="pub-gallery">
+            <div class="pub-gallery-row">
+                <div class="pub-gallery-item" onclick="openLightbox('figures/agforce/overall.png')">
+                    <img src="figures/agforce/overall.png" alt="AgForce overview" loading="lazy">
+                    <p class="pub-gallery-label">Overview</p>
+                </div>
+                <div class="pub-gallery-item" onclick="openLightbox('figures/agforce/encoder_decoder.png')">
+                    <img src="figures/agforce/encoder_decoder.png" alt="AgForce encoder-decoder" loading="lazy">
+                </div>
+                <div class="pub-gallery-item" onclick="openLightbox('figures/agforce/main_results.png')">
+                    <img src="figures/agforce/main_results.png" alt="AgForce results" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EpiFormer -->
+    <div class="pub-card" data-animate>
+        <div class="pub-header">
+            <h3 class="pub-title">EpiFormer: Learning Antigen-Antibody Interactions for Epitope Prediction via Geometric Deep Learning</h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Huirong Chai, Haoxin Wang, Hemanth Venkateswara, Murray Patterson</p>
+            <div class="pub-meta">
+                <span class="pub-venue preprint">Preprint, 2026</span>
+                <div class="pub-links">
+                    <a href="#" class="btn-sm"><svg><use href="#i-paper"></use></svg> Paper</a>
+                    <a href="https://github.com/mansoor181/epiformer.git" class="btn-sm"><svg><use href="#i-code"></use></svg> Code</a>
+                </div>
+            </div>
+        </div>
+        <div class="pub-gallery">
+            <div class="pub-gallery-row">
+                <div class="pub-gallery-item" onclick="openLightbox('figures/epiformer/epiformer.png')">
+                    <img src="figures/epiformer/epiformer.png" alt="EpiFormer architecture" loading="lazy">
+                </div>
+                <div class="pub-gallery-item" onclick="openLightbox('figures/epiformer/main_results.png')">
+                    <img src="figures/epiformer/main_results.png" alt="EpiFormer results" loading="lazy">
+                    <p class="pub-gallery-label">Interaction Maps</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EvoStruct -->
+    <div class="pub-card" data-animate>
+        <div class="pub-header">
+            <h3 class="pub-title">EvoStruct: Bridging Evolutionary and Structural Priors for Antibody CDR Design via Protein Language Model Adaptation</h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Sujin Lee, Umar Khayaz, Murray Patterson</p>
+            <div class="pub-meta">
+                <span class="pub-venue preprint">Preprint, 2026</span>
+                <div class="pub-links">
+                    <a href="https://arxiv.org/abs/2605.21485" class="btn-sm"><svg><use href="#i-paper"></use></svg> Paper</a>
+                    <a href="#" class="btn-sm"><svg><use href="#i-code"></use></svg> Code</a>
+                </div>
+            </div>
+        </div>
+        <div class="pub-gallery">
+            <div class="pub-gallery-row">
+                <div class="pub-gallery-item" onclick="openLightbox('figures/evostruct/overall.png')">
+                    <img src="figures/evostruct/overall.png" alt="EvoStruct architecture" loading="lazy">
+                    <p class="pub-gallery-label">Architecture</p>
+                </div>
+                <div class="pub-gallery-item" onclick="openLightbox('figures/evostruct/main_results_1.png')">
+                    <img src="figures/evostruct/main_results_1.png" alt="EvoStruct AAR" loading="lazy">
+                    <p class="pub-gallery-label">Amino Acid Recovery</p>
+                </div>
+                <div class="pub-gallery-item" onclick="openLightbox('figures/evostruct/main_results_2.png')">
+                    <img src="figures/evostruct/main_results_2.png" alt="EvoStruct vocabulary" loading="lazy">
+                    <p class="pub-gallery-label">Vocabulary Comparison</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ConTact -->
+    <div class="pub-card" data-animate>
+        <div class="pub-header">
+            <h3 class="pub-title">ConTact: Contact-First Antibody CDR Design via Explicit Interface Reasoning</h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Spencer VonBank, Nadeem Taj, Sujin Lee, Naila Jan, Murray Patterson</p>
+            <div class="pub-meta">
+                <span class="pub-venue preprint">Preprint, 2026</span>
+                <div class="pub-links">
+                    <a href="#" class="btn-sm"><svg><use href="#i-paper"></use></svg> Paper</a>
+                    <a href="#" class="btn-sm"><svg><use href="#i-code"></use></svg> Code</a>
+                </div>
+            </div>
+        </div>
+        <div class="pub-gallery">
+            <div class="pub-gallery-row">
+                <div class="pub-gallery-item" onclick="openLightbox('figures/contact/overall.png')">
+                    <img src="figures/contact/overall.png" alt="ConTact architecture" loading="lazy">
+                    <p class="pub-gallery-label">Architecture</p>
+                </div>
+                <div class="pub-gallery-item" onclick="openLightbox('figures/contact/main_results.png')">
+                    <img src="figures/contact/main_results.png" alt="ConTact results" loading="lazy">
+                    <p class="pub-gallery-label">Key Results</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHIMERA-Bench -->
+    <div class="pub-card" data-animate>
+        <div class="pub-header">
+            <h3 class="pub-title">CHIMERA-Bench: A Benchmark Dataset for Epitope-Specific Antibody Design</h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Nadeem Taj, Imdad Ullah Khan, Hemanth Venkateswara, Murray Patterson</p>
+            <div class="pub-meta">
+                <span class="pub-venue published">ICLR 2026 GEM Workshop</span>
+                <div class="pub-links">
+                    <a href="https://arxiv.org/abs/2603.13431" class="btn-sm"><svg><use href="#i-paper"></use></svg> Paper</a>
+                    <a href="https://github.com/mansoor181/chimera-bench.git" class="btn-sm"><svg><use href="#i-code"></use></svg> Code</a>
+                </div>
+            </div>
+        </div>
+        <div class="pub-gallery">
+            <div class="pub-gallery-row">
+                <div class="pub-gallery-item" onclick="openLightbox('figures/chimera-bench/overall.png')">
+                    <img src="figures/chimera-bench/overall.png" alt="CHIMERA-Bench pipeline" loading="lazy">
+                    <p class="pub-gallery-label">Data Pipeline</p>
+                </div>
+                <div class="pub-gallery-item" onclick="openLightbox('figures/chimera-bench/radar_plots.png')">
+                    <img src="figures/chimera-bench/radar_plots.png" alt="CHIMERA-Bench baselines" loading="lazy">
+                    <p class="pub-gallery-label">Benchmarking Baselines</p>
+                </div>
+                <div class="pub-gallery-item" onclick="openLightbox('figures/chimera-bench/h3_baselines.png')">
+                    <img src="figures/chimera-bench/h3_baselines.png" alt="CHIMERA-Bench baselines" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Walle++ -->
+    <div class="pub-card" data-animate>
+        <div class="pub-header">
+            <h3 class="pub-title">Improved Graph-Based Antibody-Aware Epitope Prediction with Protein Language Model Embeddings</h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Sarwan Ali, Avais Jan, Imdad Ullah Khan, Murray Patterson</p>
+            <div class="pub-meta">
+                <span class="pub-venue published">ICCABS 2025 &middot; Springer LNBI</span>
+                <div class="pub-links">
+                    <a href="https://www.biorxiv.org/content/10.1101/2025.02.12.637989v2" class="btn-sm"><svg><use href="#i-paper"></use></svg> BioRxiv</a>
+                    <a href="https://github.com/mansoor181/walle-pp.git" class="btn-sm"><svg><use href="#i-code"></use></svg> Code</a>
+                </div>
+            </div>
+        </div>
+        <div class="pub-gallery">
+            <div class="pub-gallery-row">
+                <div class="pub-gallery-item" onclick="openLightbox('figures/wallepp/overall.png')">
+                    <img src="figures/wallepp/overall.png" alt="Walle++ architecture" loading="lazy">
+                    <p class="pub-gallery-label">Architecture</p>
+                </div>
+                <div class="pub-gallery-item" onclick="openLightbox('figures/wallepp/results.png')">
+                    <img src="figures/wallepp/results.png" alt="Walle++ results" loading="lazy">
+                    <p class="pub-gallery-label">Results</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Brain Age -->
+    <div class="pub-card" data-animate>
+        <div class="pub-header">
+            <h3 class="pub-title">Robust Brain Age Estimation via Regression Models and MRI-derived Features</h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Usama Sardar, Sarwan Ali, Shafiq Alam, Murray Patterson, Imdad Ullah Khan</p>
+            <div class="pub-meta">
+                <span class="pub-venue published">ICCCI 2023 &middot; Springer CCIS</span>
+                <div class="pub-links">
+                    <a href="https://arxiv.org/pdf/2306.05514" class="btn-sm"><svg><use href="#i-paper"></use></svg> Paper</a>
+                    <a href="https://github.com/mansoor181/Brain_Age_Estimation.git" class="btn-sm"><svg><use href="#i-code"></use></svg> Code</a>
+                </div>
+            </div>
+        </div>
+        <div class="pub-gallery">
+            <div class="pub-gallery-row">
+                <div class="pub-gallery-item" onclick="openLightbox('figures/brain_age/visual.png')">
+                    <img src="figures/brain_age/visual.png" alt="Brain aging visualization" loading="lazy">
+                    <p class="pub-gallery-label">Brain Aging</p>
+                </div>
+                <div class="pub-gallery-item" onclick="openLightbox('figures/brain_age/overall.png')">
+                    <img src="figures/brain_age/overall.png" alt="Brain Age pipeline" loading="lazy">
+                    <p class="pub-gallery-label">Pipeline</p>
+                </div>
+                <div class="pub-gallery-item" onclick="openLightbox('figures/brain_age/results.png')">
+                    <img src="figures/brain_age/results.png" alt="VBM results" loading="lazy">
+                    <p class="pub-gallery-label">VBM Analysis</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</section>
+
+<!-- Teaching -->
+<section id="teaching">
+<div class="container">
+    <h2 class="section-heading">Teaching</h2>
+
+    <div class="teaching-item" data-animate>
+        <h3>CSC 8850 &mdash; Advanced Machine Learning, GSU
+            <a href="aml25.html" style="font-weight:300; font-size:0.85rem;">[Course Page]</a>
+        </h3>
+        <p class="teaching-meta">Graduate TA &middot; Spring 2025, Fall 2025 &middot; Prof. Sergey Plis</p>
+    </div>
+    <div class="teaching-item" data-animate>
+        <h3>CS 3210 &mdash; Computer Organization &amp; Programming, GSU</h3>
+        <p class="teaching-meta">Graduate TA &middot; Summer 2025, Spring 2026</p>
+    </div>
+    <div class="teaching-item" data-animate>
+        <h3>CSC 8713 &mdash; Spatial and Scientific Databases, GSU</h3>
+        <p class="teaching-meta">Graduate TA &middot; Fall 2024</p>
+    </div>
+    <div class="teaching-item" data-animate>
+        <h3>EE 212 &mdash; Mathematical Foundations for Machine Learning, LUMS
+            <a href="https://www.zubairkhalid.org/ee212_2022.html" target="_blank" rel="noopener" style="font-weight:300; font-size:0.85rem;">[Course Page]</a>
+        </h3>
+        <p class="teaching-meta">Teaching Assistant &middot; Fall 2022 &middot; Prof. Zubair Khalid</p>
+    </div>
+</div>
+</section>
+
+<!-- Honors & Service -->
+<section id="honors">
+<div class="container">
+    <h2 class="section-heading">Honors &amp; Service</h2>
+    <div class="hs-grid">
+        <div data-animate>
+            <h3 class="hs-subtitle">Fellowships &amp; Awards</h3>
+            <ul class="hs-list">
+                <li>Molecular Basis for Disease (MBD) Fellowship, GSU <span class="hs-year">2025 &ndash; present</span></li>
+                <li>Warren Alpert Computational Biology &amp; AI Network Fellow, UCLA <span class="hs-year">2025 &ndash; 2026</span></li>
+                <li>Computational Genomics Summer Institute (CGSI), UCLA <span class="hs-year">2025</span></li>
+                <li>Summer School in Biomedical Engineering, Max Planck / TU Ilmenau <span class="hs-year">2023</span></li>
+                <li>HEC Merit Scholarship (fully funded BSc EE), Pakistan <span class="hs-year">2017 &ndash; 2021</span></li>
+                <li>Balochistan Educational Endowment Fund <span class="hs-year">2015 &ndash; 2017</span></li>
             </ul>
         </div>
-
-
-        <!-- Research Tab -->
-        <div id="research" class="tab-content">
-            <h2 >Research Projects and Publications</h2>
-
-            <h3>Exploring the Impact of Embedding Methods on Graph-based Antibody-aware Epitope Prediction (Presented at <a href="https://iccabs.engr.uconn.edu/home" target="_blank" style="color:Tomato;">ICCABS-2025</a>) - [<a href="https://www.biorxiv.org/content/10.1101/2025.02.12.637989v2" target="_blank">BioRxiv</a>, <a href="https://mansoor181.github.io/docs/Epitope_Prediction_ICCABS_Mansoor.pdf" target="_blank"> Slides</a>, <a href="https://github.com/mansoor181/epitope-pred.git" target="_blank"> GitHub</a>]</h3>
-            <ul>
-                <li>Designed and implemented a graph neural network (GCN) framework to predict antibody-antigen interactions using 3D structural data, leveraging protein language models (PLMs) like AntiBERTy, ESM2, and ProtBERT for residue embeddings. This approach significantly improved epitope prediction accuracy over traditional sequence-based methods.</li>
-                <li><strong>Contribution:</strong> Achieved state-of-the-art performance on the AsEP benchmark dataset, with a 0.263 MCC and 0.348 F1 score, outperforming existing methods like GraphBepi and EpiGraph.</li>
-                
-                <!-- <li><strong>Tool Integration:</strong> Integrated with <a href="https://github.com/trendscenter/coinstac" target="_blank">COINSTAC</a>.</li> -->
-            </ul>
-
-
-            <h3 >Robust Brain Age Estimation via Regression Models and MRI-derived Features <a href="https://iccci.pwr.edu.pl/2023/" target="_blank" style="color:Tomato;">(ICCCI-2023)</span></a> - [<a href="https://link.springer.com/chapter/10.1007/978-3-031-41774-0_52" target="_blank"> Paper</a>, <a href="https://mansoor181.github.io/docs/ICCCI_2023_Brain_Age_Paper_Presentation_Slides.pdf" target="_blank"> Slides</a>, <a href="https://github.com/mansoor181/Brain_Age_Estimation.git" target="_blank"> GitHub</a>] </h3>
-            <ul>
-                <li>Integrated the region-wise volumetric measurements of 3965 healthy individuals derived from T1-weighted MRIs and trained regression models to estimate brain age.</li>
-                <li><strong>Result:</strong> Achieved an MAE of <strong>3.25 years</strong>.</li>
-                <!-- <li><strong>GitHub:</strong> <a href="https://github.com/mansoor181/Brain_Age_Estimation.git" target="_blank">Code Repository</a></li> -->
-            </ul>
-
-            <h3>Mitigating Covariance in MRI Site-effects in a Federated Learning Framework (ongoing) - [<a href="https://mansoor181.github.io/docs/FL_Based_MRI_Site_Effect_Removal.pdf" target="_blank"> Slides</a>, <a href="https://github.com/mansoor181/Fed-CovBat.git" target="_blank"> GitHub</a>]</h3>
-            <ul>
-                <li>Developing a decentralized algorithm for harmonizing multi-site MRI data using region-based brain features of 4k healthy controls, collected across 64 sites.</li>
-                <li><strong>Contribution:</strong> The first MRI harmonizing approach in a federated setting that removes bias in covariance between features, achieving accuracy equivalent to centralized approaches.</li>
-                
-                <!-- <li><strong>Tool Integration:</strong> Integrated with <a href="https://github.com/trendscenter/coinstac" target="_blank">COINSTAC</a>.</li> -->
-            </ul>
-
-            <h3>A Data-driven Pipeline for Designing Antibodies (ongoing) - [<a href="https://mansoor181.github.io/docs/Antibody_design.pdf" target="_blank"> Slides</a>]</h3>
-            <ul>
-                <li>Developing the first-of-its-kind end-to-end computational pipeline for designing antibodies for a given antigen sequence using advanced bioinformatics, machine learning, and NLP methods.</li>
-                <!-- <li>Currently building a robust antibody-aware epitope prediction model using the benchmark <a href="https://github.com/biochunan/AsEP-dataset/tree/main/asep" target="_blank">AsEP dataset</a>.</li> -->
-            </ul>
-
-            <h3>Deep Feature Ensemble-based Brain Age Estimation - [<a href="https://github.com/mansoor181/Deep-Feature-Ensemble-Based-BrainAGE.git" target="_blank">Github</a>] </h3>
-            <ul>
-                <li>Developed a brain age estimation (BAE) framework by ensembling 3D CNN, ResNet, Vision Transformer, and AlexNet using the T1-weighted 3D MRI volumes of 3966 healthy controls.</li>
-                <li><strong>Result:</strong> Achieved state-of-the-art with an <strong>MAE of 2.05 years</strong>.</li>
-            </ul>
-
-            <h3>Liquidity is all you need: A decentralized approach to generative agentic AI systems with liquidity - [<a href="https://github.com/mansoor181/TBC-Agent-Based-Simulation.git" target="_blank">Github</a>] </h3>
-            <ul>
-                <li>Designed and implemented a simulation modeling the behavior of diverse platform participants (creators, buyers, investors, speculators) in a multi-token economy, incorporating heterogeneity, bounded rationality, learning, and network effects.</li>
-                <li>Conducted in-depth analysis of platform properties such as price discovery, supply-demand trends, volatility, and arbitrage opportunities, while investigating the impact of bonding curve shapes and agent behaviors on system dynamics.</li>
-                <li>Generated simulation outputs to support explanatory, exploratory, and predictive tasks, enabling the forecasting of platform behavior under varying parameters and agent strategies.</li>
-            </ul>
-
-            <h3>Quantifying the Impact of Brain Tumor on the Brain Age </h3>
-            <ul>
-                <li>Developed an improved brain age estimation (BAE) model using the region-wise, surface-wise, and voxel-wise features extracted from 757 healthy MRIs with an MAE of 3.1 years.</li>
-                <li><strong>Result:</strong> Predicted the brain age of brain tumor patients using our BAE model and observed an increased <strong>brain age gap of 10.3 years</strong> in tumor patients compared to healthy controls.</li>
-            </ul>
-
-            <h3>A Deep Learning-based Interpretable Framework for Early-stage Alzheimer's Disease Detection </h3>
-            <ul>
-                <li>Developed a CNN-based model for detecting early-stage Alzheimer's Disease (AD) and interpreted the aging-related phenomenon using multimodal input data of 457 samples from the <a href="https://adni.loni.usc.edu/" target="_blank">ADNI dataset</a>.</li>
-                <li><strong>Contribution:</strong> The novel approach combines data from multiple modalities and provides explainability of the early-stage changes in the brain of AD patients.</li>
-            </ul>
-
-
-        </div>
-
-        <!-- Teaching Tab -->
-        <div id="teaching" class="tab-content">
-            <h2>Teaching Experience</h2>
-            <h3>Graduate Teaching Assistant<a href="https://neuroneural.net/posts/advancedml/" target="_blank"> - Advanced Machine Learning (CSC 8850)</a> - [<a href="https://mansoor181.github.io/aml25.html" target="_blank" style="color:Tomato;">Course page</a>]</h3>
-            <ul>
-                <li><strong>Course description: </strong>This course offers an in-depth understanding of machine learning, with theoretical and practical flavors. The course introduces learning theory and PAC learnability with key models such as linear models, PCA, Bayesian Decision Theory, and parameter estimation (MLE, MAP). Other advanced topics include logistic regression, SVMs, clustering (k-means, EM), and methods like matrix factorization, automatic differentiation, and CNNs.</li>
-            </ul>
-
-            <h3>Graduate Teaching Assistant - Spatial and Scientific Databases (CSC 8713)</h3>
-            <ul>
-                <li><strong>Course description: </strong>this course covers three major components: Part 1: Spatial Databases, Part 2: Data Warehousing & Scientific Databases (mainly from research papers), Part 3: Graduate research project. 
-                    The goal of this course is to present in detail a number of advanced concepts of database systems: spatial data storage and retrieval, multi-dimensional indexing techniques, advanced data modeling techniques, data warehouses, and a few areas of database-related research.</li>
-            </ul>
-
-            <h3>Teaching Assistant - Mathematical Foundations for Machine Learning (EE 212) - [<a href="https://www.zubairkhalid.org/ee212_2022.html" target="_blank">Course page</a>]</h3>
-            <ul>
-                <li>Topics covered are vectors and matrices, vector spaces, system of linear equations, eigen-value decomposition, singular value decomposition, regression, least-squares, regularization, 
-                    multivariate calculus and differentials for optimization, gradient descent, 
-                    probability axioms, Bayes rule, random variable, probability distributions, descriptive stats, inferential stats, statistical tests
-                    
-                    introduction to Neural Networks: single and multi-layer perceptron(s), feedforward and feedback networks
-                    
-                    application to machine learning and data science: principal component analysis (PCA), time series forecasting, clustering etc, 
-                    
-                    with hands-on exercises in Python</li>
-                <li>Conducted bi-weekly tutorials and supervised students' semester projects.</li>
-                <li>Prepared and graded quizzes, homework, and programming assignments.</li>
-            </ul>
-        </div>
-
-        <!-- Certifications Tab -->
-        <div id="certifications" class="tab-content">
-            <h2>Certifications</h2>
-            <h3><a href="https://www.fil.ion.ucl.ac.uk/spm/course/london/" target="_blank">Statistical Parametric Mapping (SPM) for fMRI/VBM</a></h3>
-            <ul>
-                <li>Wellcome Centre for Human Neuroimaging, University College London (UCL), UK.</li>
-                <li><strong>Certificate:</strong> <a href="https://mansoor181.github.io/figures/Mansoor-SPM-fMRI-Course-UCL.jpg" target="_blank">View Certificate</a></li>
-            </ul>
-
-            <h3><a href="https://www.cbs.mpg.de/en/biomedical-engineering-sommer-school-2023.html" target="_blank">10th International Summer School in Biomedical Engineering</a></h3>
-            <ul>
-                <li>Max Planck Institute for Human Cognitive and Brain Sciences, TU Ilmenau, Germany.</li>
-                <li><strong>Certificate:</strong> <a href="https://mansoor181.github.io/figures/Mansoor_Ahmed_Geo_Summer_School_Cert.png" target="_blank">View Certificate</a></li>
-            </ul>
-
-            <h3><a href="https://learn.nvidia.com/courses/course-detail?course_id=course-v1:DLI+C-DS-02+V1" target="_blank">Fundamentals of Accelerated Data Science with RAPIDS</a></h3>
-            <ul>
-                <li>NVIDIA Deep Learning Institute at LUMS, Pakistan.</li>
-                <li><strong>Certificate:</strong> <a href="https://courses.nvidia.com/certificates/3523e2a26d744c5faa997e34880dc3dd/" target="_blank">View Certificate</a></li>
-            </ul>
-
-            <h3><a href="http://www.lmars.whu.edu.cn/geosummerschool/index.jsp" target="_blank">International Geoinformatics Summer School</a></h3>
-            <ul>
-                <li>State Key Lab of Information Engineering in Surveying, Mapping & Remote Sensing, Wuhan University, China.</li>
-                <li><strong>Certificate:</strong> <a href="https://mansoor181.github.io/figures/Mansoor_Ahmed_Geo_Summer_School_Cert.png" target="_blank">View Certificate</a></li>
+        <div data-animate>
+            <h3 class="hs-subtitle">Reviewing &amp; Service</h3>
+            <ul class="hs-list">
+                <li>ICML GenBio Workshop <span class="hs-year">2026</span></li>
+                <li>ISBRA <span class="hs-year">2025, 2026</span></li>
+                <li>ICCABS <span class="hs-year">2025, 2026</span></li>
+                <li>PeerJ Computer Science <span class="hs-year">2025</span></li>
             </ul>
         </div>
     </div>
-    <footer>
-        &copy; 2024 Mansoor Ahmed. All rights reserved.
-    </footer>
-    
+</div>
+</section>
 
-    <script>
+</main>
 
-        function showTab(tabName, event) {
-            // Prevent default behavior (page jump)
-            event.preventDefault();
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            // Show the selected tab content
-            document.getElementById(tabName).classList.add('active');
-        }
+<footer>
+    &copy; 2026 Mansoor Ahmed &middot;
+    <a href="mailto:mahmed76@student.gsu.edu">mahmed76@student.gsu.edu</a>
+</footer>
 
-        // function showTab(tabName) {
-        //     // Hide all tab contents
-        //     document.querySelectorAll('.tab-content').forEach(tab => {
-        //         tab.classList.remove('active');
-        //     });
-        //     // Show the selected tab content
-        //     document.getElementById(tabName).classList.add('active');
-        // }
-    </script>
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="Enlarged figure">
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
