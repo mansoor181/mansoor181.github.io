@@ -74,7 +74,7 @@ section { padding: 64px 24px; }
     display: grid; grid-template-columns: 1fr 200px; gap: 40px; align-items: start;
 }
 .profile-photo {
-    width: 200px; border-radius: var(--radius);
+    width: 170px; border-radius: var(--radius);
     box-shadow: var(--z1); transition: transform 0.4s ease;
 }
 .profile-photo:hover { transform: scale(1.03); }
