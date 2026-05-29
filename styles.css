@@ -87,18 +87,29 @@ section { padding: 24px 24px; }
 .about-interests { font-size: 0.88rem; color: var(--text-light); margin-bottom: 20px; }
 .about-interests strong { color: var(--text); font-weight: 500; }
 
-.social-links { display: flex; gap: 12px; flex-wrap: wrap; }
-.social-links a {
-    display: inline-flex; align-items: center; gap: 6px;
-    color: var(--text-light); font-size: 0.82rem; font-weight: 400;
-    padding: 6px 14px; border-radius: var(--radius); border: 1px solid var(--border);
-    transition: all 0.25s ease; text-decoration: none;
+.contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+    margin-top: 20px; padding: 20px;
+    background: var(--bg-alt); border-radius: var(--radius);
+    border: 1px solid var(--border);
 }
-.social-links a:hover {
-    color: var(--accent); border-color: var(--accent);
-    box-shadow: var(--z1); transform: translateY(-2px); text-decoration: none;
+.contact-col { display: flex; flex-direction: column; gap: 8px; }
+.contact-heading {
+    font-family: 'Roboto Slab', serif; font-size: 0.9rem; font-weight: 500;
+    color: var(--text); margin-bottom: 4px; text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
-.social-links svg { width: 16px; height: 16px; flex-shrink: 0; }
+.contact-item {
+    display: flex; align-items: center; gap: 10px;
+    color: var(--text-light); font-size: 0.88rem;
+    text-decoration: none; transition: color 0.2s;
+}
+.contact-item span { user-select: all; }
+a.contact-item:hover { color: var(--accent); text-decoration: none; }
+.contact-item svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--accent); }
+.profiles-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px;
+}
 
 /* ── News ── */
 #news { background: var(--bg-alt); padding-top: 24px; padding-bottom: 24px; }
@@ -226,7 +237,8 @@ footer a:hover { text-decoration: underline; }
 @media (max-width: 768px) {
     .about-grid { grid-template-columns: 1fr; text-align: center; }
     .profile-photo { margin: 0 auto; width: 160px; order: -1; }
-    .social-links { justify-content: center; }
+    .contact-grid { grid-template-columns: 1fr; gap: 24px; text-align: left; }
+    .contact-item { justify-content: flex-start; }
     .pub-gallery-row { flex-wrap: wrap; }
     .pub-gallery-item { flex: 1 1 45%; height: 130px; }
     .hs-grid { grid-template-columns: 1fr; gap: 32px; }
