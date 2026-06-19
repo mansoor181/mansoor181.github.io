@@ -191,6 +191,63 @@ a.contact-item:hover { color: var(--accent); text-decoration: none; }
 .teaching-item h3 { font-size: 0.95rem; margin-bottom: 2px; }
 .teaching-meta { font-size: 0.85rem; color: var(--text-light); }
 
+
+/* ── Talks ── */
+#talks { background: var(--bg); }
+.talk-item {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+}
+.talk-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.talk-title {
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+    font-family: 'Roboto Slab', serif;
+    font-weight: 400;
+}
+.talk-title a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.talk-title a:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+.talk-meta {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.talk-venue {
+    font-weight: 500;
+    color: var(--text);
+}
+.talk-date {
+    color: var(--text-light);
+}
+.talk-recording {
+    color: var(--text-light);
+    font-style: italic;
+}
+.talk-recording a {
+    color: var(--accent);
+    text-decoration: none;
+    font-style: normal;
+}
+.talk-recording a:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
 /* ── Honors & Service ── */
 .hs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
 .hs-subtitle { font-family: 'Roboto Slab', serif; font-size: 1.1rem; font-weight: 400; margin-bottom: 16px; }
