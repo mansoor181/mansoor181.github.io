@@ -12,26 +12,27 @@
     --z2: 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12), 0 2px 4px -1px rgba(0,0,0,.2);
     --radius: 0.25rem;
     --max-width: 900px;
+    --font: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 
 body {
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: var(--font);
     color: var(--text);
     background: var(--bg);
-    line-height: 1.8;
+    line-height: 1.7;
     font-size: 16px;
-    font-weight: 300;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
 }
 
 a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
 a:hover { color: var(--accent-hover); text-decoration: underline; }
 img { max-width: 100%; height: auto; }
-strong, b { font-weight: 500; }
+strong, b { font-weight: 600; }
 
-h1, h2, h3 { font-family: 'Roboto Slab', serif; font-weight: 400; color: var(--text); }
+h1, h2, h3 { font-family: var(--font); font-weight: 600; color: var(--text); }
 
 /* ── Navigation ── */
 nav {
@@ -47,7 +48,7 @@ nav.scrolled { border-bottom-color: var(--border); box-shadow: 0 1px 4px rgba(0,
     display: flex; align-items: center; justify-content: space-between; height: 56px;
 }
 .nav-name {
-    font-family: 'Roboto Slab', serif; font-weight: 700; font-size: 1.05rem; color: var(--text);
+    font-family: var(--font); font-weight: 700; font-size: 1.05rem; color: var(--text);
 }
 .nav-links { display: flex; gap: 24px; list-style: none; }
 .nav-links a {
@@ -62,7 +63,7 @@ section { padding: 24px 24px; }
 .container { max-width: var(--max-width); margin: 0 auto; }
 
 .section-heading {
-    font-family: 'Roboto Slab', serif; font-size: 1.6rem; font-weight: 400;
+    font-family: var(--font); font-size: 1.6rem; font-weight: 700;
     margin-bottom: 20px; color: var(--text);
 }
 .section-heading a { color: inherit; text-decoration: none; }
@@ -79,7 +80,7 @@ section { padding: 24px 24px; }
 }
 .profile-photo:hover { transform: scale(1.03); }
 .about-text h1 {
-    font-family: 'Roboto Slab', serif; font-size: 2rem; font-weight: 300; margin-bottom: 2px;
+    font-family: var(--font); font-size: 2rem; font-weight: 700; margin-bottom: 2px;
 }
 .about-text h1 strong { font-weight: 700; }
 .about-subtitle { font-size: 0.95rem; color: var(--text-light); margin-bottom: 16px; font-style: italic; }
@@ -96,7 +97,7 @@ section { padding: 24px 24px; }
 }
 .contact-col { display: flex; flex-direction: column; gap: 8px; }
 .contact-heading {
-    font-family: 'Roboto Slab', serif; font-size: 0.9rem; font-weight: 500;
+    font-family: var(--font); font-size: 0.9rem; font-weight: 600;
     color: var(--text); margin-bottom: 4px; text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -146,7 +147,7 @@ a.contact-item:hover { color: var(--accent); text-decoration: none; }
 
 .pub-header { margin-bottom: 12px; }
 .pub-title {
-    font-family: 'Roboto Slab', serif; font-size: 1.05rem; font-weight: 400;
+    font-family: var(--font); font-size: 1.05rem; font-weight: 600;
     margin-bottom: 4px; line-height: 1.45;
 }
 .pub-authors { font-size: 0.85rem; color: var(--text-light); margin-bottom: 4px; }
@@ -162,7 +163,7 @@ a.contact-item:hover { color: var(--accent); text-decoration: none; }
     padding: 4px 12px; font-size: 0.78rem; font-weight: 400;
     border-radius: var(--radius); border: 1px solid var(--border);
     background: var(--bg); color: var(--text-light);
-    cursor: pointer; font-family: 'Roboto', sans-serif; transition: all 0.25s ease; text-decoration: none;
+    cursor: pointer; font-family: var(--font); transition: all 0.25s ease; text-decoration: none;
 }
 .btn-sm:hover {
     color: var(--accent); border-color: var(--accent);
@@ -221,8 +222,8 @@ a.contact-item:hover { color: var(--accent); text-decoration: none; }
 .talk-title {
     font-size: 0.95rem;
     margin-bottom: 2px;
-    font-family: 'Roboto Slab', serif;
-    font-weight: 400;
+    font-family: var(--font);
+    font-weight: 600;
 }
 .talk-title a {
     color: var(--accent);
@@ -264,7 +265,7 @@ a.contact-item:hover { color: var(--accent); text-decoration: none; }
 
 /* ── Honors & Service ── */
 .hs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
-.hs-subtitle { font-family: 'Roboto Slab', serif; font-size: 1.1rem; font-weight: 400; margin-bottom: 16px; }
+.hs-subtitle { font-family: var(--font); font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
 .hs-list { list-style: none; }
 .hs-list li { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; line-height: 1.5; }
 .hs-list li:last-child { border-bottom: none; }
