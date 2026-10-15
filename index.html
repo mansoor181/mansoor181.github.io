@@ -75,9 +75,31 @@
     <p>
         Previously, I worked as a research assistant for one year at the <a href="https://web.lums.edu.pk/~imdad/index.html" target="_blank" rel="noopener">Data Analytics lab at LUMS, Pakistan</a> where I developed graph and Physics-based methods for antigen-antibody interaction, preprocessing pipelines for multi-modal MRI, and trained custom CV models for neurological disorders detection. Prior to that, I worked as a research assistant for one year at the <a href="https://sdsa.lums.edu.pk/" target="_blank" rel="noopener">Smart Data Systems & Applications (SDSA) lab</a> at LUMS, where I developed the software and computer vision models for <a href="https://www.vendingc.com/" target="_blank" rel="noopener">Vending Central</a> that is now a leading vending company in Pakistan.
     </p>
-    <p class="about-interests">
-        <strong>Research Interests:</strong> Generative models for protein design, equivariant &amp; geometric deep learning, protein language models, antibody engineering, computational structural biology
-    </p>
+    <div class="areas">
+        <p class="areas-label">Research areas <span>&middot; click one to filter my papers</span></p>
+        <div class="areas-grid">
+            <button type="button" class="area" data-topic="antibody" aria-pressed="false">
+                <span class="area-head">Antibody design<span class="area-count"></span></span>
+                <span class="area-desc">Designing antibody CDR loops for a target epitope, and a benchmark to compare such methods fairly.</span>
+                <span class="area-papers"></span>
+            </button>
+            <button type="button" class="area" data-topic="discrete" aria-pressed="false">
+                <span class="area-head">Few-step discrete generation<span class="area-count"></span></span>
+                <span class="area-desc">Faster sampling for discrete diffusion models: distillation, joint unmasking and latent kernels.</span>
+                <span class="area-papers"></span>
+            </button>
+            <button type="button" class="area" data-topic="epitope" aria-pressed="false">
+                <span class="area-head">Epitope prediction<span class="area-count"></span></span>
+                <span class="area-desc">Predicting where an antibody binds its antigen, with geometric deep learning and protein language models.</span>
+                <span class="area-papers"></span>
+            </button>
+            <button type="button" class="area" data-topic="neuro" aria-pressed="false">
+                <span class="area-head">Neuroimaging<span class="area-count"></span></span>
+                <span class="area-desc">Estimating brain age from MRI-derived features.</span>
+                <span class="area-papers"></span>
+            </button>
+        </div>
+    </div>
     <div class="contact-grid">
         <div class="contact-col">
             <h4 class="contact-heading">Contact</h4>
@@ -169,13 +191,17 @@
 <section id="publications">
 <div class="container">
     <h2 class="section-heading"><a href="#publications">Publications/Preprints</a></h2>
+    <p class="area-filter" id="area-filter" hidden>Showing <strong></strong> papers &middot; <button type="button">show all</button></p>
 
     <!-- ChiMERa-Bench -->
-    <div class="pub" data-animate>
+    <div class="pub" data-topic="antibody" data-short="ChiMERa-Bench" data-animate>
         <div class="pub-fig">
             <span class="pub-badge">TMLR</span>
             <a href="docs/chimera-bench/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="ChiMERa-Bench project page">
-                <img src="docs/chimera-bench/static/images/scene.png" alt="How the benchmark works: curate, annotate, then design and score" loading="lazy">
+                <picture>
+                    <source srcset="docs/chimera-bench/static/images/scene.png" media="(prefers-reduced-motion: reduce)">
+                    <img src="figures/chimera-bench/teaser.webp" alt="How the benchmark works: curate, annotate, then design and score" loading="lazy">
+                </picture>
             </a>
         </div>
         <div class="pub-body">
@@ -194,7 +220,7 @@
     </div>
 
     <!-- MLD3 -->
-    <div class="pub" data-animate>
+    <div class="pub" data-topic="discrete" data-short="MLD3" data-animate>
         <div class="pub-fig">
             <span class="pub-badge preprint">Preprint</span>
             <a href="docs/mld3/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="MLD3 project page">
@@ -215,7 +241,7 @@
     </div>
 
     <!-- Domino -->
-    <div class="pub" data-animate>
+    <div class="pub" data-topic="discrete" data-short="Domino" data-animate>
         <div class="pub-fig">
             <span class="pub-badge preprint">Preprint</span>
             <a href="docs/domino/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="Domino project page">
@@ -236,31 +262,37 @@
     </div>
 
     <!-- LKF -->
-    <div class="pub" data-animate>
+    <div class="pub" data-topic="discrete" data-short="LKF" data-animate>
         <div class="pub-fig">
             <span class="pub-badge">NeurIPS Workshop</span>
-            <div class="pub-fig-frame" onclick="openLightbox('figures/lkf/conceptual.png')">
-                <img src="figures/lkf/conceptual.png" alt="Factorized step versus the LKF step with a latent kernel" loading="lazy">
-            </div>
+            <a href="docs/lkf/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="LKF project page">
+                <video muted loop playsinline preload="none" poster="docs/lkf/static/images/concept.png" aria-label="Animation of Figure 1: a factorized step against an LKF step">
+                    <source src="docs/lkf/static/videos/lkf_concept.mp4" type="video/mp4">
+                </video>
+            </a>
         </div>
         <div class="pub-body">
-            <h3 class="pub-title"><a href="https://openreview.net/forum?id=iuTdDIaTrl" target="_blank" rel="noopener">Latent-Kernel Discrete Diffusion for Few-Step Generation</a></h3>
+            <h3 class="pub-title"><a href="docs/lkf/index.html" target="_blank" rel="noopener">Latent-Kernel Discrete Diffusion for Few-Step Generation</a></h3>
             <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Yue-Tsz Fan, Hemanth Venkateswara, Murray Patterson</p>
             <p class="pub-venue"><em>NeurIPS 2026, Beyond Next&#8209;Token Prediction (<strong>BeNTo</strong>) Workshop</em></p>
             <div class="pub-links">
                 <a href="https://openreview.net/forum?id=iuTdDIaTrl" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
                 <a href="https://arxiv.org/abs/2607.27529" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> arXiv</a>
                 <a href="https://github.com/mansoor181/lkf" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
+                <a href="docs/lkf/index.html" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-web"></use></svg> Project Page</a>
             </div>
         </div>
     </div>
 
     <!-- AgForce -->
-    <div class="pub" data-animate>
+    <div class="pub" data-topic="antibody" data-short="AgForce" data-animate>
         <div class="pub-fig">
             <span class="pub-badge preprint">Preprint</span>
             <a href="docs/agforce/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="AgForce project page">
-                <img src="docs/agforce/static/images/agforce_arch.png" alt="AgForce architecture" loading="lazy">
+                <picture>
+                    <source srcset="docs/agforce/static/images/agforce_arch.png" media="(prefers-reduced-motion: reduce)">
+                    <img src="figures/agforce/teaser.webp" alt="AgForce in three stages: encode the complex, attend and gate, decode with a mixture" loading="lazy">
+                </picture>
             </a>
         </div>
         <div class="pub-body">
@@ -276,7 +308,7 @@
     </div>
 
     <!-- EpiFormer -->
-    <div class="pub" data-animate>
+    <div class="pub" data-topic="epitope" data-short="EpiFormer" data-animate>
         <div class="pub-fig">
             <span class="pub-badge preprint">Preprint</span>
             <a href="docs/epiformer/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="EpiFormer project page">
@@ -298,45 +330,53 @@
     </div>
 
     <!-- ConTact -->
-    <div class="pub" data-animate>
+    <div class="pub" data-topic="antibody" data-short="ConTact" data-animate>
         <div class="pub-fig">
             <span class="pub-badge">ICML Workshop</span>
-            <div class="pub-fig-frame" onclick="openLightbox('figures/contact/architecture.png')">
-                <img src="figures/contact/architecture.png" alt="ConTact architecture" loading="lazy">
-            </div>
+            <a href="docs/contact/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="ConTact project page">
+                <video muted loop playsinline preload="none" poster="docs/contact/static/images/architecture_poster.jpg" aria-label="The ConTact architecture, animated stage by stage">
+                    <source src="docs/contact/static/videos/architecture.mp4" type="video/mp4">
+                </video>
+            </a>
         </div>
         <div class="pub-body">
-            <h3 class="pub-title"><a href="https://arxiv.org/abs/2605.21600" target="_blank" rel="noopener">ConTact: Contact-First Antibody CDR Design via Explicit Interface Reasoning</a></h3>
+            <h3 class="pub-title"><a href="docs/contact/index.html" target="_blank" rel="noopener">ConTact: Contact-First Antibody CDR Design via Explicit Interface Reasoning</a></h3>
             <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Spencer VonBank, Nadeem Taj, Sujin Lee, Naila Jan, Murray Patterson</p>
             <p class="pub-venue"><em>ICML 2026, Generative and Agentic AI for Biology (<strong>GenBio</strong>) Workshop</em></p>
             <div class="pub-links">
-                <a href="https://arxiv.org/abs/2605.21600" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
+                <a href="https://openreview.net/forum?id=c36TRdJayj" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
+                <a href="https://arxiv.org/abs/2605.21600" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> arXiv</a>
                 <a href="https://github.com/mansoor181/ConTact" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
+                <a href="docs/contact/index.html" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-web"></use></svg> Project Page</a>
             </div>
         </div>
     </div>
 
     <!-- EvoStruct -->
-    <div class="pub" data-animate>
+    <div class="pub" data-topic="antibody" data-short="EvoStruct" data-animate>
         <div class="pub-fig">
             <span class="pub-badge">ICML Workshop</span>
-            <div class="pub-fig-frame" onclick="openLightbox('figures/evostruct/overall.png')">
-                <img src="figures/evostruct/overall.png" alt="EvoStruct architecture" loading="lazy">
-            </div>
+            <a href="docs/evostruct/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="EvoStruct project page">
+                <video muted loop playsinline preload="none" poster="docs/evostruct/static/images/architecture_poster.jpg" aria-label="The EvoStruct architecture, animated stage by stage">
+                    <source src="docs/evostruct/static/videos/architecture.mp4" type="video/mp4">
+                </video>
+            </a>
         </div>
         <div class="pub-body">
-            <h3 class="pub-title"><a href="https://arxiv.org/abs/2605.21485" target="_blank" rel="noopener">EvoStruct: Bridging Evolutionary and Structural Priors for Antibody CDR Design via Protein Language Model Adaptation</a></h3>
+            <h3 class="pub-title"><a href="docs/evostruct/index.html" target="_blank" rel="noopener">EvoStruct: Bridging Evolutionary and Structural Priors for Antibody CDR Design via Protein Language Model Adaptation</a></h3>
             <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Sujin Lee, Umar Khayaz, Murray Patterson</p>
             <p class="pub-venue"><em>ICML 2026, Generative and Agentic AI for Biology (<strong>GenBio</strong>) Workshop</em></p>
             <div class="pub-links">
-                <a href="https://arxiv.org/abs/2605.21485" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
+                <a href="https://openreview.net/forum?id=7bAEJ3UMPi" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
+                <a href="https://arxiv.org/abs/2605.21485" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> arXiv</a>
                 <a href="https://github.com/mansoor181/EvoStruct" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
+                <a href="docs/evostruct/index.html" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-web"></use></svg> Project Page</a>
             </div>
         </div>
     </div>
 
     <!-- Walle++ -->
-    <div class="pub" data-animate>
+    <div class="pub" data-topic="epitope" data-short="Walle++" data-animate>
         <div class="pub-fig">
             <span class="pub-badge">ICCABS</span>
             <div class="pub-fig-frame" onclick="openLightbox('figures/wallepp/overall.png')">
@@ -355,11 +395,11 @@
     </div>
 
     <!-- Brain Age -->
-    <div class="pub" data-animate>
+    <div class="pub" data-topic="neuro" data-short="Brain Age" data-animate>
         <div class="pub-fig">
             <span class="pub-badge">ICCCI</span>
-            <div class="pub-fig-frame" onclick="openLightbox('figures/brain_age/visual.png')">
-                <img src="figures/brain_age/visual.png" alt="Brain aging across the lifespan" loading="lazy">
+            <div class="pub-fig-frame" onclick="openLightbox('figures/brain_age/pipeline.png')">
+                <img src="figures/brain_age/pipeline.png" alt="T1-weighted MRI, region-wise feature extraction, a regression model, and predicted against chronological age" loading="lazy">
             </div>
         </div>
         <div class="pub-body">

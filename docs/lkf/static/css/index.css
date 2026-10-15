@@ -176,6 +176,16 @@ table.results-table td.second { text-decoration: underline; text-underline-offse
 .sample-text { padding: 0.7rem 0.9rem; font-size: 0.9rem; line-height: 1.65; word-break: break-word; }
 .legend-note { font-size: 0.88rem; color: var(--gray); margin-top: 0.8rem; }
 
+/* phones: narrower gutters, and smaller tables and display math so that less of them scrolls */
+@media (max-width: 600px) {
+  .section { padding: 2.4rem 1rem; }
+  .content table.results-table { font-size: 0.8rem; }
+  .content table.results-table th, .content table.results-table td { padding: 0.36rem 0.42rem; }
+  .math-box { padding: 0.45rem 0.6rem; }
+  .math-box .katex-display > .katex { font-size: 0.9em; }
+  .demo { padding: 0.9rem 0.8rem 0.7rem 0.8rem; }
+}
+
 /* bibtex */
 .bibtex-header { display: flex; align-items: center; justify-content: space-between; }
 .copy-bibtex-btn { font-family: var(--serif); background: var(--ink); color: #fff; border: none; border-radius: 8px; padding: 0.4rem 0.9rem; cursor: pointer; }

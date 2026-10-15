@@ -72,3 +72,28 @@ if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         videoObserver.observe(v);
     });
 }
+
+// Research areas: count each area's papers, list them, and filter the publications on click
+var areas = document.querySelectorAll('.area');
+var pubs = Array.prototype.slice.call(document.querySelectorAll('.pub[data-topic]'));
+var areaFilter = document.getElementById('area-filter');
+var activeArea = null;
+
+function setArea(topic) {
+    activeArea = topic;
+    areas.forEach(function(a) { a.setAttribute('aria-pressed', String(a.dataset.topic === topic)); });
+    pubs.forEach(function(p) { p.classList.toggle('is-filtered-out', !!topic && p.dataset.topic !== topic); });
+    areaFilter.hidden = !topic;
+    if (topic) areaFilter.querySelector('strong').textContent = document.querySelector('.area[data-topic="' + topic + '"] .area-head').firstChild.textContent;
+}
+
+areas.forEach(function(a) {
+    var mine = pubs.filter(function(p) { return p.dataset.topic === a.dataset.topic; });
+    a.querySelector('.area-count').textContent = mine.length + (mine.length === 1 ? ' paper' : ' papers');
+    a.querySelector('.area-papers').textContent = mine.map(function(p) { return p.dataset.short; }).join(' · ');
+    a.addEventListener('click', function() {
+        setArea(activeArea === a.dataset.topic ? null : a.dataset.topic);
+        if (activeArea) document.getElementById('publications').scrollIntoView();
+    });
+});
+if (areaFilter) areaFilter.querySelector('button').addEventListener('click', function() { setArea(null); });

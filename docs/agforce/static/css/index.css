@@ -155,3 +155,19 @@ pre#bibtex-code { background: #F5F6F8; border: 1px solid var(--rule); border-rad
   .section { padding: 2.4rem 1rem; }
   table.results-table { font-size: 0.85rem; }
 }
+
+/* the animated figures, drawn live as inline SVG by static/js/arch.js and concept.js */
+.af-scene { width: 100%; cursor: pointer; }
+.af-scene svg { width: 100%; height: auto; display: block; overflow: visible; }
+.af-scene.is-paused { opacity: 0.97; }
+.af-scene text { font-family: var(--serif); }
+.scene-figure { margin: 0 0 1.2rem 0; }
+.af-act { font-size: 23px; font-weight: 700; fill: var(--navy); }
+.af-sub { font-size: 14.5px; fill: var(--gray); }
+.af-step { font-size: 14px; font-weight: 700; fill: var(--navy-soft); }
+.af-note { font-size: 12.5px; fill: var(--gray); }
+.af-tag { font-size: 13.5px; font-weight: 600; }
+.af-count { font-size: 34px; font-weight: 700; fill: var(--navy-soft); font-variant-numeric: tabular-nums; }
+.af-count-sm { font-size: 13px; fill: var(--gray); font-variant-numeric: tabular-nums; }
+.af-res { font-size: 15px; font-weight: 700; fill: var(--text); }
+.af-lane { font-size: 15px; font-weight: 600; fill: var(--navy); }

@@ -11,9 +11,9 @@
   <meta property="og:title" content="ConTact: Contact-First Antibody CDR Design via Explicit Interface Reasoning">
   <meta property="og:description" content="Predict where the loop will touch the antigen, then design what goes there.">
   <!-- the absolute urls assume the page is served at https://mansoor181.github.io/contact/ ; change them if the folder name differs -->
-  <link rel="canonical" href="https://mansoor181.github.io/contact/">
-  <meta property="og:url" content="https://mansoor181.github.io/contact/">
-  <meta property="og:image" content="https://mansoor181.github.io/contact/static/images/architecture_poster.jpg">
+  <link rel="canonical" href="https://mansoor181.github.io/docs/contact/">
+  <meta property="og:url" content="https://mansoor181.github.io/docs/contact/">
+  <meta property="og:image" content="https://mansoor181.github.io/docs/contact/static/images/architecture_poster.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
 
@@ -57,7 +57,7 @@
           <h1 class="title is-1 publication-title hero-fade hero-fade-1">ConTact</h1>
           <h2 class="subtitle is-4 publication-subtitle hero-fade hero-fade-1">Contact-First Antibody CDR Design via Explicit Interface Reasoning</h2>
           <div class="is-size-5 publication-authors hero-fade hero-fade-2">
-            <span class="author-block"><a href="https://mansoor181.github.io/" title="Mansoor Ahmed's website">Mansoor Ahmed</a><sup>1,2,*</sup>,</span>
+            <span class="author-block"><a href="https://mansoor181.github.io/" title="Mansoor Ahmed's website" target="_blank" rel="noopener noreferrer">Mansoor Ahmed</a><sup>1,2,*</sup>,</span>
             <!-- PLACEHOLDER: add homepage links for the co-authors below -->
             <span class="author-block">Spencer VonBank<sup>3</sup>,</span>
             <span class="author-block">Nadeem Taj<sup>4</sup>,</span>
@@ -162,7 +162,7 @@
 <section class="section is-light" id="results">
   <div class="container is-max-desktop content reveal">
     <h2 class="title is-3 has-text-centered">Best interface on every split</h2>
-    <p>All methods are retrained on <a href="https://mansoor181.github.io/chimera-bench/">ChiMERa-Bench</a>, which holds 2,922 antibody-antigen complexes under three splits that withhold unseen epitope shapes, unseen antigen folds and later depositions. Every number below is CDR-H3, the hardest loop.</p>
+    <p>All methods are retrained on <a href="../chimera-bench/index.html" target="_blank" rel="noopener noreferrer">ChiMERa-Bench</a>, which holds 2,922 antibody-antigen complexes under three splits that withhold unseen epitope shapes, unseen antigen folds and later depositions. Every number below is CDR-H3, the hardest loop.</p>
     <div class="table-wrap">
       <table class="results-table">
         <thead><tr><th>Epitope-group split</th><th>AAR&uarr;</th><th>PPL&darr;</th><th>RMSD&darr;</th><th>fnat&uarr;</th><th>iRMSD&darr;</th><th>DockQ&uarr;</th><th>epiF1&uarr;</th></tr></thead>
@@ -267,7 +267,7 @@
       <div class="prop"><h4>The interface rides the same wall</h4><p>fnat, epitope F1, iRMSD and DockQ are all functions of the same coordinates through an 8&nbsp;&#8491; contact graph. Tightening the contact-recovery margin trades fnat up and iRMSD down along a DockQ contour pinned near 0.67, so loss reweighting slides along the frontier without moving it.</p></div>
     </div>
     <div class="takeaway">Position, germline, framework flanks, antigen microenvironment, torsion co-design and library retrieval are each dead ends for the apex. Raising sequence recovery calls for a sharper apex generator or an external evolutionary signal, such as a protein language model, rather than further loss engineering.</div>
-    <p>That last sentence is the starting point of a companion paper. <a href="https://mansoor181.github.io/evostruct/">EvoStruct</a> brings ESM-2 into the sequence head through a structural adapter and recovers the vocabulary that structure-only models lose.</p>
+    <p>That last sentence is the starting point of a companion paper. <a href="../evostruct/index.html" target="_blank" rel="noopener noreferrer">EvoStruct</a> brings ESM-2 into the sequence head through a structural adapter and recovers the vocabulary that structure-only models lose.</p>
   </div>
 </section>
 
@@ -294,7 +294,7 @@
     <div class="columns is-centered">
       <div class="column is-8">
         <div class="content has-text-centered">
-          <p>ConTact &middot; Georgia State University &middot; Georgia Institute of Technology<br>The architecture figure is the one printed in the paper, with a walkthrough drawn over it.<br>Companion pages: <a href="https://mansoor181.github.io/chimera-bench/">ChiMERa-Bench</a> and <a href="https://mansoor181.github.io/evostruct/">EvoStruct</a>.<br>Template from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener noreferrer">Academic Project Page</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p>
+          <p>ConTact &middot; Georgia State University &middot; Georgia Institute of Technology<br>The architecture figure is the one printed in the paper, with a walkthrough drawn over it.<br>Companion pages: <a href="../chimera-bench/index.html" target="_blank" rel="noopener noreferrer">ChiMERa-Bench</a> and <a href="../evostruct/index.html" target="_blank" rel="noopener noreferrer">EvoStruct</a>.<br>Template from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener noreferrer">Academic Project Page</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p>
         </div>
       </div>
     </div>
