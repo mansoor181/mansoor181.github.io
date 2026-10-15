@@ -23,6 +23,9 @@
     <symbol id="i-linkedin" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></symbol>
     <symbol id="i-scholar" viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></symbol>
     <symbol id="i-twitter" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></symbol>
+    <symbol id="i-web" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+    <symbol id="i-data" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></symbol>
+    <symbol id="i-demo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></symbol>
     <symbol id="i-paper" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></symbol>
     <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></symbol>
 </svg>
@@ -124,7 +127,7 @@
         </li>
         <!-- <li class="news-item">
             <span class="news-date">Sept 2026</span>
-            <span>New preprint: <a href="https://arxiv.org/abs/2607.27529" target="_blank" rel="noopener">MLD3</a> is out, where we introduce mixture-of-latents for few-step generation in masked diffusion models.</span>
+            <span>New preprint: <a href="docs/mld3/index.html" target="_blank" rel="noopener">MLD3</a> is out, where we introduce mixture-of-latents for few-step generation in masked diffusion models.</span>
         </li> -->
         <li class="news-item">
             <span class="news-date">Sept 2026</span>
@@ -167,298 +170,205 @@
 <div class="container">
     <h2 class="section-heading"><a href="#publications">Publications/Preprints</a></h2>
 
-        <!-- CHIMERA-Bench -->
-    <div class="pub-card" data-animate>
-        <div class="pub-header">
-            <h3 class="pub-title">ChiMERa-Bench: A Benchmark Dataset for Epitope-Specific Antibody Design</h3>
-            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Nadeem Taj, Imdad Ullah Khan, Hemanth Venkateswara, Murray Patterson</p>
-            <div class="pub-meta">
-                <span class="pub-venue published">Transactions on Machine Learning Research (TMLR), 2026</span>
-                <div class="pub-links">
-                    <a href="https://openreview.net/forum?id=3m8uaq7luq" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
-                    <a href="https://github.com/mansoor181/chimera-bench.git" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
-                </div>
-            </div>
+    <!-- ChiMERa-Bench -->
+    <div class="pub" data-animate>
+        <div class="pub-fig">
+            <span class="pub-badge">TMLR</span>
+            <a href="docs/chimera-bench/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="ChiMERa-Bench project page">
+                <img src="docs/chimera-bench/static/images/scene.png" alt="How the benchmark works: curate, annotate, then design and score" loading="lazy">
+            </a>
         </div>
-        <div class="pub-gallery">
-            <div class="pub-gallery-row">
-                <div class="pub-gallery-item" onclick="openLightbox('figures/chimera-bench/pipeline.png')">
-                    <img src="figures/chimera-bench/pipeline.png" alt="CHIMERA-Bench pipeline" loading="lazy">
-                    <p class="pub-gallery-label">Data Pipeline</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/chimera-bench/radar_plots.png')">
-                    <img src="figures/chimera-bench/radar_plots.png" alt="CHIMERA-Bench baselines" loading="lazy">
-                    <p class="pub-gallery-label">Benchmarking Baselines</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/chimera-bench/h3_baselines.png')">
-                    <img src="figures/chimera-bench/h3_baselines.png" alt="CHIMERA-Bench baselines" loading="lazy">
-                </div>
+        <div class="pub-body">
+            <h3 class="pub-title"><a href="docs/chimera-bench/index.html" target="_blank" rel="noopener">ChiMERa-Bench: A Benchmark Dataset for Epitope-Specific Antibody Design</a></h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Nadeem Taj, Imdad Ullah Khan, Hemanth Venkateswara, Murray Patterson</p>
+            <p class="pub-venue"><em>Transactions on Machine Learning Research (<strong>TMLR</strong>)</em>, 2026</p>
+            <div class="pub-links">
+                <a href="https://openreview.net/forum?id=3m8uaq7luq" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
+                <a href="https://arxiv.org/abs/2603.13431" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> arXiv</a>
+                <a href="https://github.com/mansoor181/chimera-bench" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
+                <a href="https://huggingface.co/datasets/mansoorbaloch/chimera-bench" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-data"></use></svg> Dataset</a>
+                <a href="https://colab.research.google.com/github/mansoor181/chimera-bench/blob/main/notebooks/demo.ipynb" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-demo"></use></svg> Colab</a>
+                <a href="docs/chimera-bench/index.html" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-web"></use></svg> Project Page</a>
             </div>
         </div>
     </div>
 
     <!-- MLD3 -->
-    <div class="pub-card" data-animate>
-        <div class="pub-header">
-            <h3 class="pub-title">MLD3: Mixture-of-Latents for Few-Step Discrete Diffusion Distillation</h3>
+    <div class="pub" data-animate>
+        <div class="pub-fig">
+            <span class="pub-badge preprint">Preprint</span>
+            <a href="docs/mld3/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="MLD3 project page">
+                <video muted loop playsinline preload="none" poster="docs/mld3/static/images/mld3_concept.png" aria-label="Animation of the toy illustration, from noise to data, for a fixed latent prior and for a learned router">
+                    <source src="docs/mld3/static/videos/mld3_concept.mp4" type="video/mp4">
+                </video>
+            </a>
+        </div>
+        <div class="pub-body">
+            <h3 class="pub-title"><a href="docs/mld3/index.html" target="_blank" rel="noopener">MLD3: Mixture-of-Latents for Few-Step Discrete Diffusion Distillation</a></h3>
             <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Sophia Tang, Hemanth Venkateswara, Murray Patterson</p>
-            <div class="pub-meta">
-                <span class="pub-venue preprint">Preprint, 2026</span>
-                <div class="pub-links">
-                    <a href="" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
-                    <a href="https://github.com/mansoor181/mld3.git" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
-                </div>
-            </div>
-        </div>
-                <div class="pub-gallery">
-            <div class="pub-gallery-row">
-                <div class="pub-gallery-item" onclick="openLightbox('figures/mld3/conceptual.png')">
-                    <img src="figures/mld3/conceptual.png" alt="MLD3 overview" loading="lazy">
-                    <p class="pub-gallery-label">Overview</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/mld3/architecture.png')">
-                    <img src="figures/mld3/architecture.png" alt="MLD3 training-inference" loading="lazy">
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/mld3/results.png')">
-                    <img src="figures/mld3/results.png" alt="MLD3 results" loading="lazy">
-                </div>
+            <p class="pub-venue"><em>Preprint</em>, 2026</p>
+            <div class="pub-links">
+                <a href="https://github.com/mansoor181/mld3" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
+                <a href="docs/mld3/index.html" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-web"></use></svg> Project Page</a>
             </div>
         </div>
     </div>
 
-        <!-- MLD3 -->
-    <div class="pub-card" data-animate>
-        <div class="pub-header">
-            <h3 class="pub-title">Domino: Joint Unmasking via First-order Markov Chain for Few-Step Masked Diffusion</h3>
+    <!-- Domino -->
+    <div class="pub" data-animate>
+        <div class="pub-fig">
+            <span class="pub-badge preprint">Preprint</span>
+            <a href="docs/domino/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="Domino project page">
+                <video muted loop playsinline preload="none" poster="docs/domino/static/images/concept.png" aria-label="Animation of Figure 1: a Markov chain within a denoising step">
+                    <source src="docs/domino/static/videos/domino_concept.mp4" type="video/mp4">
+                </video>
+            </a>
+        </div>
+        <div class="pub-body">
+            <h3 class="pub-title"><a href="docs/domino/index.html" target="_blank" rel="noopener">Domino: Joint Unmasking via First-order Markov Chain for Few-Step Masked Diffusion</a></h3>
             <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Lilia Chebbah, Jenny Dinh, Murray Patterson, Hemanth Venkateswara</p>
-            <div class="pub-meta">
-                <span class="pub-venue preprint">Preprint, 2026</span>
-                <div class="pub-links">
-                    <a href="" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
-                    <a href="" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
-                </div>
-            </div>
-        </div>
-                <div class="pub-gallery">
-            <div class="pub-gallery-row">
-                <div class="pub-gallery-item" onclick="openLightbox('figures/domino/conceptual.png')">
-                    <img src="figures/domino/conceptual.png" alt="Domino overview" loading="lazy">
-                    <p class="pub-gallery-label">Overview</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/domino/architecture.png')">
-                    <img src="figures/domino/architecture.png" alt="Domino training-inference" loading="lazy">
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/domino/results.png')">
-                    <img src="figures/domino/results.png" alt="Domino results" loading="lazy">
-                </div>
+            <p class="pub-venue"><em>Preprint</em>, 2026</p>
+            <div class="pub-links">
+                <a href="https://github.com/mansoor181/domino" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
+                <a href="docs/domino/index.html" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-web"></use></svg> Project Page</a>
             </div>
         </div>
     </div>
 
-        <!-- LKF -->
-    <div class="pub-card" data-animate>
-        <div class="pub-header">
-            <h3 class="pub-title">Latent-Kernel Discrete Diffusion for Few-Step Generation</h3>
-            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Yue-Tsz Fan, Hemanth Venkateswara, Murray Patterson</p>
-            <div class="pub-meta">
-                <span class="pub-venue published">NeurIPS 2026, Beyond Next‑Token Prediction (BeNTo) Workshop</span>
-                <div class="pub-links">
-                    <a href="https://openreview.net/forum?id=iuTdDIaTrl" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
-                    <a href="https://github.com/mansoor181/lkf.git" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
-                </div>
+    <!-- LKF -->
+    <div class="pub" data-animate>
+        <div class="pub-fig">
+            <span class="pub-badge">NeurIPS Workshop</span>
+            <div class="pub-fig-frame" onclick="openLightbox('figures/lkf/conceptual.png')">
+                <img src="figures/lkf/conceptual.png" alt="Factorized step versus the LKF step with a latent kernel" loading="lazy">
             </div>
         </div>
-        <div class="pub-gallery">
-            <div class="pub-gallery-row">
-                <div class="pub-gallery-item" onclick="openLightbox('figures/lkf/conceptual.png')">
-                    <img src="figures/lkf/conceptual.png" alt="LKF overview" loading="lazy">
-                    <p class="pub-gallery-label">Overview</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/lkf/overall.png')">
-                    <img src="figures/lkf/overall.png" alt="LKF training-inference" loading="lazy">
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/lkf/results.png')">
-                    <img src="figures/lkf/results.png" alt="LKF results" loading="lazy">
-                </div>
+        <div class="pub-body">
+            <h3 class="pub-title"><a href="https://openreview.net/forum?id=iuTdDIaTrl" target="_blank" rel="noopener">Latent-Kernel Discrete Diffusion for Few-Step Generation</a></h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Yue-Tsz Fan, Hemanth Venkateswara, Murray Patterson</p>
+            <p class="pub-venue"><em>NeurIPS 2026, Beyond Next&#8209;Token Prediction (<strong>BeNTo</strong>) Workshop</em></p>
+            <div class="pub-links">
+                <a href="https://openreview.net/forum?id=iuTdDIaTrl" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
+                <a href="https://arxiv.org/abs/2607.27529" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> arXiv</a>
+                <a href="https://github.com/mansoor181/lkf" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
             </div>
         </div>
     </div>
 
     <!-- AgForce -->
-    <div class="pub-card" data-animate>
-        <div class="pub-header">
-            <h3 class="pub-title">AgForce Enables Antigen-Conditioned Generative Antibody Design (via annealed Multiple Choice Learning with Mixture Density Networks)</h3>
-            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Murray Patterson</p>
-            <div class="pub-meta">
-                <span class="pub-venue preprint">Preprint, 2026</span>
-                <div class="pub-links">
-                    <a href="https://arxiv.org/abs/2605.21610" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
-                    <a href="https://github.com/mansoor181/ag-force.git" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
-                </div>
-            </div>
+    <div class="pub" data-animate>
+        <div class="pub-fig">
+            <span class="pub-badge preprint">Preprint</span>
+            <a href="docs/agforce/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="AgForce project page">
+                <img src="docs/agforce/static/images/agforce_arch.png" alt="AgForce architecture" loading="lazy">
+            </a>
         </div>
-        <div class="pub-gallery">
-            <div class="pub-gallery-row">
-                <div class="pub-gallery-item" onclick="openLightbox('figures/agforce/overall.png')">
-                    <img src="figures/agforce/overall.png" alt="AgForce overview" loading="lazy">
-                    <p class="pub-gallery-label">Overview</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/agforce/encoder_decoder.png')">
-                    <img src="figures/agforce/encoder_decoder.png" alt="AgForce encoder-decoder" loading="lazy">
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/agforce/main_results.png')">
-                    <img src="figures/agforce/main_results.png" alt="AgForce results" loading="lazy">
-                </div>
+        <div class="pub-body">
+            <h3 class="pub-title"><a href="docs/agforce/index.html" target="_blank" rel="noopener">AgForce Enables Antigen-Conditioned Generative Antibody Design (via annealed Multiple Choice Learning with Mixture Density Networks)</a></h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Murray Patterson</p>
+            <p class="pub-venue"><em>Preprint</em>, 2026</p>
+            <div class="pub-links">
+                <a href="https://arxiv.org/abs/2605.21610" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
+                <a href="https://github.com/mansoor181/ag-force" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
+                <a href="docs/agforce/index.html" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-web"></use></svg> Project Page</a>
             </div>
         </div>
     </div>
 
     <!-- EpiFormer -->
-    <div class="pub-card" data-animate>
-        <div class="pub-header">
-            <h3 class="pub-title">EpiFormer: Learning Antigen-Antibody Interactions for Epitope Prediction via Geometric Deep Learning</h3>
+    <div class="pub" data-animate>
+        <div class="pub-fig">
+            <span class="pub-badge preprint">Preprint</span>
+            <a href="docs/epiformer/index.html" class="pub-fig-frame" target="_blank" rel="noopener" aria-label="EpiFormer project page">
+                <video muted loop playsinline preload="none" poster="docs/epiformer/static/images/epiformer_concept.png" aria-label="Animation of where the antibody enters the representation of an antigen residue">
+                    <source src="docs/epiformer/static/videos/epiformer_concept.mp4" type="video/mp4">
+                </video>
+            </a>
+        </div>
+        <div class="pub-body">
+            <h3 class="pub-title"><a href="docs/epiformer/index.html" target="_blank" rel="noopener">EpiFormer: Learning Antigen-Antibody Interactions for Epitope Prediction via Geometric Deep Learning</a></h3>
             <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Huirong Chai, Haoxin Wang, Hemanth Venkateswara, Murray Patterson</p>
-            <div class="pub-meta">
-                <span class="pub-venue preprint">Preprint, 2026</span>
-                <div class="pub-links">
-                    <a href="https://arxiv.org/abs/2606.04154" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
-                    <a href="https://github.com/mansoor181/epiformer.git" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
-                </div>
-            </div>
-        </div>
-        <div class="pub-gallery">
-            <div class="pub-gallery-row">
-                <div class="pub-gallery-item" onclick="openLightbox('figures/epiformer/epiformer.png')">
-                    <img src="figures/epiformer/epiformer.png" alt="EpiFormer architecture" loading="lazy">
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/epiformer/main_results.png')">
-                    <img src="figures/epiformer/main_results.png" alt="EpiFormer results" loading="lazy">
-                    <p class="pub-gallery-label">Interaction Maps</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/epiformer/epiformer_results.png')">
-                    <img src="figures/epiformer/epiformer_results.png" alt="EpiFormer results" loading="lazy">
-                </div>
+            <p class="pub-venue"><em>Preprint</em>, 2026</p>
+            <div class="pub-links">
+                <a href="https://arxiv.org/abs/2606.04154" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
+                <a href="https://github.com/mansoor181/epiformer" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
+                <a href="docs/epiformer/index.html" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-web"></use></svg> Project Page</a>
             </div>
         </div>
     </div>
 
-
-
-        <!-- ConTact -->
-    <div class="pub-card" data-animate>
-        <div class="pub-header">
-            <h3 class="pub-title">ConTact: Contact-First Antibody CDR Design via Explicit Interface Reasoning</h3>
+    <!-- ConTact -->
+    <div class="pub" data-animate>
+        <div class="pub-fig">
+            <span class="pub-badge">ICML Workshop</span>
+            <div class="pub-fig-frame" onclick="openLightbox('figures/contact/architecture.png')">
+                <img src="figures/contact/architecture.png" alt="ConTact architecture" loading="lazy">
+            </div>
+        </div>
+        <div class="pub-body">
+            <h3 class="pub-title"><a href="https://arxiv.org/abs/2605.21600" target="_blank" rel="noopener">ConTact: Contact-First Antibody CDR Design via Explicit Interface Reasoning</a></h3>
             <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Spencer VonBank, Nadeem Taj, Sujin Lee, Naila Jan, Murray Patterson</p>
-            <div class="pub-meta">
-                <span class="pub-venue published">ICML 2026, Generative and Agentic AI for Biology (GenBio) Workshop</span>
-                <div class="pub-links">
-                    <a href="https://arxiv.org/abs/2605.21600" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
-                    <a href="#" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
-                </div>
-            </div>
-        </div>
-        <div class="pub-gallery">
-            <div class="pub-gallery-row">
-                <div class="pub-gallery-item" onclick="openLightbox('figures/contact/architecture.png')">
-                    <img src="figures/contact/architecture.png" alt="ConTact architecture" loading="lazy">
-                    <p class="pub-gallery-label">Architecture</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/contact/main_results.png')">
-                    <img src="figures/contact/main_results.png" alt="ConTact results" loading="lazy">
-                    <p class="pub-gallery-label">Key Results</p>
-                </div>
+            <p class="pub-venue"><em>ICML 2026, Generative and Agentic AI for Biology (<strong>GenBio</strong>) Workshop</em></p>
+            <div class="pub-links">
+                <a href="https://arxiv.org/abs/2605.21600" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
+                <a href="https://github.com/mansoor181/ConTact" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
             </div>
         </div>
     </div>
 
-    
     <!-- EvoStruct -->
-    <div class="pub-card" data-animate>
-        <div class="pub-header">
-            <h3 class="pub-title">EvoStruct: Bridging Evolutionary and Structural Priors for Antibody CDR Design via Protein Language Model Adaptation</h3>
-            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Sujin Lee, Umar Khayaz, Murray Patterson</p>
-            <div class="pub-meta">
-                <span class="pub-venue published">ICML 2026, Generative and Agentic AI for Biology (GenBio) Workshop</span>
-                <div class="pub-links">
-                    <a href="https://arxiv.org/abs/2605.21485" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
-                    <a href="#" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
-                </div>
+    <div class="pub" data-animate>
+        <div class="pub-fig">
+            <span class="pub-badge">ICML Workshop</span>
+            <div class="pub-fig-frame" onclick="openLightbox('figures/evostruct/overall.png')">
+                <img src="figures/evostruct/overall.png" alt="EvoStruct architecture" loading="lazy">
             </div>
         </div>
-        <div class="pub-gallery">
-            <div class="pub-gallery-row">
-                <div class="pub-gallery-item" onclick="openLightbox('figures/evostruct/overall.png')">
-                    <img src="figures/evostruct/overall.png" alt="EvoStruct architecture" loading="lazy">
-                    <p class="pub-gallery-label">Architecture</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/evostruct/main_results_1.png')">
-                    <img src="figures/evostruct/main_results_1.png" alt="EvoStruct AAR" loading="lazy">
-                    <p class="pub-gallery-label">Amino Acid Recovery</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/evostruct/main_results_2.png')">
-                    <img src="figures/evostruct/main_results_2.png" alt="EvoStruct vocabulary" loading="lazy">
-                    <p class="pub-gallery-label">Vocabulary Comparison</p>
-                </div>
+        <div class="pub-body">
+            <h3 class="pub-title"><a href="https://arxiv.org/abs/2605.21485" target="_blank" rel="noopener">EvoStruct: Bridging Evolutionary and Structural Priors for Antibody CDR Design via Protein Language Model Adaptation</a></h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Sujin Lee, Umar Khayaz, Murray Patterson</p>
+            <p class="pub-venue"><em>ICML 2026, Generative and Agentic AI for Biology (<strong>GenBio</strong>) Workshop</em></p>
+            <div class="pub-links">
+                <a href="https://arxiv.org/abs/2605.21485" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
+                <a href="https://github.com/mansoor181/EvoStruct" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
             </div>
         </div>
     </div>
-
-
 
     <!-- Walle++ -->
-    <div class="pub-card" data-animate>
-        <div class="pub-header">
-            <h3 class="pub-title">Improved Graph-Based Antibody-Aware Epitope Prediction with Protein Language Model Embeddings</h3>
-            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Sarwan Ali, Avais Jan, Imdad Ullah Khan, Murray Patterson</p>
-            <div class="pub-meta">
-                <span class="pub-venue published">ICCABS 2025 &middot; Springer LNBI</span>
-                <div class="pub-links">
-                    <a href="https://www.biorxiv.org/content/10.1101/2025.02.12.637989v2" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> BioRxiv</a>
-                    <a href="https://github.com/mansoor181/walle-pp.git" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
-                </div>
+    <div class="pub" data-animate>
+        <div class="pub-fig">
+            <span class="pub-badge">ICCABS</span>
+            <div class="pub-fig-frame" onclick="openLightbox('figures/wallepp/overall.png')">
+                <img src="figures/wallepp/overall.png" alt="Walle++ architecture" loading="lazy">
             </div>
         </div>
-        <div class="pub-gallery">
-            <div class="pub-gallery-row">
-                <div class="pub-gallery-item" onclick="openLightbox('figures/wallepp/overall.png')">
-                    <img src="figures/wallepp/overall.png" alt="Walle++ architecture" loading="lazy">
-                    <p class="pub-gallery-label">Architecture</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/wallepp/results.png')">
-                    <img src="figures/wallepp/results.png" alt="Walle++ results" loading="lazy">
-                    <p class="pub-gallery-label">Results</p>
-                </div>
+        <div class="pub-body">
+            <h3 class="pub-title"><a href="https://www.biorxiv.org/content/10.1101/2025.02.12.637989v2" target="_blank" rel="noopener">Improved Graph-Based Antibody-Aware Epitope Prediction with Protein Language Model Embeddings</a></h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Sarwan Ali, Avais Jan, Imdad Ullah Khan, Murray Patterson</p>
+            <p class="pub-venue"><em><strong>ICCABS</strong> 2025</em> &middot; Springer LNBI</p>
+            <div class="pub-links">
+                <a href="https://www.biorxiv.org/content/10.1101/2025.02.12.637989v2" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> BioRxiv</a>
+                <a href="https://github.com/mansoor181/walle-pp" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
             </div>
         </div>
     </div>
 
     <!-- Brain Age -->
-    <div class="pub-card" data-animate>
-        <div class="pub-header">
-            <h3 class="pub-title">Robust Brain Age Estimation via Regression Models and MRI-derived Features</h3>
-            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Usama Sardar, Sarwan Ali, Shafiq Alam, Murray Patterson, Imdad Ullah Khan</p>
-            <div class="pub-meta">
-                <span class="pub-venue published">ICCCI 2023 &middot; Springer CCIS</span>
-                <div class="pub-links">
-                    <a href="https://arxiv.org/abs/2306.05514" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
-                    <a href="https://github.com/mansoor181/Brain_Age_Estimation.git" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
-                </div>
+    <div class="pub" data-animate>
+        <div class="pub-fig">
+            <span class="pub-badge">ICCCI</span>
+            <div class="pub-fig-frame" onclick="openLightbox('figures/brain_age/visual.png')">
+                <img src="figures/brain_age/visual.png" alt="Brain aging across the lifespan" loading="lazy">
             </div>
         </div>
-        <div class="pub-gallery">
-            <div class="pub-gallery-row">
-                <div class="pub-gallery-item" onclick="openLightbox('figures/brain_age/visual.png')">
-                    <img src="figures/brain_age/visual.png" alt="Brain aging visualization" loading="lazy">
-                    <p class="pub-gallery-label">Brain Aging</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/brain_age/overall.png')">
-                    <img src="figures/brain_age/overall.png" alt="Brain Age pipeline" loading="lazy">
-                    <p class="pub-gallery-label">Pipeline</p>
-                </div>
-                <div class="pub-gallery-item" onclick="openLightbox('figures/brain_age/results.png')">
-                    <img src="figures/brain_age/results.png" alt="VBM results" loading="lazy">
-                    <p class="pub-gallery-label">VBM Analysis</p>
-                </div>
+        <div class="pub-body">
+            <h3 class="pub-title"><a href="https://arxiv.org/abs/2306.05514" target="_blank" rel="noopener">Robust Brain Age Estimation via Regression Models and MRI-derived Features</a></h3>
+            <p class="pub-authors"><span class="me">Mansoor Ahmed</span>, Usama Sardar, Sarwan Ali, Shafiq Alam, Murray Patterson, Imdad Ullah Khan</p>
+            <p class="pub-venue"><em><strong>ICCCI</strong> 2023</em> &middot; Springer CCIS</p>
+            <div class="pub-links">
+                <a href="https://arxiv.org/abs/2306.05514" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-paper"></use></svg> Paper</a>
+                <a href="https://github.com/mansoor181/Brain_Age_Estimation" class="btn-sm" target="_blank" rel="noopener"><svg><use href="#i-code"></use></svg> Code</a>
             </div>
         </div>
     </div>

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Latent-Kernel Discrete Diffusion for Few-Step Generation</title>
+  <meta name="description" content="LKF makes each step of a masked discrete diffusion model a mixture of M factorized components tied by one shared latent, trained from scratch with the exact mixture likelihood, for few-step text generation.">
+  <meta name="keywords" content="discrete diffusion, masked diffusion, few-step generation, mixture model, latent variable, language models">
+  <meta name="author" content="Mansoor Ahmed, Yue-Tsz Fan, Hemanth Venkateswara, Murray Patterson">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Latent-Kernel Discrete Diffusion for Few-Step Generation">
+  <meta property="og:description" content="Each denoising step as a mixture of factorized components tied by one shared latent, for few-step text generation.">
+  <!-- the absolute urls assume the page is served at https://mansoor181.github.io/lkf/ ; change them if the folder name differs -->
+  <link rel="canonical" href="https://mansoor181.github.io/lkf/">
+  <meta property="og:url" content="https://mansoor181.github.io/lkf/">
+  <meta property="og:image" content="https://mansoor181.github.io/lkf/static/images/concept.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], ignoredClasses: ['sample-text', 'no-math'], throwOnError: false});"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProg"></div>
+<button class="scroll-to-top" title="Back to top" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+<main>
+<!-- ================================================================== title, authors, links -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <span class="venue-badge hero-fade hero-fade-1">BeNTo Workshop at NeurIPS 2026</span>
+          <h1 class="title is-1 publication-title hero-fade hero-fade-1">Latent-Kernel Discrete Diffusion for Few-Step Generation</h1>
+          <div class="is-size-5 publication-authors hero-fade hero-fade-2">
+            <span class="author-block"><a href="https://mansoor181.github.io/" title="Mansoor Ahmed's website">Mansoor Ahmed</a><sup>1,2,*</sup>,</span>
+            <!-- PLACEHOLDER: add homepage links for the co-authors below -->
+            <span class="author-block">Yue-Tsz Fan<sup>2</sup>,</span>
+            <span class="author-block">Hemanth Venkateswara<sup>1</sup>,</span>
+            <span class="author-block">Murray Patterson<sup>1,*</sup></span>
+          </div>
+          <div class="affiliations hero-fade hero-fade-3">
+            <span class="author-block"><sup>1</sup>Georgia State University</span>
+            <span class="author-block"><sup>2</sup>Georgia Institute of Technology</span>
+          </div>
+          <p class="author-note hero-fade hero-fade-3"><sup>*</sup>Corresponding authors</p>
+          <div class="publication-links hero-fade hero-fade-4">
+            <!-- PLACEHOLDER: replace href="#" with the paper and arXiv links once they are public, and drop the is-placeholder class -->
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://github.com/mansoor181/lkf" target="_blank" rel="noopener noreferrer" title="Source code on GitHub"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="#BibTeX" title="Jump to the BibTeX citation"><span class="icon"><i class="fas fa-quote-left"></i></span><span>BibTeX</span></a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== teaser: figure 1, animated -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body hero-fade hero-fade-5">
+      <video class="figure-video" autoplay muted loop playsinline preload="auto" poster="static/images/concept.png" aria-label="Animation of Figure 1: a factorized step against an LKF step">
+        <source src="static/videos/lkf_concept.mp4" type="video/mp4">
+        <img src="static/images/concept.png" alt="Figure 1: a factorized step against an LKF step">
+      </video>
+      <p class="teaser-caption"><strong>One factorized step against one LKF step.</strong> Two masked tokens must agree in number, as in <em>dog barks</em> or <em>dogs bark</em>. (a) A factorized step draws the two positions independently from their marginals, and half of its probability therefore falls on inconsistent pairs. (b) An LKF step with $M=2$ first draws one shared latent <span class="nowrap">$k$.</span> Each component places its mass on one consistent completion, and the step agrees with probability one.</p>
+    </div>
+  </div>
+</section>
+
+<nav class="section-nav" aria-label="Page sections">
+  <a href="#problem">Problem</a>
+  <a href="#method">Method</a>
+  <a href="#theory">Theory</a>
+  <a href="#results">Results</a>
+  <a href="#examples">Examples</a>
+  <a href="#BibTeX">BibTeX</a>
+</nav>
+
+<!-- ================================================================== tl;dr and abstract -->
+<section class="section">
+  <div class="container is-max-desktop content">
+    <div class="tldr reveal"><p><span class="tldr-label">TL;DR</span>Masked diffusion models decide the tokens of a denoising step independently, and with few steps, tokens that must agree often do not. LKF makes each step a mixture of $M$ factorized components tied by one shared latent and trains it from scratch with the exact mixture likelihood. The masked diffusion language model (MDLM) is the case <span class="nowrap">$M=1$.</span> With eight components and best-of-8 decoding, LKF lowers the generative perplexity at 32 steps by 2.1 to 3.3 times relative to MDLM and score entropy discrete diffusion (SEDD) on LM1B and WikiText-103, and by 47% relative to MDLM given the same eight rollouts and selector.</p></div>
+    <details class="paper-details reveal">
+      <summary>Abstract</summary>
+      <div class="details-body">
+        <p>Discrete diffusion and flow-matching models denoise a sequence over many steps, but to keep each step cheap, they factorize the transition across positions and decide every token <em>independently</em>. This makes few-step generation challenging for text when the target couples two positions, such as a subject and a verb that must agree. An independent update commits to them separately, and many function evaluations are spent repairing the mismatch. Existing few-step methods buy back the lost correlation by distilling or rectifying a slow teacher, and so inherit the teacher's quality ceiling. We ask instead <em>whether a model can express correlated steps natively</em>, and answer with Latent-Kernel Discrete Diffusion (LKF), <em>a from-scratch masked diffusion kernel that is a mixture of</em> $M$ <em>factorized components tied by a single shared latent</em>. Conditioned on the latent, each component is cheap, and the mixture is summed over the latent in closed form for small <span class="nowrap">$M$.</span> We show that a single step places mass on correlated completions with the same sampling time complexity as a factorized model, since one latent is drawn per sequence and reused across the entire denoising trajectory. We also show that the Masked Diffusion Language Model (MDLM) is a special case of our LKF model at <span class="nowrap">$M=1$.</span> The experiments for unconditional text generation on the One-Billion-Word (LM1B) and WikiText-103 benchmarks show that our LKF model learns strongly heterogeneous components and improves generative perplexity by $2.1\times$ to $3.3\times$ over the likelihood baselines without losing diversity. The gain grows with <span class="nowrap">$M$,</span> and at <span class="nowrap">$M=8$,</span> it surpasses distilled and rectified few-step samplers.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== the problem -->
+<section class="section is-light" id="problem">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Independent draws within a step</h2>
+    <p>A masked diffusion model generates a sequence of $L$ tokens by unmasking it over several denoising steps. To keep a step cheap, it factorizes the transition from the current state $x_t$ to the next state $x_s$ across positions,</p>
+    <div class="math-box">$$p_{t\to s}(x_s\mid x_t)\;=\;\prod_{i=1}^{L}p_i(x_s^i\mid x_t),$$</div>
+    <p>and decides each token independently given <span class="nowrap">$x_t$.</span> With few steps, each step reveals many tokens, and tokens revealed together are often coupled. A subject and its verb must agree in number, and an opening bracket needs its closing match. A factorized step can match the marginal of each token and still place much of its probability on combinations that are jointly inconsistent. What it misses is the total correlation (TC) of the step,</p>
+    <div class="math-box">$$\mathrm{TC}(X_s\mid x_t)\;=\;\sum_{i=1}^{L}\mathrm{H}(X_s^i\mid x_t)-\mathrm{H}(X_s\mid x_t),$$</div>
+    <p>which is zero for any product distribution. In the example of Figure 1, the completions <em>dog barks</em> and <em>dogs bark</em> are equally likely, and each position is uniform over its two words. The target step has <span class="nowrap">$\mathrm{TC}=\log 2$,</span> while the product of its marginals puts half of its mass on <em>dog bark</em> and <em>dogs barks</em>. Later denoising steps then have to repair such mismatches, which costs function evaluations.</p>
+    <p>Few-step accelerators recover part of this correlation from a trained teacher, either by distillation, as in SDTT and Di4C, or by rectifying its coupling, as in ReDi. They inherit the teacher's quality ceiling. We ask instead whether a model can express correlated steps natively, without a teacher.</p>
+    <div class="takeaway">A product of per-position distributions has zero total correlation, however accurate its marginals are. Correlated tokens then need either more steps or a step of a different form.</div>
+
+    <div class="demo" id="demo">
+      <div class="demo-head">
+        <h3 class="title">Try one step</h3>
+        <div class="demo-controls">
+          <button class="demo-btn" data-draw="1">Draw one step</button>
+          <button class="demo-btn" data-draw="100">Draw 100 steps</button>
+          <button class="demo-btn is-ghost" data-reset>Reset</button>
+        </div>
+      </div>
+      <div class="demo-grid">
+        <div class="demo-panel" data-kernel="fact">
+          <h4>Factorized step</h4>
+          <p class="demo-how">&nbsp;</p>
+          <p class="demo-sentence no-math">The <span class="slot"></span> <span class="slot"></span> loudly.</p>
+          <div class="bars">
+            <div class="bar-row is-good"><span class="bar-label is-good">dog barks</span><span class="bar"><span class="fill"></span></span><span class="bar-count">0</span></div>
+            <div class="bar-row is-bad"><span class="bar-label is-bad">dog bark</span><span class="bar"><span class="fill"></span></span><span class="bar-count">0</span></div>
+            <div class="bar-row is-bad"><span class="bar-label is-bad">dogs barks</span><span class="bar"><span class="fill"></span></span><span class="bar-count">0</span></div>
+            <div class="bar-row is-good"><span class="bar-label is-good">dogs bark</span><span class="bar"><span class="fill"></span></span><span class="bar-count">0</span></div>
+          </div>
+          <p class="demo-rate">Agreement in <strong>no draws yet</strong></p>
+        </div>
+        <div class="demo-panel" data-kernel="lkf">
+          <h4>LKF step, $M=2$</h4>
+          <p class="demo-how">&nbsp;</p>
+          <p class="demo-sentence no-math">The <span class="slot"></span> <span class="slot"></span> loudly.</p>
+          <div class="bars">
+            <div class="bar-row is-good"><span class="bar-label is-good">dog barks</span><span class="bar"><span class="fill"></span></span><span class="bar-count">0</span></div>
+            <div class="bar-row is-bad"><span class="bar-label is-bad">dog bark</span><span class="bar"><span class="fill"></span></span><span class="bar-count">0</span></div>
+            <div class="bar-row is-bad"><span class="bar-label is-bad">dogs barks</span><span class="bar"><span class="fill"></span></span><span class="bar-count">0</span></div>
+            <div class="bar-row is-good"><span class="bar-label is-good">dogs bark</span><span class="bar"><span class="fill"></span></span><span class="bar-count">0</span></div>
+          </div>
+          <p class="demo-rate">Agreement in <strong>no draws yet</strong></p>
+        </div>
+      </div>
+      <p class="demo-note">Both steps use the numbers of Figure 1. The factorized step draws <em>dog</em> or <em>dogs</em> and, independently, <em>barks</em> or <em>bark</em>, each with probability one half. The LKF step draws $k=1$ or $k=2$ with probability one half, and the drawn component fills both positions. The factorized step agrees on about half of its draws, and the LKF step agrees on all of them.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== the method -->
+<section class="section" id="method">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">A mixture of factorized steps</h2>
+    <p>LKF keeps each component factorized and ties the components together with one shared latent <span class="nowrap">$k\in\{1,\dots,M\}$.</span> Its step from $x_t$ to $x_s$ is the mixture</p>
+    <div class="math-box">$$\Psi^{\theta}_{t\to s}(x_s\mid x_t)\;=\;\sum_{k=1}^{M}w^{\theta}_k(x_t,t,s)\prod_{i=1}^{L}P^{\theta}_i(x_s^i\mid x_t,k,t,s).$$</div>
+    <p>A step first draws $k$ from the router weights $w^{\theta}$ and then samples all positions independently from component <span class="nowrap">$k$.</span> Given <span class="nowrap">$k$,</span> the step is as cheap as a factorized one. Summed over <span class="nowrap">$k$,</span> the positions become coupled, and the latent carries the correlation of the step. With <span class="nowrap">$M=1$,</span> the kernel is the factorized step of MDLM.</p>
+    <figure class="paper-figure">
+      <video class="figure-video" autoplay muted loop playsinline preload="metadata" poster="static/images/method.png" aria-label="Animation of Figure 2: training and inference in LKF">
+        <source src="static/videos/lkf_method.mp4" type="video/mp4">
+        <img src="static/images/method.png" alt="Figure 2: training and inference in LKF">
+      </video>
+      <figcaption><strong>Training (a) and inference (b) with $M=4$ components.</strong> (a) A clean sequence $x_1$ is masked to $x_t$ and to a target <span class="nowrap">$x_s$.</span> One pass of the diffusion transformer (DiT) trunk on <span class="nowrap">$x_t$,</span> conditioned on <span class="nowrap">$(t,s)$,</span> gives the router weights $w_1,\dots,w_4$ and the four factorized components <span class="nowrap">$P^{(k)}$.</span> All four enter the exact mixture likelihood of <span class="nowrap">$x_s$,</span> and its negative logarithm plus a router regularizer is the training loss. (b) Sampling starts from the all-mask state and draws one latent <span class="nowrap">$k$,</span> here <span class="nowrap">$k=3$.</span> Each of the $J$ steps runs the same trunk, samples the masked positions from component <span class="nowrap">$k$,</span> and feeds $x_s$ back as the next state.</figcaption>
+    </figure>
+
+    <h3 class="title is-4">Training with the exact mixture likelihood</h3>
+    <p>For a target state <span class="nowrap">$x_s$,</span> let $\ell_k=\sum_{i:\,x_t^i=\texttt{[MASK]}}\log P^{\theta}_i(x_s^i\mid x_t,k)$ be the log-probability that component $k$ assigns to all revealed tokens together. The loss sums over the $M$ components in closed form, with no sampled latent and no variational bound,</p>
+    <div class="math-box">$$\log\Psi^{\theta}_{t\to s}(x_s\mid x_t)=\operatorname{logsumexp}_k\big(\log w_k+\ell_k\big),\qquad \mathcal L_{\text{nll}}=-\mathbb E\big[\log\Psi^{\theta}_{t\to s}(x_s\mid x_t)\big].$$</div>
+    <p>Because the sum over positions is inside the logsumexp, one latent has to explain the whole masked set jointly. Exchanging the two would train the per-position marginal $\sum_k w_k P^{\theta}_i$ instead, which is blind to correlation and leaves the latent without a training signal. In the language experiments, the target is the clean sequence $x_1$ at <span class="nowrap">$s=1$.</span> A router regularizer keeps the latent in use,</p>
+    <div class="math-box">$$\mathcal R=-\lambda_{\text{ent}}\,\mathrm H\big(\mathbb E_b[w]\big)+\lambda_{\text{lb}}\,\mathbb E_b\big[\mathrm H(w\mid x_t)\big],$$</div>
+    <p>where $\mathbb E_b$ averages over a batch. The first term spreads usage across the $M$ components and prevents the router from sending all inputs to one of them. The second term controls how much information the latent can carry, since <span class="nowrap">$\mathrm I(k;X_s\mid x_t)\le\mathrm H(k\mid x_t)$.</span> We set <span class="nowrap">$\lambda_{\text{lb}}\le 0$,</span> the opposite sign of the usual load-balancing loss, which keeps the prior entropy high and lets the exact likelihood sharpen the posterior over <span class="nowrap">$k$.</span></p>
+
+    <h3 class="title is-4">Inference with best-of-$M$</h3>
+    <p>Sampling starts from the all-mask sequence and takes $J$ steps. A rollout draws $k$ once at the start, where the router weights are a constant prior, and keeps it for the whole trajectory, which matches the sequence-level training objective. One rollout therefore uses one component. Best-of-$M$ decoding runs all $M$ components as parallel rollouts, scores each finished candidate by the model's own mixture negative evidence lower bound (NELBO), and returns the candidate with the lowest score. It needs no reward model, external judge or teacher, and the rollouts run concurrently at the sequential depth of a single chain.</p>
+    <div class="props">
+      <div class="prop"><h4><span class="icon"><i class="fas fa-equals"></i></span>Exact likelihood</h4><p>The loss sums over the $M$ components in closed form, with no sampled latent and no variational bound.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-layer-group"></i></span>Contains MDLM</h4><p>With one component, the kernel is the factorized step of MDLM.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-seedling"></i></span>Teacher-free</h4><p>LKF trains from scratch and needs no distillation or rectification of another model.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-code-branch"></i></span>Shared trunk</h4><p>The latent enters only the last 4 of 12 blocks. A step with $M=8$ then costs 40 block passes instead of 96.</p></div>
+    </div>
+    <details class="paper-details">
+      <summary>Training and decoding algorithms</summary>
+      <div class="details-body">
+        <div class="algorithm">
+          <h3 class="algo-title">Algorithm 1 &middot; LKF training</h3>
+          <ol>
+            <li>Draw a clean batch $x_1$ and one noise level $\tau\sim U[\varepsilon,1]$ per sequence.</li>
+            <li>Mask each position of $x_1$ with probability $(1-\varepsilon)\tau$ to get <span class="nowrap">$x_\tau$,</span> and let $\mathcal M$ be the masked positions.</li>
+            <li>Run the network once on $(x_\tau,s=1)$ to get the components $P^1,\dots,P^M$ and the router weights <span class="nowrap">$w$.</span></li>
+            <li class="algo-highlight">For each <span class="nowrap">$k$,</span> compute <span class="nowrap">$\ell_k=\sum_{i\in\mathcal M}\log P_i^k(x_1^i)$,</span> how well component $k$ explains the whole masked set, and combine them as <span class="nowrap">$\log\Psi=\operatorname{logsumexp}_k(\log w_k+\ell_k)$.</span></li>
+            <li>Take a gradient step on <span class="nowrap">$-\log\Psi/\tau$,</span> averaged over the batch, plus the router regularizer <span class="nowrap">$\mathcal R$.</span></li>
+          </ol>
+        </div>
+        <div class="algorithm">
+          <h3 class="algo-title">Algorithm 2 &middot; Best-of-$M$ decoding with $J$ steps</h3>
+          <ol>
+            <li>For each component <span class="nowrap">$k=1,\dots,M$,</span> in parallel, start a rollout from the all-mask sequence.</li>
+            <li>At step <span class="nowrap">$j=0,\dots,J-1$,</span> run the network and reveal each masked position with probability <span class="nowrap">$1/(J-j)$,</span> drawing its token from <span class="nowrap">$P_i^k$.</span> Revealed tokens stay fixed.</li>
+            <li>Fill any position still masked after $J$ steps with the most likely token under <span class="nowrap">$P_i^k$.</span></li>
+            <li class="algo-highlight">Score each candidate $\hat x^k$ by the mixture NELBO, averaged over $R$ draws of the noise level and mask shared across <span class="nowrap">$k$,</span> and return the candidate with the lowest score.</li>
+          </ol>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== theory -->
+<section class="section is-light" id="theory">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">How much correlation one step can carry</h2>
+    <p>We write $\mathrm{TC}(X_s\mid x_t)$ for the total correlation of the step distribution at a fixed state <span class="nowrap">$x_t$,</span> and $\mathrm I$ for mutual information. Three results bound what a mixture step can express.</p>
+    <div class="result-box">
+      <p class="result-name">Proposition 1 &middot; Latent decomposition and correlation capacity</p>
+      <div class="math-box">$$\mathrm{TC}(X_s\mid x_t)=\sum_{i=1}^{L}\mathrm I(k;X_s^i\mid x_t)-\mathrm I(k;X_s\mid x_t),\qquad 0\le\mathrm{TC}(X_s\mid x_t)\le(L-1)\,\mathrm H(k\mid x_t)\le(L-1)\log M.$$</div>
+      <p class="gloss">All correlation of an LKF step passes through the latent. A step with $M$ components carries at most $(L-1)\log M$ nats of total correlation, and none when the router is certain of <span class="nowrap">$k$.</span></p>
+    </div>
+    <div class="result-box">
+      <p class="result-name">Theorem 1 &middot; Mixture approximation lower bound</p>
+      <p>Let $P$ be a distribution on sequences of $L$ tokens and $Q=\sum_{k=1}^{M}w_kQ_k$ a mixture of $M$ product distributions, with $Q&gt;0$ wherever <span class="nowrap">$P&gt;0$.</span> Then</p>
+      <div class="math-box">$$\mathrm{KL}(P\,\|\,Q)\;\ge\;\big[\mathrm{TC}(P)-(L-1)\log M\big]_+.$$</div>
+      <p class="gloss">Correlation of the target beyond the capacity of the mixture turns into approximation error. Applied to one step, with $P$ the true step and $Q$ the LKF step, the bound limits how close training can bring the two. The bound is tight on the hidden-agreement corpus below.</p>
+    </div>
+    <div class="result-box">
+      <p class="result-name">Theorem 2 &middot; Parity separation</p>
+      <p>Let $P_d$ be the uniform distribution on the even-parity strings of <span class="nowrap">$\{0,1\}^d$.</span> A mixture $Q$ of at most $M$ product distributions within total variation distance $\mathrm{TV}(P_d,Q)\le\varepsilon&lt;\tfrac13$ of $P_d$ needs</p>
+      <div class="math-box">$$M\;\ge\;(1-3\varepsilon)\,2^{\,d-1}.$$</div>
+      <p class="gloss">Some targets need exponentially many components. Parity couples all $d$ positions at once, and a mixture with far fewer than $2^{d-1}$ components cannot approximate it well.</p>
+    </div>
+
+    <h3 class="title is-4">Synthetic corpora with known correlation</h3>
+    <p>We test both theorems on two synthetic corpora whose total correlation is known in closed form, and train LKF with $M\in\{1,2,4,8,16\}$ and three seeds. <em>Hidden agreement</em> repeats one of 16 tokens at all 8 positions, and a mixture of 16 components represents it without error. There, the captured information $\hat{\mathrm I}=\mathrm I(k;X_s\mid x_t)$ rises from 0 to 2.46 nats at <span class="nowrap">$M=16$,</span> which is 89% of the $\log 16$ ceiling, and the held-out negative log-likelihood (NLL) falls from 3.50 to 2.56 nats. On <em>parity</em>, which is uniform over the even-parity binary strings, the latent stays unused for all <span class="nowrap">$M$.</span> Its captured information and total correlation remain at zero, and the NLL stays flat near 7.1 nats, as Theorem 2 predicts.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>$M$</th><th>$\log M$</th><th>$\hat{\mathrm I}$ (nats)</th><th>$\widehat{\mathrm{TC}}$ (nats)</th><th>$(L-1)\log M$</th><th>held-out NLL</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>0.00</td><td>0.00</td><td>0.00</td><td>0.0</td><td>3.50</td></tr>
+          <tr><td>2</td><td>0.69</td><td>0.68</td><td>4.71</td><td>4.9</td><td>3.11</td></tr>
+          <tr><td>4</td><td>1.39</td><td>1.30</td><td>9.01</td><td>9.7</td><td>2.93</td></tr>
+          <tr><td>8</td><td>2.08</td><td>1.87</td><td>13.02</td><td>14.6</td><td>2.70</td></tr>
+          <tr><td>16</td><td>2.77</td><td>2.46</td><td>17.12</td><td>19.4</td><td>2.56</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Hidden agreement, full transition from $t=0$ to <span class="nowrap">$s=1$,</span> means over three seeds. Both information quantities stay below their ceilings, $\log M$ and <span class="nowrap">$(L-1)\log M$,</span> and the NLL falls as $M$ grows.</p>
+    <figure class="paper-figure">
+      <img src="static/images/hidden_agreement_diagnostics.png" alt="Diagnostics on the hidden-agreement corpus with sixteen components: captured information per transition, total correlation of frozen and routed components, and sample quality across refinement steps" loading="lazy">
+      <figcaption><strong>Diagnostics on hidden agreement with <span class="nowrap">$M=16$.</span></strong> (a) The captured information concentrates in the first, most masked transition, with 2.21 of the 2.46 nats in <span class="nowrap">$t=0\to0.25$.</span> (b) Each frozen component is close to deterministic, while the routed mixture reconstructs 26.7 of the 28 bits of total correlation, and shuffling $k$ across the batch leaves this unchanged. (c) The fraction of samples that are valid strings of the corpus rises from 0.47 at one step to 0.95 at 32 steps.</figcaption>
+    </figure>
+    <div class="takeaway">The latent captures correlation close to its ceiling where a mixture can represent it and stays unused where it cannot. Most of the captured information falls in the earliest, most masked transitions, which a few-step sampler can least afford to skip.</div>
+  </div>
+</section>
+
+<!-- ================================================================== results -->
+<section class="section" id="results">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Few-step text generation</h2>
+    <p>We train LKF from scratch with $M\in\{1,4,8\}$ on LM1B, with the BERT-base-uncased vocabulary, and on WikiText-103, with the GPT-2 vocabulary, at a sequence length of 128 for 200k steps. We report the generative perplexity (gen-PPL) under GPT-2 Large across the number of function evaluations (NFE), together with the sample entropy <span class="nowrap">$H$,</span> since the judge rewards low-entropy text. The baselines are the likelihood models MDLM and SEDD, the few-step accelerators SDTT, Di4C and ReDi, and an autoregressive transformer (AR) on LM1B.</p>
+    <div class="tabs-head">
+      <h3 class="title is-4" style="margin: 0;">Generative perplexity across NFEs</h3>
+      <div class="tabs-mini" data-tabs="main" role="tablist">
+        <button class="tab-btn is-active" data-tab="lm1b" role="tab" aria-selected="true">LM1B</button>
+        <button class="tab-btn" data-tab="wt103" role="tab" aria-selected="false">WikiText-103</button>
+      </div>
+    </div>
+    <div class="table-wrap" data-tab-pane="main" data-tab="lm1b">
+      <table class="results-table">
+        <thead>
+          <tr><th rowspan="2">LM1B</th><th rowspan="2">ELBO-PPL &darr;</th><th colspan="6">gen-PPL &darr; at NFE</th><th rowspan="2">$H$ at 32 &uarr;</th><th rowspan="2">$\mathrm I(k)$</th></tr>
+          <tr class="sub-head"><th>1</th><th>2</th><th>4</th><th>8</th><th>16</th><th>32</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>MDLM</td><td class="best">33.96</td><td class="second">1082</td><td>1231</td><td>926</td><td>614</td><td>410</td><td>304</td><td>&asymp;4.0</td><td>n/a</td></tr>
+          <tr><td>MDLM, best-of-8<span class="dag">&dagger;</span></td><td>n/a</td><td>1992</td><td>1401</td><td>770</td><td>428</td><td>281</td><td>199</td><td>5.13</td><td>n/a</td></tr>
+          <tr><td>SEDD</td><td>42.37</td><td>3235</td><td>3253</td><td>1117</td><td>485</td><td>303</td><td>225</td><td>4.41</td><td>n/a</td></tr>
+          <tr><td>SDTT teacher, 7 rounds</td><td>n/a</td><td>1645</td><td>1122</td><td>612</td><td>359</td><td>243</td><td>194</td><td>4.08</td><td>n/a</td></tr>
+          <tr><td>Di4C, best round (4)</td><td>n/a</td><td>1375</td><td class="second">899</td><td class="second">453</td><td class="second">236</td><td class="second">156</td><td class="second">115</td><td>3.99</td><td>n/a</td></tr>
+          <tr><td>ReDi, best rectification (3)</td><td>n/a</td><td class="best">141</td><td class="best">133</td><td class="best">121</td><td class="best">124</td><td class="best">119</td><td>117</td><td>3.22</td><td>n/a</td></tr>
+          <tr class="group-row"><td>AR (reference)</td><td>27.61</td><td colspan="6">135 at a fixed 128 NFE</td><td>4.34</td><td>n/a</td></tr>
+          <tr class="ours-row"><td>LKF <span class="nowrap">$M=1$,</span> best-of-8<span class="dag">&dagger;</span></td><td>n/a</td><td>2024</td><td>1308</td><td>706</td><td>400</td><td>262</td><td>183</td><td>5.12</td><td>0.00</td></tr>
+          <tr class="ours-row"><td>LKF $M=1$</td><td class="second">34.22</td><td>2398</td><td>1619</td><td>913</td><td>573</td><td>429</td><td>321</td><td>5.22</td><td>0.00</td></tr>
+          <tr class="ours-row"><td>LKF $M=4$<span class="dag">&dagger;</span></td><td>35.52</td><td>2169</td><td>1649</td><td>820</td><td>407</td><td>226</td><td>166</td><td>5.09</td><td>0.86</td></tr>
+          <tr class="ours-row"><td>LKF $M=8$<span class="dag">&dagger;</span></td><td>34.62</td><td>1827</td><td>1515</td><td>625</td><td>284</td><td>169</td><td class="best">105</td><td>4.93</td><td>1.48</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrap" data-tab-pane="main" data-tab="wt103" style="display: none;">
+      <table class="results-table">
+        <thead>
+          <tr><th rowspan="2">WikiText-103</th><th rowspan="2">ELBO-PPL &darr;</th><th colspan="6">gen-PPL &darr; at NFE</th><th rowspan="2">$H$ at 32 &uarr;</th><th rowspan="2">$\mathrm I(k)$</th></tr>
+          <tr class="sub-head"><th>1</th><th>2</th><th>4</th><th>8</th><th>16</th><th>32</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>MDLM</td><td class="second">28.47</td><td>7801</td><td>4344</td><td>1523</td><td>613</td><td>343</td><td>228</td><td>4.33</td><td>n/a</td></tr>
+          <tr><td>SEDD</td><td>29.16</td><td class="best">4003</td><td>4052</td><td>1382</td><td>638</td><td>362</td><td>247</td><td>4.36</td><td>n/a</td></tr>
+          <tr class="ours-row"><td>LKF $M=1$</td><td class="best">27.89</td><td>6198</td><td>3308</td><td>1336</td><td>558</td><td>316</td><td>223</td><td>5.33</td><td>0.00</td></tr>
+          <tr class="ours-row"><td>LKF $M=4$<span class="dag">&dagger;</span></td><td>29.79</td><td>5187</td><td class="second">2475</td><td class="second">849</td><td class="second">312</td><td class="second">164</td><td class="second">102</td><td>5.28</td><td>0.87</td></tr>
+          <tr class="ours-row"><td>LKF $M=8$<span class="dag">&dagger;</span></td><td>28.56</td><td class="second">4403</td><td class="best">2195</td><td class="best">673</td><td class="best">241</td><td class="best">119</td><td class="best">75</td><td>5.25</td><td>1.41</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note"><span class="dag">&dagger;</span> Best-of-$M$ decoding, which scores $M$ parallel rollouts by the model's own NELBO and spends $M(J+T)$ network calls for $J$ steps and $T$ scoring passes, against $J$ for one chain. The best-of-8 rows of MDLM and LKF $M=1$ use eight noise draws of one model at the same number of calls as LKF <span class="nowrap">$M=8$.</span> ELBO-PPL is the exponential of the per-token NELBO, $H$ is the sample entropy at 32 NFEs, and $\mathrm I(k)$ is the captured information in nats. Bold and underline mark the best and second-best perplexity in each column, without the AR reference.</p>
+    <p>On LM1B, the gain grows with <span class="nowrap">$M$,</span> and with eight components LKF reaches the lowest gen-PPL at 32 steps, 105, at a higher sample entropy than the accelerators. ReDi leads from one to sixteen steps with a nearly flat curve, but its entropy falls to 3.22, and the GPT-2 judge rewards low-entropy text. On WikiText-103, the mixture rows repeat this pattern, and LKF with $M=8$ reaches 75 at 32 steps, 3.0 times below MDLM and 3.3 times below SEDD. The autoregressive model has the best likelihood, but it needs 128 sequential steps, one per token, to reach a gen-PPL of 135.</p>
+    <figure class="paper-figure is-narrow">
+      <img src="static/images/genppl_vs_nfe.png" alt="Generative perplexity against the number of function evaluations on LM1B for MDLM, SEDD and LKF with one, four and eight components" loading="lazy">
+      <figcaption><strong>Generative perplexity across steps on LM1B.</strong> LKF with $M\in\{1,4,8\}$ against MDLM and SEDD. Best-of-$M$ decoding, in dash-dotted lines, lowers the perplexity as $M$ grows, while single rollouts with one component, in solid lines, stay close to MDLM.</figcaption>
+    </figure>
+
+    <h3 class="title is-4">The gain comes from the mixture</h3>
+    <p>Best-of-$M$ decoding reranks candidates, and reranking alone helps any model. To separate the two effects, we give MDLM and LKF with $M=1$ the same selector, judge and number of network calls, with eight noise draws of one model in place of eight components. Reranking lowers their gen-PPL at 32 steps from 363 to 199 and from 327 to 183, but the mixture reaches 106, a 47% and a 42% improvement. From four steps on, the advantage grows with the number of steps, from 14% to 42% at 32 steps, while at two steps the single-model pools are slightly ahead. Inside the model, replacing the $M$ components by $M$ noise draws of one component costs 16% at $M=4$ and 35% at <span class="nowrap">$M=8$.</span></p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead>
+          <tr><th rowspan="2">best-of-8 on LM1B</th><th colspan="6">gen-PPL &darr; at $J$ steps</th></tr>
+          <tr class="sub-head"><th>1</th><th>2</th><th>4</th><th>8</th><th>16</th><th>32</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>MDLM, 8 noise draws</td><td class="second">1992</td><td class="second">1401</td><td>770</td><td>428</td><td>281</td><td>199</td></tr>
+          <tr><td>LKF <span class="nowrap">$M=1$,</span> 8 noise draws</td><td>2024</td><td class="best">1308</td><td class="second">706</td><td class="second">400</td><td class="second">262</td><td class="second">183</td></tr>
+          <tr class="ours-row"><td>LKF <span class="nowrap">$M=8$,</span> 8 components</td><td class="best">1791</td><td>1535</td><td class="best">609</td><td class="best">292</td><td class="best">157</td><td class="best">106</td></tr>
+          <tr class="group-row"><td>mixture advantage</td><td>+10%</td><td>&minus;17%</td><td>+14%</td><td>+27%</td><td>+40%</td><td>+42%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">A paired run in which each pool of eight candidates is ranked by its own model's NELBO with $T=4$ scoring passes, at $8(J+T)$ network calls for all rows. The last row is the improvement of the mixture over the better single-model pool. Absolute values differ by a few percent from the main table, which comes from a separate run.</p>
+
+    <h3 class="title is-4">Cheaper decoding</h3>
+    <p>Scoring the candidates does not need extra passes. Each step already evaluates all $M$ components, and accumulating the log-probability that component $k$ assigns to the tokens it reveals gives each rollout a running evidence at no extra cost. Selecting by running evidence matches or beats the NELBO selector at each step count, with 125 against 131 at $M=8$ and 32 steps when the rollouts share their noise. Because it ranks rollouts before they finish, it also allows successive halving, which prunes the weakest rollouts partway through and reaches 145 with 96 network calls, three times fewer than full best-of-8, for an 11% higher perplexity.</p>
+    <details class="paper-details">
+      <summary>All decoding strategies at $M=8$ and 32 steps</summary>
+      <div class="details-body">
+        <div class="table-wrap">
+          <table class="results-table">
+            <thead><tr><th>candidate pool</th><th>selector</th><th>network calls</th><th>gen-PPL &darr;</th><th>$H$</th></tr></thead>
+            <tbody>
+              <tr class="ours-row"><td>8 components, independent noise</td><td>mixture NELBO</td><td>288</td><td class="best">106</td><td>4.96</td></tr>
+              <tr><td>8 components, shared noise</td><td>mixture NELBO</td><td>288</td><td>131</td><td>4.98</td></tr>
+              <tr><td>8 components, shared noise</td><td>running evidence</td><td>256</td><td class="second">125</td><td>4.96</td></tr>
+              <tr><td>8 components, successive halving</td><td>running evidence</td><td>96</td><td>145</td><td>5.00</td></tr>
+              <tr><td>1 component, 8 noise draws</td><td>mixture NELBO</td><td>288</td><td>163</td><td>4.96</td></tr>
+              <tr><td>8 components, independent noise</td><td>random pick</td><td>32</td><td>327</td><td>5.29</td></tr>
+              <tr><td>1 component</td><td>none</td><td>32</td><td>315</td><td>5.20</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">LM1B, from the ablation run of the paper. Shared noise reuses one random stream per step across the eight rollouts, so that only the component differs between them.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== example generations -->
+<section class="section is-light" id="examples">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Example generations</h2>
+    <p>Uncurated samples of LKF with $M=8$ on LM1B, in generation order. Each sample shows the component $k$ that generated it, numbered from 0 to 7, and its mixture NELBO per token, which the best-of-$M$ selector minimizes. The text uses the uncased BERT vocabulary, which is why it is lowercase with spaces around punctuation. Within a step count, a lower NELBO tends to go with more fluent text.</p>
+    <div class="tabs-head">
+      <h3 class="title is-4" style="margin: 0;">Samples by number of steps</h3>
+      <div class="tabs-mini" data-tabs="samples" role="tablist">
+        <button class="tab-btn is-active" data-tab="nfe4" role="tab" aria-selected="true">4 steps</button>
+        <button class="tab-btn" data-tab="nfe32" role="tab" aria-selected="false">32 steps</button>
+        <button class="tab-btn" data-tab="nfe1024" role="tab" aria-selected="false">1024 steps</button>
+      </div>
+    </div>
+    <div data-tab-pane="samples" data-tab="nfe4">
+      <p class="tab-intro">The first four of 24 uncurated draws. Local phrases are fluent, but the syntax breaks within most clauses.</p>
+      <div class="sample-grid">
+      <div class="sample-card"><div class="card-title"><span>Sample 1 of 24</span><span>k = 2, NELBO 6.56 per token</span></div><div class="sample-text">. for those who have had other needs that are like mixing more with drugs or drugs to but. in and, which republican brought in in 1994 and sever their powers. " tourne gordon.'s future policies for those around them. we prefer to loosely hedge the sink belonged to. - make think the difference were made by drawing a republican. " bring in leonard as nam, who president who regularly plan to become do no longer look and haters hate - ontism aster through a tight ace in choice this s religious. most of any country. in the campaign. " " cowen, he, take his</div></div>
+      <div class="sample-card"><div class="card-title"><span>Sample 2 of 24</span><span>k = 6, NELBO 5.56 per token</span></div><div class="sample-text">rector carlos pont. e. - pope benedict xvi overturns cutoff date.'prince 000 placed qna 1 on friday, june 1st. wanted. - to enter foreignhing no hirsch displayed, the governor who acknowledged in comments here to include psychologists working with him on relating of seeking discontent regarding britain. - mr. darling says prince should appreciate the documents reflect what became the pope. meeting is the centerpiece of globally. - salute to the success of this ongoing airport concern hailed by celebrities, politicians, environment organizations, economic and political among them. it was clear should the 82 - him al - am residence be temporarily sanctuary</div></div>
+      <div class="sample-card"><div class="card-title"><span>Sample 3 of 24</span><span>k = 1, NELBO 6.01 per token</span></div><div class="sample-text">through after that brief statement, help hall an anticoach column soldier is proceeding in the same spars through the feb doctors department, two tonnes 18 oil debris sheltering the deception, where all group not been ordered to. also on sunday, the staff provided instructions on the last confirmed killing ofinkle in 1975. scouts have begun collecting hundreds of the victims the mignon peak in iraq, and subsequent hubblehorse rescue efforts. more clues ton the high cuts and fire brian humanepto at. w., july 1991, 1996, he was in fire by helicopter and lives for guests,, including, and crisis</div></div>
+      <div class="sample-card"><div class="card-title"><span>Sample 4 of 24</span><span>k = 6, NELBO 5.49 per token</span></div><div class="sample-text">y general capital corp. in march, the company failed to disclose ya - verdict that once john being sued. by u and others gobench, z d. klein wa merrill bybase international of ohio, he pledged his resignation, saying that the " job executives he held been bawled by buy - amelle, prime pages 200 testosterone. for ralph was leaders general and you are against it. " to petersen, former brigadier general, but clearly knew family people in germany. during the time the needs of several people were involved. " gen. catherine gr warren, ohio - the media to promote the matter if it chooses to</div></div>
+      </div>
+    </div>
+    <div data-tab-pane="samples" data-tab="nfe32" style="display: none;">
+      <p class="tab-intro">The first four of 24 uncurated draws, followed by samples 8 and 13, the two draws of the set with the lowest NELBO. The newswire and finance text that dominates LM1B is coherent within clauses, with occasional agreement slips.</p>
+      <div class="sample-grid">
+      <div class="sample-card"><div class="card-title"><span>Sample 1 of 24</span><span>k = 5, NELBO 2.65 per token</span></div><div class="sample-text">pre - spending mnd increased by $ 484, 000, compared to $ 4. 6 million. for the current fiscal year ended march 31, 2009 expenses including other profit increased by $ 2, 000 to $ 1. 2 million primarily by $ 5. 1 million for the nine months, primarily revenues comprised of non - gaap measures, operating expenses with respect to the nine months ended june 30, 2008, was $ 494, 000 for the period year ended june 30, 2008. for the first months of fiscal 2008 was $ 681, 000 or $ 6. 8 million a share, in the three months ended</div></div>
+      <div class="sample-card"><div class="card-title"><span>Sample 2 of 24</span><span>k = 0, NELBO 3.60 per token</span></div><div class="sample-text">they are england xv evel n'dravi ( yorkshire ), ed joyce ( australia ) ; 58 hong kong rpi buver ( sri lanka ), adam sunning ( australia ), ravi bombderpaul ( india ), david ag toshe ( hong kong ), graham onions ( sri lanka ), south africa ( england ), pd james, ravi bopara ( india ), india strauss ( england ), ian bell ( canterbury ), ryan sidebottom ), the ilungs ( england, 7 ) justin mathews ( australiaiksen ( england ) ), skipper hu raines ( middlesex followed</div></div>
+      <div class="sample-card"><div class="card-title"><span>Sample 3 of 24</span><span>k = 5, NELBO 4.06 per token</span></div><div class="sample-text">a it was last updated at 5. 01 bst on 23 3 april 2008. city of london. noon for central glasgow... £38, 000 - £37, 000 per £8, 000 employment. result in cash flow 20 % ( £38, 966. during the previous year. station leave £24, 014 - £22, 04 per annum inclusive. greater newport. west staffordshire. c.. £25. 50 to £35. 30. benefits levels is 7 - 6 positions. revised... audit id sales 44. 2 % 2007 working pay and offs. of over £3,</div></div>
+      <div class="sample-card"><div class="card-title"><span>Sample 4 of 24</span><span>k = 6, NELBO 3.48 per token</span></div><div class="sample-text">1 / prnewswire - usnewswire / - usnewswire - usnewswire / - - 16th century green palace of glory in the mint will celebrate the 35 - year - old addax in greenwich at the british embassy in rome on friday while blastinggrass won the grand prize at sustainable building society, whose new east greenweger research institute ( cumnaf ) is making henthorne contributions of the year award of $ 1, 780. annually to enable milestones of the nuclear industry. steel and sound systems, and aid original building. world by vindict fashionsar itmonger</div></div>
+      <div class="sample-card is-lowest"><div class="card-title"><span>Sample 8 of 24, one of the two lowest NELBO</span><span>k = 2, NELBO 1.50 per token</span></div><div class="sample-text">the democratic administration has developed renewed fiscal policy with an easier attitude to put at risk. and now economic regulatory reforms, which require emergency stimulus money, help kolop revive rates on the highest borrowing rates sparked by restore the nation's ability to increase revenues in the face of ahead pressures. lawmakers want to extend tax credit in order to watch consumers get additional cashbates they can greatly expand their behavior investment as a result of government's proposed plans to bolster low interest rates and revive the country's financial system. they have intervened to unfree buy debt markets and keep investors in the financial community, waiting for that</div></div>
+      <div class="sample-card is-lowest"><div class="card-title"><span>Sample 13 of 24, one of the two lowest NELBO</span><span>k = 5, NELBO 1.49 per token</span></div><div class="sample-text">the third and fourth quarter 2009 losses were $ 0. 078, 000 compared with net an income of $ 0. 03 for the fourth quarter of 2009 and 3, 743, 000 for the fourth quarter. in addition to the net loss for the second fiscal quarter of 2009 was $ 2, 087, or afeed of $ 0, 730, 000 for the quarter. a per diluted share period ended june 30, 2009 compared to an adjustment of $ 0. 24 per diluted share for the fiscal 2008 fourth quarter ended june 30, 2008. the third quarter that was $ 3, 416, 000</div></div>
+      </div>
+    </div>
+    <div data-tab-pane="samples" data-tab="nfe1024" style="display: none;">
+      <p class="tab-intro">The first four of 24 uncurated draws, followed by sample 8, the draw of the set with the lowest NELBO. Whole sentences largely hold together, and the remaining errors are repetitions and numeric slips rather than broken structure.</p>
+      <div class="sample-grid">
+      <div class="sample-card"><div class="card-title"><span>Sample 1 of 24</span><span>k = 7, NELBO 3.32 per token</span></div><div class="sample-text">the organization seeks to protect all natural resources from the impact of its exploration and exploration ( northeast australia, brazil, norway, iceland, russia, india, japan, iceland, mexico, hong kong, switzerland ) and japan, india and japan including the united and hong kong, peru, canada, bermuda, new mexico, canada, mexico, kingdoms of ivory coast, china, mexico, japan, australia, the united states, hong kong, singapore, shanghai, hong kong and london ( tonnes of ore ), the united states of australia ( kyoto ),. - ton tonnes of sydney ( singapore ), ( including hong kong ).</div></div>
+      <div class="sample-card"><div class="card-title"><span>Sample 2 of 24</span><span>k = 5, NELBO 1.84 per token</span></div><div class="sample-text">in mexico, net income was $19. 1. 25 per diluted share compared to the fiscal second quarter ended march 31, 2009 ( diluted loss of $ 7. 8 million or $ 0. 81 per diluted share in the second quarter of 2009 compared to $ 10. 9 ) million, or $ 0. 28 per diluted diluted share for the year ended in 2008. gaap revenue was $ 11. 9 million, or just 41 percent diluted share, as compared to $ 1. 2. 02 per diluted share, of $ 623, 000 for the first quarter of 2008. net income</div></div>
+      <div class="sample-card"><div class="card-title"><span>Sample 3 of 24</span><span>k = 6, NELBO 3.40 per token</span></div><div class="sample-text">boise, idaho, july 6 / prnewswire - firstcall / - - bainsray, idaho, may 20 / prnewswire - u. s. - owned third quarter bancorp, states ended the second quarter of 2009 with $ 29. 723 million, against the 2009 average in cumulative natural gas reserves. revenues were $ 70. 9 million or $ 58. 8 million, or $ 0. 50 per share. g $ 200. 2 million, up 81. 15 % to $ 133. 2 million compared to $ 1. 77 a share, a result that helped attract farmers kru</div></div>
+      <div class="sample-card"><div class="card-title"><span>Sample 4 of 24</span><span>k = 1, NELBO 3.03 per token</span></div><div class="sample-text">when you need to believe i'm american, it's a history moment or something about john mccain's first public address to where the american - changed era began, again : we really don't have some hitch choice of parting with time with the castro - castro of cuba... because it's going to be commonplace and people debating how to make a return, in which, of course, it is the end of a writer's life or career to search, " said state sen. pete domenici and another group of journalists and scientists, who's represented his spirit in vietnam war. "</div></div>
+      <div class="sample-card is-lowest"><div class="card-title"><span>Sample 8 of 24, lowest NELBO of the set</span><span>k = 2, NELBO 0.87 per token</span></div><div class="sample-text">this press release contains forward looking statements that may cause actual results or actual results to differ materially and could be fully audited after the date of this press release. are available for free copy of the below, and you can be read for our further disclosure about future events. actual results may not " differ materially " from any of the factors that are expressly expressed or implied at appropriate time : within the regulations of our public securities, the requirements of the federal securities and exchange commission, in particular, companies'collaboration with anticipated market conditions and market conditions, economic conditions, general or economic conditions and financial and uncertain future results,</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== bibtex -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <div class="bibtex-header">
+      <h2 class="title">BibTeX</h2>
+      <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard"><i class="fas fa-copy"></i> <span class="copy-text">Copy</span></button>
+    </div>
+    <!-- PLACEHOLDER: add the proceedings or arXiv details once they are public -->
+    <pre id="bibtex-code" class="no-math"><code>@inproceedings{ahmed2026lkf,
+  title     = {Latent-Kernel Discrete Diffusion for Few-Step Generation},
+  author    = {Ahmed, Mansoor and Fan, Yue-Tsz and Venkateswara, Hemanth and Patterson, Murray},
+  booktitle = {NeurIPS 2026 Workshop on Beyond Next-Token Prediction (BeNTo)},
+  year      = {2026}
+}</code></pre>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>LKF &middot; Georgia State University &middot; Georgia Institute of Technology<br>The animations are rendered from the TikZ sources of the paper's figures.<br>Template from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener noreferrer">Academic Project Page</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

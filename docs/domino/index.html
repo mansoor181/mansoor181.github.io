@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Domino: Joint Unmasking via First-order Markov Chain for Few-Step Masked Diffusion</title>
+  <meta name="description" content="Domino draws the tokens that a masked diffusion model reveals in one denoising step along a first-order Markov chain over their positions, with a lightweight module on a fixed pre-trained denoiser, for few-step generation of text, molecules and images.">
+  <meta name="keywords" content="masked diffusion, discrete diffusion, few-step generation, Markov chain, parallel decoding, language models">
+  <meta name="author" content="Mansoor Ahmed, Lilia Chebbah, Jenny Dinh, Murray Patterson, Hemanth Venkateswara">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Domino: Joint Unmasking via First-order Markov Chain for Few-Step Masked Diffusion">
+  <meta property="og:description" content="A Markov chain over the positions revealed in one step of a pre-trained masked diffusion model, for few-step generation.">
+  <!-- the absolute urls assume the page is served at https://mansoor181.github.io/domino/ ; change them if the folder name differs -->
+  <link rel="canonical" href="https://mansoor181.github.io/domino/">
+  <meta property="og:url" content="https://mansoor181.github.io/domino/">
+  <meta property="og:image" content="https://mansoor181.github.io/domino/static/images/concept.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], ignoredClasses: ['sample-text', 'no-math'], throwOnError: false});"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProg"></div>
+<button class="scroll-to-top" title="Back to top" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+<main>
+<!-- ================================================================== title, authors, links -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title hero-fade hero-fade-1">Domino</h1>
+          <h2 class="subtitle is-4 publication-subtitle hero-fade hero-fade-1">Joint Unmasking via First-order Markov Chain for Few-Step Masked Diffusion</h2>
+          <div class="is-size-5 publication-authors hero-fade hero-fade-2">
+            <span class="author-block"><a href="https://mansoor181.github.io/" title="Mansoor Ahmed's website" target="_blank" rel="noopener">Mansoor Ahmed</a><sup>1,2,*</sup>,</span>
+            <!-- PLACEHOLDER: add homepage links for the co-authors below -->
+            <span class="author-block">Lilia Chebbah<sup>1</sup>,</span>
+            <span class="author-block">Jenny Dinh<sup>1</sup>,</span>
+            <span class="author-block">Murray Patterson<sup>1</sup>,</span>
+            <span class="author-block">Hemanth Venkateswara<sup>1,*</sup></span>
+          </div>
+          <div class="affiliations hero-fade hero-fade-3">
+            <span class="author-block"><sup>1</sup>Georgia State University</span>
+            <span class="author-block"><sup>2</sup>Georgia Institute of Technology</span>
+          </div>
+          <p class="author-note hero-fade hero-fade-3"><sup>*</sup>Corresponding authors</p>
+          <div class="publication-links hero-fade hero-fade-4">
+            <!-- PLACEHOLDER: replace href="#" with the paper, arXiv and code links once they are public, and drop the is-placeholder class -->
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="#BibTeX" title="Jump to the BibTeX citation"><span class="icon"><i class="fas fa-quote-left"></i></span><span>BibTeX</span></a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== teaser: figure 1, animated -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body hero-fade hero-fade-5">
+      <video class="figure-video" autoplay muted loop playsinline preload="auto" poster="static/images/concept.png" aria-label="Animation of Figure 1: a Markov chain within a denoising step">
+        <source src="static/videos/domino_concept.mp4" type="video/mp4">
+        <img src="static/images/concept.png" alt="Figure 1: a Markov chain within a denoising step">
+      </video>
+      <p class="teaser-caption"><strong>A Markov chain within a denoising step.</strong> One large step from $\boldsymbol z_t$ to $\boldsymbol z_s$ reveals three positions, which the data complete as <em>A dog barks</em> or <em>Two dogs bark</em>. (a) A masked diffusion model draws the three tokens independently given $\boldsymbol z_t$ and can mix the two sentences. (b) Domino draws them along a Markov chain through a pairwise potential $\psi$, given $\boldsymbol z_t$ and the token of each predecessor, and keeps them consistent.</p>
+    </div>
+  </div>
+</section>
+
+<nav class="section-nav" aria-label="Page sections">
+  <a href="#problem">Problem</a>
+  <a href="#method">Method</a>
+  <a href="#theory">Theory</a>
+  <a href="#results">Results</a>
+  <a href="#examples">Examples</a>
+  <a href="#BibTeX">BibTeX</a>
+</nav>
+
+<!-- ================================================================== tl;dr and abstract -->
+<section class="section">
+  <div class="container is-max-desktop content">
+    <div class="tldr reveal"><p><span class="tldr-label">TL;DR</span>A few-step sampler of a masked diffusion model reveals many tokens in each step and draws them independently, so tokens that must agree often do not. Domino keeps the pre-trained model fixed and draws the tokens of each step along a first-order Markov chain over their positions, with transitions computed by a small module from the model's hidden states. At four steps, it lowers the generative perplexity of MDLM by 1.7 to 3.8 times on three text corpora at nearly unchanged entropy, with 2.6% more parameters.</p></div>
+    <details class="paper-details reveal">
+      <summary>Abstract</summary>
+      <div class="details-body">
+        <p>Masked diffusion models generate a sequence by revealing masked positions over many denoising steps. A few-step sampler has to reveal many positions at once, but the standard reverse kernel draws them <em>independently</em> and primarily ignores the conditional dependence between tokens revealed in the same step. We propose a novel framework called Domino, which models this dependence with a first-order Markov chain over the revealed positions, given the current state. The first revealed position keeps the posterior of a pre-trained masked diffusion model (MDM), and each subsequent position follows a transition given the token of its predecessor. Notably, the resulting step is normalized by construction, contains the factorized step in MDMs as a special case, and has a likelihood in closed form. We implement the Domino transitions via a lightweight module on the hidden states of a pre-trained MDM denoiser with only 2.6% parameter overhead and train by keeping the MDM denoiser frozen. Our extensive evaluations across text, molecules, and images show that Domino lowers the few-step generative perplexity of MDMs by a factor of 1.7 to 3.8 on One Billion Word (LM1B), WikiText-103, and OpenWebText at nearly unchanged sample entropy. It also raises the validity of few-step molecule samples by 1.5&times;.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== the problem -->
+<section class="section is-light" id="problem">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">One large step, independent draws</h2>
+    <p>A masked diffusion model generates a sequence by unmasking its positions over many denoising steps. Given the current state $\boldsymbol z_t$, it first chooses the set $S$ of positions that a step reveals, and then draws their tokens independently from the per-position posteriors of its denoiser,</p>
+    <div class="math-box">$$p(\boldsymbol x^{S}\mid \boldsymbol z_t, S)\;=\;\prod_{i\in S}P_i(x^{i}\mid \boldsymbol z_t).$$</div>
+    <p>A sampler with few steps has to reveal many positions in each step, and positions revealed together are rarely independent in the data. A subject and its verb must agree, and an opening bracket needs a closing one. Even with exact marginals $q_i$, the product kernel then pays the total correlation of the step,</p>
+    <div class="math-box">$$\mathrm{TC}(q)\;=\;\mathrm{KL}\Big(q\,\Big\|\,\prod_{i\in S}q_i\Big)\;=\;\sum_{i\in S}\mathrm{H}(q_i)-\mathrm{H}(q),$$</div>
+    <p>which grows with the number of positions revealed at once. In the example of Figure 1, the data complete the three revealed positions as <em>A dog barks</em> or <em>Two dogs bark</em>. Each position is then uniform over its two words, the product kernel spreads its mass over all eight combinations, and $\mathrm{TC}(q)=2\log 2$.</p>
+    <div class="takeaway">The error comes from the form of the step, not from the denoiser. A product of per-position distributions cannot keep tokens consistent within a step, however accurate its marginals are.</div>
+  </div>
+</section>
+
+<!-- ================================================================== the method -->
+<section class="section" id="method">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">A Markov chain within a denoising step</h2>
+    <p>Domino orders the revealed positions $j_1&lt;\dots&lt;j_n$ and draws their tokens as a first-order Markov chain, given the current state. The first position keeps the posterior of the pre-trained denoiser, and each subsequent position follows a transition given the token of its predecessor,</p>
+    <div class="math-box">$$p^{\theta}(\boldsymbol x^{S}\mid\boldsymbol z_t,S)\;=\;P_{j_1}(x^{j_1}\mid\boldsymbol z_t)\prod_{m=2}^{n}P^{\theta}_{j_m\mid j_{m-1}}\big(x^{j_m}\mid x^{j_{m-1}},\boldsymbol z_t\big).$$</div>
+    <p>A lightweight module computes each transition from the hidden states $h_i$ of the denoiser. It shifts the denoiser's logits $\ell_j$ by a pairwise potential of rank at most $d_p$, built from the two positions and the gap between them,</p>
+    <div class="math-box">$$P^{\theta}_{j\mid i}(b\mid a,\boldsymbol z_t)=\operatorname{softmax}_b\big(\ell_j(b)+E_a^{\top}A_{ij}E_b\big),\qquad A_{ij}=g_\theta\big(W_u h_i,\,W_u h_j,\,\mathrm{emb}(j-i)\big).$$</div>
+    <figure class="paper-figure">
+      <video class="figure-video" autoplay muted loop playsinline preload="metadata" poster="static/images/method.png" aria-label="Animation of Figure 2: sampling and training with Domino">
+        <source src="static/videos/domino_method.mp4" type="video/mp4">
+        <img src="static/images/method.png" alt="Figure 2: sampling and training with Domino">
+      </video>
+      <figcaption><strong>Sampling (a) and training (b) with Domino.</strong> (a) One pass of the pre-trained denoiser yields the logits $\ell_i$ and hidden states $h_i$. The module maps the hidden states of consecutive revealed positions and their gap to a pairwise potential $\psi_{ij}$, and the revealed positions are filled in index order, each given its sampled predecessor. (b) We train only the module, on the likelihood of the chain at the true tokens, while the denoiser stays fixed.</figcaption>
+    </figure>
+    <div class="props">
+      <div class="prop"><h4><span class="icon"><i class="fas fa-check-circle"></i></span>Normalized by construction</h4><p>The step is a product of conditionals, so it sums to one and its likelihood has a closed form.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-layer-group"></i></span>Contains the factorized step</h4><p>Transitions that ignore the predecessor recover the product kernel, and the module starts there, since its output layer starts at zero.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-feather-alt"></i></span>Lightweight</h4><p>The module adds 4.5M parameters to a 170M denoiser, trains in 1.3 H100 hours, and keeps one denoiser pass per step.</p></div>
+    </div>
+    <details class="paper-details">
+      <summary>Training and sampling algorithms</summary>
+      <div class="details-body">
+        <div class="algorithm">
+          <h3 class="algo-title">Algorithm 1 &middot; Domino training</h3>
+          <ol>
+            <li>Draw a clean sequence $\boldsymbol x$ and a step $(t,s)$ of the $K$-step schedule, or with probability $\eta$ a step of random size.</li>
+            <li>Mask each token of $\boldsymbol x$ with probability $1-\alpha_t$ to get $\boldsymbol z_t$, and add each masked position to the reveal set $S$ with probability $(\alpha_s-\alpha_t)/(1-\alpha_t)$.</li>
+            <li>Run the pre-trained denoiser once on $\boldsymbol z_t$, without gradients, to get $\ell_i$ and $h_i$.</li>
+            <li class="algo-highlight">For each consecutive pair $(j_{m-1},j_m)$ of $S$ in index order, compute $A$ from the two hidden states and their gap, and score the true token $x^{j_m}$ under $\operatorname{softmax}(\ell_{j_m}+E_{x^{j_{m-1}}}^{\top}AE)$, with the true predecessor $x^{j_{m-1}}$.</li>
+            <li>Update only the module on the summed negative log-likelihood.</li>
+          </ol>
+        </div>
+        <div class="algorithm">
+          <h3 class="algo-title">Algorithm 2 &middot; Domino sampling</h3>
+          <ol>
+            <li>Start from the fully masked sequence, and for $k=0,\dots,K-1$ go from $t=1-k/K$ to $s=1-(k+1)/K$.</li>
+            <li>Draw the reveal set $S$ among the masked positions, and run the denoiser once on the current state.</li>
+            <li>Draw the first position of $S$ from its posterior $\operatorname{softmax}(\ell_{j_1})$.</li>
+            <li class="algo-highlight">Draw each subsequent position from $\operatorname{softmax}(\ell_{j_m}+E_{z^{j_{m-1}}}^{\top}AE)$, given its sampled predecessor $z^{j_{m-1}}$.</li>
+          </ol>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== theory -->
+<section class="section is-light" id="theory">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">What the chain removes</h2>
+    <p>A $K$-step sampler is a generative model of its own, and its negative log-likelihood is bounded by the log-probabilities that its steps assign to the true tokens. In expectation over the data, the bound splits into the entropy of the data and one divergence per step,</p>
+    <div class="math-box">$$\mathbb{E}_{\boldsymbol x\sim q}\big[-\log p_K(\boldsymbol x)\big]\;\le\;\mathrm{H}(\boldsymbol X)+\sum_{k=0}^{K-1}\mathbb{E}\Big[\mathrm{KL}\big(q_k\,\big\|\,p^{\theta}(\cdot\mid\boldsymbol z_{t_k},S_k)\big)\Big].$$</div>
+    <p>For the chain, each of these divergences separates into the error of the best chain, the error of the denoiser at the first position, and the transition error $\varepsilon_\theta$ of the module,</p>
+    <div class="math-box">$$\mathrm{KL}\big(q\,\|\,p^{\theta}\big)\;=\;\underbrace{\mathrm{TC}(q)-\sum_{(i,j)\in C(S)}\mathrm{I}_q(X^{i};X^{j})}_{\text{error of the best chain}}\;+\;\mathrm{KL}\big(q_{j_1}\,\|\,P_{j_1}\big)\;+\;\varepsilon_\theta(q).$$</div>
+    <p>The best chain removes from the total correlation the information that consecutive revealed positions share, and it removes all of it when the step is itself a Markov chain in index order, as in Figure 1. The training loss of Domino is the transition part of this bound, so the module learns the pairwise dependence that the product kernel discards. Its gain shrinks as the number of steps grows, because consecutive revealed positions then lie farther apart and share less information.</p>
+    <div class="takeaway">The product kernel pays the total correlation of each step. The chain pays only what consecutive positions cannot explain, plus the error of its learned transitions.</div>
+  </div>
+</section>
+
+<!-- ================================================================== results -->
+<section class="section" id="results">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Few-step generation</h2>
+    <p>We train the module on pre-trained MDLM and SEDD models and on distilled SDTT students, and compare with a tensor-train joint layer of similar size (TTD). At four function evaluations (NFEs), Domino lowers the generative perplexity of MDLM by 2.3 times on WikiText-103, 1.7 times on LM1B and 3.8 times on OpenWebText, while the per-position entropy stays close to that of held-out text. MAUVE rises from 0.05 to 0.29 on WikiText-103 and from 0.06 to 0.31 on LM1B.</p>
+    <figure class="paper-figure is-narrow">
+      <img src="static/images/text_nfe4.png" alt="Generative perplexity at four NFEs for the pre-trained models, with a tensor-train layer and with Domino" loading="lazy">
+      <figcaption><strong>Few-step generation at four NFEs.</strong> Generative perplexity under GPT-2 Large for the pre-trained models alone, with a tensor-train joint layer and with Domino, on WikiText-103, LM1B and OpenWebText. The SDTT bars with Domino use a sampling temperature of 0.9.</figcaption>
+    </figure>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>gen-PPL at 4 NFEs</th><th>WikiText-103</th><th>LM1B</th><th>OpenWebText</th></tr></thead>
+        <tbody>
+          <tr><td>MDLM</td><td>1328</td><td>931</td><td>2007</td></tr>
+          <tr><td>&nbsp;&nbsp;+ TTD</td><td>1218</td><td>861</td><td>1749</td></tr>
+          <tr class="ours-row"><td>&nbsp;&nbsp;+ Domino</td><td>589</td><td>543</td><td>524</td></tr>
+          <tr><td>SEDD</td><td>1382</td><td>1117</td><td>1856</td></tr>
+          <tr><td>&nbsp;&nbsp;+ TTD</td><td>1122</td><td>934</td><td>1496</td></tr>
+          <tr class="ours-row"><td>&nbsp;&nbsp;+ Domino</td><td>601</td><td>470</td><td>964</td></tr>
+          <tr><td>SDTT</td><td>328</td><td>428</td><td>339</td></tr>
+          <tr><td>&nbsp;&nbsp;+ TTD</td><td>1212</td><td>685</td><td>1540</td></tr>
+          <tr class="ours-row"><td>&nbsp;&nbsp;+ Domino, temperature 0.9</td><td>214</td><td>235</td><td>155</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Lower is better. Distilled SDTT students reach low perplexity by narrowing their samples. Domino restores their entropy, and at a temperature of 0.9, which brings the entropy back to that of the student, it lowers the student's perplexity by 1.5 to 2.2 times. The paper reports all NFEs from 1 to 32, the entropies, MAUVE and DUO.</p>
+    <figure class="paper-figure">
+      <img src="static/images/main_curves.png" alt="Generative perplexity on text, validity on molecules and FID on ImageNet-256 across the number of function evaluations" loading="lazy">
+      <figcaption><strong>Across steps and domains.</strong> Generative perplexity on text, validity on molecules and FID on ImageNet-256 across NFEs, for MDLM (MaskGIT on images) alone, with a tensor-train layer and with Domino. The gain is largest at few steps, where each step reveals the most positions.</figcaption>
+    </figure>
+
+    <h3 class="title is-4">Molecules and images</h3>
+    <p>A SMILES string parses only when its ring-closure digits pair up and its parentheses balance, so positions revealed in the same step are tightly coupled. At four NFEs, Domino raises the validity of MDLM from 24.8% to 37.8% on QM9 and from 22.1% to 30.6% on ZINC-250k, and it lowers the Fr&eacute;chet ChemNet distance (FCD) on both.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th></th><th>QM9 validity at 4 NFEs</th><th>QM9 FCD at 32 NFEs</th><th>ZINC-250k validity at 4 NFEs</th><th>ZINC-250k FCD at 32 NFEs</th></tr></thead>
+        <tbody>
+          <tr><td>MDLM</td><td>24.8 <span class="pm">&plusmn; 10.6</span></td><td>1.36</td><td>22.1 <span class="pm">&plusmn; 2.4</span></td><td>6.35</td></tr>
+          <tr><td>&nbsp;&nbsp;+ TTD</td><td>33.4 <span class="pm">&plusmn; 4.0</span></td><td>1.52</td><td>27.2 <span class="pm">&plusmn; 5.1</span></td><td>7.67</td></tr>
+          <tr class="ours-row"><td>&nbsp;&nbsp;+ Domino</td><td>37.8 <span class="pm">&plusmn; 0.8</span></td><td>1.18</td><td>30.6 <span class="pm">&plusmn; 3.4</span></td><td>5.42</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Validity in percent (higher is better) over three training runs, FCD lower is better.</p>
+    <figure class="paper-figure is-narrow">
+      <img src="static/images/mol_examples.png" alt="Valid molecules generated by MDLM and by MDLM with Domino on QM9 and ZINC-250k at 8 NFEs" loading="lazy">
+      <figcaption><strong>Valid molecules at 8 NFEs.</strong> The first six valid samples above a size cutoff from MDLM (gray) and MDLM with Domino (teal) on QM9 (top) and ZINC-250k (bottom).</figcaption>
+    </figure>
+    <p>On ImageNet-256, we integrate Domino into the official MaskGIT checkpoint. We keep MaskGIT's own confidence-based sampler and let the chain revise its candidates through a maximal coupling, as in speculative decoding. Domino lowers FID at 2 to 5 steps, and MaskGIT catches up from 6 steps onwards.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>FID on 10,000 samples</th><th>2 steps</th><th>3 steps</th><th>4 steps</th><th>5 steps</th><th>6 steps</th><th>8 steps</th></tr></thead>
+        <tbody>
+          <tr><td>MaskGIT</td><td>65.24</td><td>36.29</td><td>21.21</td><td>15.17</td><td>12.66</td><td>11.91</td></tr>
+          <tr><td>&nbsp;&nbsp;+ TTD</td><td>62.60</td><td>32.52</td><td>19.25</td><td>14.34</td><td>12.48</td><td>12.30</td></tr>
+          <tr class="ours-row"><td>&nbsp;&nbsp;+ Domino</td><td>59.83</td><td>29.87</td><td>18.53</td><td>14.05</td><td>12.61</td><td>12.67</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <figure class="paper-figure">
+      <img src="static/images/image_samples.jpg" alt="ImageNet-256 samples of MaskGIT and MaskGIT with Domino at 3 and 4 steps" loading="lazy">
+      <figcaption><strong>ImageNet-256 at 3 and 4 steps.</strong> Uncurated samples of MaskGIT and MaskGIT with Domino under MaskGIT's sampler at a guidance weight of 3, with the same class in each column. The top row shows real images as the tokenizer reconstructs them.</figcaption>
+    </figure>
+
+    <h3 class="title is-4">Agreement within one step</h3>
+    <p>To test the failure of Figure 1 on real text, we place the subject-verb items of BLiMP in held-out text, mask both the subject and its verb, and let a model fill them in one network call. The agreement share is the joint probability of the grammatical pair relative to the ungrammatical one, so chance is 50%. MDLM stays near chance, while Domino closes about 40% of the gap to a two-call reference on WikiText-103 and LM1B and 58% on OpenWebText.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>mean agreement (%)</th><th>WikiText-103</th><th>LM1B</th><th>OpenWebText</th></tr></thead>
+        <tbody>
+          <tr><td>MDLM, one call</td><td>46.0</td><td>46.6</td><td>47.7</td></tr>
+          <tr class="ours-row"><td>Domino, one call</td><td>53.3</td><td>55.5</td><td>60.8</td></tr>
+          <tr><td>two calls (reference)</td><td>65.0</td><td>70.2</td><td>70.1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="title is-4">Cost</h3>
+    <p>The module adds 4.5M parameters to a denoiser of 170M and trains in 1.3 H100 hours, about 6% of the training time of MDLM. Its sequential transitions add 58% to the sampling time of MDLM at 4 NFEs and 6% at 32 NFEs, where the denoiser passes dominate.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>WikiText-103</th><th>trainable parameters</th><th>training (H100 hours)</th><th>sampling at 4 NFEs (ms)</th><th>sampling at 32 NFEs (ms)</th></tr></thead>
+        <tbody>
+          <tr><td>MDLM</td><td>170.2M</td><td>22.5</td><td>2.0</td><td>15.9</td></tr>
+          <tr><td>MDLM + TTD</td><td>3.5M</td><td>5.3</td><td>12.5</td><td>83.5</td></tr>
+          <tr class="ours-row"><td>MDLM + Domino</td><td>4.5M</td><td>1.3</td><td>3.2</td><td>17.0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Sampling time per sequence at a batch of 32 on one H100.</p>
+  </div>
+</section>
+
+<!-- ================================================================== example generations -->
+<section class="section is-light" id="examples">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Example generations</h2>
+    <p>We draw pairs of samples from MDLM and from MDLM with Domino under the same reveal schedule, so the two differ only in how the tokens of each step are drawn. A token is shown in <span style="color: var(--red);">red</span> when GPT-2 Large finds it more surprising than nine in ten tokens of held-out text from the same corpus.</p>
+    <h3 class="title is-4">One sample through its four steps</h3>
+    <div class="traj">
+      <div class="traj-controls">
+        <label for="trajSlider" class="traj-label" id="trajLabel">after step 4 of 4, 128 of 128 positions revealed</label>
+        <input type="range" id="trajSlider" min="1" max="4" step="1" value="4" aria-label="Denoising step">
+      </div>
+      <div class="traj-ticks" aria-hidden="true"><span></span><span>drag to replay the four steps</span></div>
+      <div class="sample-grid traj-step" data-step="1">
+        <div class="sample-card mdlm"><div class="card-title"><span>MDLM</span><span>32 of 128 positions revealed</span></div><div class="sample-text"><span class="msk"></span>y ep <span class="msk"></span><span class="msk"></span><span class="msk"></span> <span class="msk"></span> have <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="bad">&para;</span> <span class="msk"></span> &para; . <span class="bad">saying</span> <span class="msk"></span> victim <span class="msk"></span> <span class="msk"></span> <span class="msk"></span>x <span class="msk"></span> i <span class="bad">bangladesh</span> $ <span class="msk"></span><span class="msk"></span> <span class="msk"></span> dead <span class="bad">particularly</span> as <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="bad">assembled</span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> of <span class="msk"></span> <span class="msk"></span> carrying all <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> of <span class="msk"></span> <span class="msk"></span><span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span><span class="msk"></span> <span class="bad">professor</span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span><span class="msk"></span><span class="msk"></span> <span class="msk"></span> . <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> . . <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> party <span class="msk"></span> <span class="msk"></span> <span class="msk"></span><span class="msk"></span><span class="msk"></span><span class="msk"></span> <span class="msk"></span><span class="bad">we</span> <span class="bad">ape</span><span class="bad">gle</span><span class="msk"></span> <span class="msk"></span> <span class="msk"></span><span class="bad">en</span><span class="msk"></span> <span class="msk"></span> between <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> uk <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> through <span class="msk"></span> <span class="msk"></span> <span class="msk"></span></div></div>
+        <div class="sample-card domino"><div class="card-title"><span>MDLM + Domino</span><span>32 of 128 positions revealed</span></div><div class="sample-text"><span class="msk"></span> in the <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> who <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span><span class="bad">ed</span> <span class="msk"></span> <span class="bad">televised</span> hearing <span class="bad">formally</span> <span class="msk"></span> world <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> and <span class="msk"></span> out his <span class="bad">currently</span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> the troubles . <span class="msk"></span><span class="msk"></span> <span class="msk"></span> <span class="msk"></span> professor <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> on <span class="msk"></span> <span class="msk"></span> been said <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> - <span class="msk"></span><span class="msk"></span> <span class="msk"></span> <span class="msk"></span><span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="bad">sen</span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> , <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> to have <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> said <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> cutting costs and <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> capacity <span class="msk"></span> <span class="msk"></span> against <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="bad">&para;</span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> from <span class="msk"></span> <span class="msk"></span> <span class="msk"></span></div></div>
+      </div>
+      <div class="sample-grid traj-step" data-step="2">
+        <div class="sample-card mdlm"><div class="card-title"><span>MDLM</span><span>64 of 128 positions revealed</span></div><div class="sample-text">py ep <span class="msk"></span><span class="msk"></span><span class="msk"></span> <span class="bad">technology</span> have <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> end years <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="bad">&para;</span> <span class="msk"></span> &para; . <span class="bad">saying</span> <span class="msk"></span> victim of <span class="msk"></span> <span class="bad">n</span>x ' i <span class="bad">bangladesh</span> $ <span class="msk"></span><span class="msk"></span> <span class="msk"></span> dead <span class="bad">particularly</span> as <span class="msk"></span> are <span class="bad">au</span> <span class="msk"></span> <span class="bad">assembled</span> as <span class="msk"></span> underground <span class="msk"></span> of <span class="msk"></span> are carrying all <span class="msk"></span> square <span class="msk"></span> of <span class="msk"></span> <span class="msk"></span><span class="msk"></span> county <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> nm<span class="msk"></span> <span class="bad">professor</span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> happened <span class="msk"></span><span class="bad">shi</span><span class="msk"></span> <span class="msk"></span> . <span class="msk"></span> how , <span class="msk"></span> <span class="msk"></span> type <span class="msk"></span> <span class="msk"></span> youth . . <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> for <span class="msk"></span> the tea party <span class="msk"></span> <span class="bad">sinn</span> great<span class="bad">rip</span><span class="msk"></span><span class="msk"></span> <span class="msk"></span><span class="bad">we</span> <span class="bad">ape</span><span class="bad">gle</span><span class="msk"></span> <span class="msk"></span> <span class="msk"></span><span class="bad">en</span><span class="msk"></span> <span class="msk"></span> between <span class="bad">rules</span> <span class="msk"></span> <span class="msk"></span> uk <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> to <span class="msk"></span> <span class="msk"></span> sri <span class="msk"></span> through <span class="msk"></span> heads <span class="bad">&para;</span></div></div>
+        <div class="sample-card domino"><div class="card-title"><span>MDLM + Domino</span><span>64 of 128 positions revealed</span></div><div class="sample-text">&para; in the <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> , who <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> questioning , <span class="msk"></span> <span class="msk"></span> <span class="msk"></span><span class="bad">ed</span> <span class="msk"></span> <span class="bad">televised</span> hearing <span class="bad">formally</span> <span class="msk"></span> world trade <span class="msk"></span> easiest and <span class="bad">seeking</span> out his <span class="bad">currently</span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> the troubles . <span class="msk"></span>cini , <span class="msk"></span> professor of <span class="msk"></span> <span class="bad">person</span> <span class="msk"></span> on <span class="msk"></span> have been said <span class="msk"></span> many <span class="msk"></span> - <span class="msk"></span><span class="msk"></span> <span class="msk"></span> hind<span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> are <span class="msk"></span> <span class="bad">sen</span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> the <span class="msk"></span> - <span class="msk"></span> <span class="msk"></span> , <span class="msk"></span> he is <span class="msk"></span> <span class="msk"></span> that <span class="msk"></span> <span class="msk"></span> appear to have <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> . <span class="msk"></span> . cheney said <span class="msk"></span> - working with <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> cutting costs and <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> capacity <span class="msk"></span> <span class="msk"></span> against <span class="bad">mounting</span> <span class="msk"></span> <span class="msk"></span> <span class="bad">&para;</span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> flood <span class="msk"></span> <span class="msk"></span> country <span class="msk"></span> from <span class="msk"></span> , marc</div></div>
+      </div>
+      <div class="sample-grid traj-step" data-step="3">
+        <div class="sample-card mdlm"><div class="card-title"><span>MDLM</span><span>96 of 128 positions revealed</span></div><div class="sample-text">py ep <span class="msk"></span><span class="msk"></span><span class="msk"></span> <span class="bad">technology</span> have <span class="msk"></span> thailand <span class="msk"></span> end years of <span class="msk"></span> . <span class="bad">&para;</span> . &para; . <span class="bad">saying</span> the victim of . <span class="bad">n</span>x ' i <span class="bad">bangladesh</span> $ 10<span class="msk"></span> <span class="msk"></span> dead <span class="bad">particularly</span> as <span class="bad">sticks</span> are <span class="bad">au</span> <span class="msk"></span> <span class="bad">assembled</span> as an underground <span class="msk"></span> of <span class="msk"></span> are carrying all 75 square <span class="msk"></span> of a <span class="bad">across</span><span class="msk"></span> county of <span class="bad">memorial</span> <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> nmc <span class="bad">professor</span> who <span class="msk"></span> <span class="msk"></span> happened 65<span class="bad">shi</span><span class="msk"></span> <span class="msk"></span> . . how , <span class="bad">consider</span> new type of chinese youth . . is <span class="msk"></span> <span class="msk"></span> for <span class="msk"></span> the tea party <span class="msk"></span> <span class="bad">sinn</span> great<span class="bad">rip</span>s<span class="bad">put</span> <span class="msk"></span><span class="bad">we</span> <span class="bad">ape</span><span class="bad">gle</span>e <span class="msk"></span> <span class="msk"></span><span class="bad">en</span>uous <span class="msk"></span> between <span class="bad">rules</span> <span class="msk"></span> <span class="msk"></span> uk society are <span class="msk"></span> to cope <span class="msk"></span> sri lanka through parallel heads <span class="bad">&para;</span></div></div>
+        <div class="sample-card domino"><div class="card-title"><span>MDLM + Domino</span><span>96 of 128 positions revealed</span></div><div class="sample-text">&para; in the <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> , who <span class="msk"></span> behind <span class="msk"></span> questioning , was <span class="msk"></span> <span class="bad">brief</span><span class="bad">ed</span> , <span class="bad">televised</span> hearing <span class="bad">formally</span> calling world trade the easiest and <span class="bad">seeking</span> out his <span class="bad">currently</span> struggling <span class="msk"></span> <span class="msk"></span> the troubles . <span class="bad">man</span>cini , <span class="msk"></span> professor of economics <span class="bad">person</span> <span class="msk"></span> on <span class="msk"></span> have been said that many <span class="msk"></span> - -<span class="bad">ane</span> <span class="msk"></span> hindsight by <span class="msk"></span> <span class="msk"></span> <span class="msk"></span> are being <span class="bad">sen</span> . <span class="msk"></span> <span class="msk"></span> the post - <span class="msk"></span> <span class="msk"></span> , and he is <span class="bad">letter</span> adding that other proposals appear to have turned <span class="msk"></span> <span class="msk"></span> . <span class="msk"></span> . cheney said <span class="msk"></span> - working with them to <span class="msk"></span> cutting costs and increasing <span class="msk"></span> <span class="msk"></span> capacity for <span class="msk"></span> against <span class="bad">mounting</span> <span class="msk"></span> <span class="msk"></span> <span class="bad">&para;</span> <span class="bad">halt</span> a <span class="msk"></span> flood in <span class="msk"></span> country away from home , marc</div></div>
+      </div>
+      <div class="sample-grid traj-step is-active" data-step="4">
+        <div class="sample-card mdlm"><div class="card-title"><span>MDLM</span><span>gen-PPL 1080, entropy 4.49, 32 in red</span></div><div class="sample-text">py ep ,<span class="bad">mal</span>m <span class="bad">technology</span> have <span class="bad">shocked</span> thailand to end years of war . <span class="bad">&para;</span> . &para; . <span class="bad">saying</span> the victim of . <span class="bad">n</span>x ' i <span class="bad">bangladesh</span> $ 10rta <span class="bad">hence</span> dead <span class="bad">particularly</span> as <span class="bad">sticks</span> are <span class="bad">au</span> <span class="bad">remains</span> <span class="bad">assembled</span> as an underground group of people are carrying all 75 square miles of a <span class="bad">across</span><span class="bad">la</span> county of <span class="bad">memorial</span> cemetery a this nmc <span class="bad">professor</span> who said s happened 65<span class="bad">shi</span>c . . . how , <span class="bad">consider</span> new type of chinese youth . . is just <span class="bad">recipe</span> for <span class="bad">filling</span> the tea party that <span class="bad">sinn</span> great<span class="bad">rip</span>s<span class="bad">put</span> pan<span class="bad">we</span> <span class="bad">ape</span><span class="bad">gle</span>e down <span class="bad">ing</span><span class="bad">en</span>uous <span class="bad">differences</span> between <span class="bad">rules</span> that and uk society are used to cope with sri lanka through parallel heads <span class="bad">&para;</span></div></div>
+        <div class="sample-card domino"><div class="card-title"><span>MDLM + Domino</span><span>gen-PPL 341, entropy 4.33, 22 in red</span></div><div class="sample-text">&para; in the end , <span class="bad">obama</span> , who was behind <span class="bad">creative</span> questioning , was a <span class="bad">brief</span><span class="bad">ed</span> , <span class="bad">televised</span> hearing <span class="bad">formally</span> calling world trade the easiest and <span class="bad">seeking</span> out his <span class="bad">currently</span> struggling country from the troubles . <span class="bad">man</span>cini , the professor of economics <span class="bad">person</span> <span class="bad">thoughts</span> on what have been said that many ideas - -<span class="bad">ane</span> with hindsight by <span class="bad">philosophy</span> - - are being <span class="bad">sen</span> . obama during the post - war era , and he is <span class="bad">letter</span> adding that other proposals appear to have turned to <span class="bad">ms</span> . mr . cheney said - - working with them to include cutting costs and increasing the <span class="bad">seating</span> capacity for <span class="bad">responding</span> against <span class="bad">mounting</span> economic <span class="bad">hunger</span> <span class="bad">&para;</span> <span class="bad">halt</span> a housing flood in a country away from home , marc</div></div>
+      </div>
+      <p class="legend-note">LM1B at 4 NFEs. Gray squares are positions that are not yet revealed.</p>
+    </div>
+    <div class="samples-head">
+      <h3 class="title is-4" style="margin: 0;">Paired samples</h3>
+      <div class="tabs-mini" data-tabs="pairs">
+        <button class="tab-btn is-active" data-tab="p0">WikiText-103, 4 NFEs</button>
+        <button class="tab-btn" data-tab="p1">OpenWebText, 4 NFEs</button>
+        <button class="tab-btn" data-tab="p2">WikiText-103, 1 NFE</button>
+        <button class="tab-btn" data-tab="p3">OpenWebText, 1 NFE</button>
+      </div>
+    </div>
+    <div class="sample-grid" data-tab-pane="pairs" data-tab="p0">
+      <div class="sample-card mdlm"><div class="card-title"><span>MDLM</span><span>gen-PPL 2322, entropy 4.54, 53 in red</span></div><div class="sample-text">&para; <span class="bad">23</span>; <span class="bad">tied</span> <span class="bad">Zero</span> <span class="bad">missing</span> Zero <span class="bad">budget</span>ing was <span class="bad">represented</span> by <span class="bad">notorious</span><span class="bad">Not</span>ch <span class="bad">Professor</span> <span class="bad">Beijing</span> 7's- a<span class="bad">foot</span> <span class="bad">Bowie</span> (as an <span class="bad">Allied</span> <span class="bad">viruses</span> (<span class="bad">ction</span> <span class="bad">Pokémon</span>, <span class="bad">Bill</span> Zue <span class="bad">member</span>, in) representative ), 8<span class="bad">45</span> <span class="bad">dark</span> <span class="bad">privileges</span> &amp; <span class="bad">locks</span> (<span class="bad">FBI</span>), L6, the <span class="bad">urban</span> sewer, <span class="bad">approximately</span> <span class="bad">k</span><span class="bad">azel</span><span class="bad">aj</span>r, an angel infested, Dr <span class="bad">investigator</span> Jeff Goldblum, the <span class="bad">petrol</span> <span class="bad">payment</span> <span class="bad">13</span>59<span class="bad">650</span> to the <span class="bad">cruiser</span> <span class="bad">Acad</span>ia <span class="bad">Cart</span>oons for 18 <span class="bad">Nixon</span>'s and<span class="bad">danger</span>ous medical <span class="bad">exclusive</span> <span class="bad">Ichigo</span> with the <span class="bad">tap</span> into a school <span class="bad">occ</span><span class="bad">cal</span>ation <span class="bad">pipe</span> from the Orient Express, and a tattooed <span class="bad">business</span><span class="bad">man</span> and hacker <span class="bad">TOP</span><span class="bad">402</span> <span class="bad">En</span><span class="bad">acting</span> <span class="bad">Sydney</span> <span class="bad">Kov</span> <span class="bad">&para;</span></div></div>
+      <div class="sample-card domino"><div class="card-title"><span>MDLM + Domino</span><span>gen-PPL 436, entropy 4.45, 23 in red</span></div><div class="sample-text">&para; <span class="bad">by</span> the New York <span class="bad">Aviation</span>, which they had earlier called to a <span class="bad">Marina</span> 3, Tower <span class="bad">Pier</span> &para; <span class="bad">Wayne</span> <span class="bad">Ye</span><span class="bad">oke</span> <span class="bad">presided</span> as a passenger when the Queen was <span class="bad">departing</span> <span class="bad">without</span> <span class="bad">boat</span>. After the match, <span class="bad">Ben</span> <span class="bad">Ver</span>de's and his partner <span class="bad">Franco</span> Nespor <span class="bad">their</span> final decision <span class="bad">selecting</span> an ideal player for the New <span class="bad">Indies</span>. Pott scored his highest Test century, with 19.67, and <span class="bad">remarked</span> that &rdquo;I are being red-staged together the next morning. Our tour being really easy because the world has put our <span class="bad">technical</span> information on the players.&rdquo; After an ODI A Test <span class="bad">cancelled</span> <span class="bad">innings</span> started, the resulting international defeats coming during <span class="bad">1983</span>. P <span class="bad">&para;</span></div></div>
+    </div>
+    <div class="sample-grid" data-tab-pane="pairs" data-tab="p1" style="display: none;">
+      <div class="sample-card mdlm"><div class="card-title"><span>MDLM</span><span>gen-PPL 1810, first 128 of 1024 tokens</span></div><div class="sample-text">&para; <span class="bad">a</span> <span class="bad">their</span> <span class="bad">home</span>defines <span class="bad">book</span> a, <span class="bad">bond</span> to <span class="bad">for</span> you <span class="bad">good</span> <span class="bad">women</span> <span class="bad">c</span><span class="bad">uties</span> <span class="bad">n</span><span class="bad">other</span> <span class="bad">baby</span>. <span class="bad">eating</span><span class="bad">mm</span> <span class="bad">imaging</span> or <span class="bad">son</span>'s <span class="bad">lunch</span><span class="bad">&rdquo;</span>a <span class="bad">human</span><span class="bad">to</span> <span class="bad">forced</span> some <span class="bad">sn</span> <span class="bad">is</span> <span class="bad">known</span> as:<span class="bad">dem</span><span class="bad">erg</span><span class="bad">boot</span> or:<span class="bad">etic</span><span class="bad">olitics</span> of <span class="bad">activists</span>. The <span class="bad">cycle</span> ends because you <span class="bad">permanently</span> <span class="bad">dim</span> <span class="bad">room</span> to meet the demands<span class="bad">-</span> the <span class="bad">kin</span> are <span class="bad">conform</span> to<span class="bad">gn</span><span class="bad">root</span> <span class="bad">pass</span><span class="bad">shirts</span>.<span class="bad">'</span>The <span class="bad">friends</span> said he <span class="bad">want</span> him <span class="bad">through</span> <span class="bad">record</span> in <span class="bad">getting</span> over.The <span class="bad">the</span> <span class="bad">stand</span>-<span class="bad">1</span> a high of <span class="bad">39</span> and<span class="bad">'</span><span class="bad">William</span> did <span class="bad">music</span><span class="bad">!</span> <span class="bad">pressure</span>. It<span class="bad">'</span>s <span class="bad">41</span>% but the <span class="bad">quickest</span> <span class="bad">comes</span> <span class="bad">despite</span> <span class="bad">Of</span> late to the <span class="bad">Son</span> <span class="bad">JavaScript</span> <span class="bad">hit</span> <span class="bad">&rdquo;</span><span class="bad">Sk</span>irt<span class="bad">aking</span> <span class="bad">expert</span> <span class="bad">J</span><span class="bad">un</span><span class="bad">co</span><span class="bad">ows</span> &hellip;</div></div>
+      <div class="sample-card domino"><div class="card-title"><span>MDLM + Domino</span><span>gen-PPL 541, first 128 of 1024 tokens</span></div><div class="sample-text">&para; <span class="bad">this</span> <span class="bad">issue</span>How <span class="bad">our</span> <span class="bad">article</span> was <span class="bad">missing</span> that <span class="bad">every</span> <span class="bad">prom</span><span class="bad">í</span><span class="bad">&#92;</span><span class="bad">ring</span> <span class="bad">reference</span>, I would <span class="bad">treat</span> a <span class="bad">lack</span> of <span class="bad">trem</span>ors and <span class="bad">tone</span> lossIn terms <span class="bad">that</span> makes sense<span class="bad">Find</span> your <span class="bad">European</span> <span class="bad">Ros</span>er to <span class="bad">you</span> and <span class="bad">recruit</span> that is a <span class="bad">niche</span> product by <span class="bad">i</span>H<span class="bad">appiness</span><span class="bad">?,</span> <span class="bad">prescription</span> <span class="bad">Drug</span><span class="bad">Le</span>aving the <span class="bad">high</span> price of <span class="bad">FC</span> <span class="bad">4</span> <span class="bad">PM</span> in his <span class="bad">blood</span> <span class="bad">your</span> sidekick <span class="bad">tackles</span> <span class="bad">have</span> been all <span class="bad">through</span> the <span class="bad">regular</span> season. <span class="bad">-</span> <span class="bad">his</span> <span class="bad">Xavier</span><span class="bad">B</span><span class="bad">AN</span><span class="bad">IFA</span><span class="bad">PA</span> - <span class="bad">K</span>OM<span class="bad">'</span>s <span class="bad">story</span> <span class="bad">ranked</span> <span class="bad">Views</span><span class="bad">[</span><span class="bad">From</span>: <span class="bad">Mes</span><span class="bad">ric</span> <span class="bad">Bal</span><span class="bad">fort</span>]<span class="bad">Rest</span>ore <span class="bad">battery</span> <span class="bad">packs</span> - <span class="bad">Second</span> game <span class="bad">Baltimore</span> <span class="bad">Is</span>k<span class="bad">orea</span> <span class="bad">Twitter</span> User<span class="bad">&gt;</span>The <span class="bad">teams</span> <span class="bad">celebrities</span> and fans at <span class="bad">get</span> <span class="bad">special</span> <span class="bad">soccer</span> field <span class="bad">service</span> in one <span class="bad">mid</span> &hellip;</div></div>
+    </div>
+    <div class="sample-grid" data-tab-pane="pairs" data-tab="p2" style="display: none;">
+      <div class="sample-card mdlm"><div class="card-title"><span>MDLM</span><span>gen-PPL 9115, entropy 4.54, 67 in red</span></div><div class="sample-text">by 23;.<span class="bad">et</span> <span class="bad">It</span> <span class="bad">&para;</span> <span class="bad">budget</span> <span class="bad">Line</span> was, a <span class="bad">through</span><span class="bad">This</span> <span class="bad">arrives</span> <span class="bad">compulsory</span> <span class="bad">Beijing</span> <span class="bad">ought</span>'s- a, <span class="bad">Bowie</span> <span class="bad">25</span>'s <span class="bad">become</span> <span class="bad">Allied</span> into (<span class="bad">ction</span> <span class="bad">Pokémon</span> it was <span class="bad">==</span><span class="bad">ue</span> <span class="bad">member</span>, not <span class="bad">nose</span> <span class="bad">song</span> all 8's <span class="bad">groups</span>, the <span class="bad">locks</span> <span class="bad">reason</span> <span class="bad">satisfied</span>), L <span class="bad">major</span>. <span class="bad">Simpsons</span> <span class="bad">urban</span> be <span class="bad">which</span> other <span class="bad">furious</span> the with <span class="bad">against</span>, <span class="bad">mud</span> on G<span class="bad">ested</span> the when two he <span class="bad">pop</span> the in &para; <span class="bad">the</span><span class="bad">)</span> that <span class="bad">hits</span> <span class="bad">2015</span><span class="bad">isk</span> <span class="bad">guns</span>.&rdquo;<span class="bad">ia</span> <span class="bad">Cart</span><span class="bad">anic</span> <span class="bad">causing</span> <span class="bad">rest</span> <span class="bad">John</span> <span class="bad">scenes</span> of <span class="bad">also</span><span class="bad">ous</span> <span class="bad">Congress</span> <span class="bad">Tal</span> <span class="bad">public</span> <span class="bad">responsible</span> were <span class="bad">constraints</span><span class="bad">bach</span> a school <span class="bad">occ</span> than they<span class="bad">wood</span> from non<span class="bad">560</span> <span class="bad">Express</span> <span class="bad">inside</span><span class="bad">Pl</span>: <span class="bad">tattoo</span> was <span class="bad">plan</span> a <span class="bad">bur</span> he I new his<span class="bad">acting</span>, <span class="bad">included</span> &para;</div></div>
+      <div class="sample-card domino"><div class="card-title"><span>MDLM + Domino</span><span>gen-PPL 3324, entropy 4.43, 59 in red</span></div><div class="sample-text">by the second, <span class="bad">Pier</span> <span class="bad">&para;</span> <span class="bad">Wayne</span> <span class="bad">Sa</span>ik <span class="bad">the</span> Queen was also <span class="bad">resulted</span> in his own <span class="bad">depth</span> <span class="bad">their</span> presence of the first world <span class="bad">really</span> <span class="bad">technical</span> information on <span class="bad">After</span> <span class="bad">starting</span> <span class="bad">innings</span> <span class="bad">1983</span>, <span class="bad">parallel</span> <span class="bad">called</span> &rdquo;<span class="bad">Stars</span> All the <span class="bad">California</span> area by his command <span class="bad">self</span>-<span class="bad">23</span> - 14, <span class="bad">allowed</span> being the <span class="bad">90</span> &para; <span class="bad">&para;</span> <span class="bad">=</span><span class="bad">202</span> months <span class="bad">resulting</span> <span class="bad">line</span> at number of a <span class="bad">lion</span>'s <span class="bad">adj</span><span class="bad">ibia</span>, a <span class="bad">hub</span> <span class="bad">deposits</span> of <span class="bad">Core</span><span class="bad">ev</span> <span class="bad">increasingly</span> <span class="bad">hostile</span> <span class="bad">monopoly</span><span class="bad">able</span> or <span class="bad">Sk</span>and<span class="bad">ics</span> <span class="bad">===</span> <span class="bad">&para;</span> <span class="bad">debut</span>. <span class="bad">&para;</span> <span class="bad">In</span> his book <span class="bad">was</span> unable to <span class="bad">their</span> degree during the <span class="bad">turf</span> <span class="bad">grows</span> at <span class="bad">record</span> in the city and Ge<span class="bad">vol</span><span class="bad">sis</span> is located in <span class="bad">2001</span> to her brother <span class="bad">Weeks</span><span class="bad">'</span><span class="bad">d</span> <span class="bad">==</span> &para; <span class="bad">The</span> <span class="bad">RPGs</span></div></div>
+    </div>
+    <div class="sample-grid" data-tab-pane="pairs" data-tab="p3" style="display: none;">
+      <div class="sample-card mdlm"><div class="card-title"><span>MDLM</span><span>gen-PPL 4056, first 128 of 1024 tokens</span></div><div class="sample-text">the<span class="bad">ue</span> <span class="bad">one</span>, <span class="bad">may</span> the <span class="bad">reported</span>, <span class="bad">don</span> <span class="bad">for</span> <span class="bad">based</span> <span class="bad">Labor</span> of <span class="bad">job</span><span class="bad">IS</span> <span class="bad">brought</span><span class="bad">On</span><span class="bad">You</span><span class="bad">'</span> <span class="bad">like</span><span class="bad">'t</span> <span class="bad">if</span> <span class="bad">Thrones</span> <span class="bad">V</span> <span class="bad">as</span> <span class="bad">because</span><span class="bad">-</span> <span class="bad">This</span> <span class="bad">Bowl</span> <span class="bad">an</span>'<span class="bad">After</span><span class="bad">167</span> <span class="bad">rink</span> <span class="bad">ultimately</span> <span class="bad">main</span>, of <span class="bad">at</span> <span class="bad">Ltd</span> <span class="bad">market</span> <span class="bad">felt</span>, <span class="bad">sensit</span> <span class="bad">its</span><span class="bad">cow</span> <span class="bad">Computer</span> and<span class="bad">s</span> <span class="bad">Football</span> <span class="bad">Russian</span> <span class="bad">could</span> <span class="bad">direct</span> <span class="bad">Subscribe</span><span class="bad">acc</span> <span class="bad">live</span> at and<span class="bad">'t</span>,<span class="bad">uru</span> <span class="bad">explain</span>S. <span class="bad">seem</span> the <span class="bad">labour</span> the <span class="bad">eurozone</span><span class="bad">onde</span> <span class="bad">word</span> <span class="bad">normally</span> <span class="bad">Lucifer</span> <span class="bad">South</span> <span class="bad">basically</span> <span class="bad">my</span> <span class="bad">cervical</span> in <span class="bad">war</span>'an, <span class="bad">cheerful</span> <span class="bad">14</span> <span class="bad">pret</span><span class="bad">OU</span><span class="bad">ot</span> not <span class="bad">then</span> <span class="bad">has</span> <span class="bad">declined</span><span class="bad">t</span> <span class="bad">overall</span> <span class="bad">shown</span> <span class="bad">like</span> that <span class="bad">prison</span> a <span class="bad">couple</span>' the, <span class="bad">good</span> <span class="bad">at</span> so she <span class="bad">argument</span> <span class="bad">front</span> <span class="bad">there</span> she<span class="bad">uts</span> is the. the for <span class="bad">clashes</span> <span class="bad">crap</span><span class="bad">mm</span>, the<span class="bad">bell</span> <span class="bad">Volume</span> <span class="bad">very</span> ' <span class="bad">Ferguson</span> <span class="bad">social</span> <span class="bad">Netherlands</span> &hellip;</div></div>
+      <div class="sample-card domino"><div class="card-title"><span>MDLM + Domino</span><span>gen-PPL 1119, first 128 of 1024 tokens</span></div><div class="sample-text">a <span class="bad">people</span> and a <span class="bad">p</span><span class="bad">ons</span>s <span class="bad">a</span> <span class="bad">compliment</span>ed e<span class="bad">'</span><span class="bad">I</span> <span class="bad">hadn</span> <span class="bad">had</span> been<span class="bad">min</span><span class="bad">id</span><span class="bad">|</span><span class="bad">AL</span><span class="bad">ITY</span>,<span class="bad">'</span>s <span class="bad">known</span> as <span class="bad">simply</span> <span class="bad">characterized</span> by the <span class="bad">character</span> in <span class="bad">2010</span>.<span class="bad">Using</span> their <span class="bad">left</span> <span class="bad">it</span> not <span class="bad">evidence</span> that they're from a <span class="bad">comprehensive</span> <span class="bad">story</span><span class="bad">include</span> <span class="bad">http</span>://www. <span class="bad">A</span><span class="bad">TS</span> <span class="bad">in</span> the <span class="bad">Red</span>, the <span class="bad">international</span> <span class="bad">government</span> <span class="bad">was</span> that <span class="bad">single</span> <span class="bad">table</span> and <span class="bad">foreign</span> <span class="bad">province</span> <span class="bad">towards</span> <span class="bad">minorities</span>, <span class="bad">gloss</span><span class="bad">ate</span>, where you choose you <span class="bad">couldn</span>'t <span class="bad">had</span> <span class="bad">decided</span> to the <span class="bad">May</span> 21, <span class="bad">on</span> <span class="bad">serious</span> time and <span class="bad">AFP</span>/<span class="bad">list</span><span class="bad">ended</span> <span class="bad">veteran</span> <span class="bad">look</span> about why you <span class="bad">love</span> to make these <span class="bad">large</span> as a <span class="bad">no</span> not having <span class="bad">compared</span> <span class="bad">designer</span> <span class="bad">B</span><span class="bad">IG</span><span class="bad">'</span>s, there are <span class="bad">aligned</span> with <span class="bad">subtly</span> of a <span class="bad">year</span>.<span class="bad">And</span> according &hellip;</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== bibtex -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <div class="bibtex-header">
+      <h2 class="title">BibTeX</h2>
+      <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard"><i class="fas fa-copy"></i> <span class="copy-text">Copy</span></button>
+    </div>
+    <!-- PLACEHOLDER: add the arXiv identifier, e.g. journal = {arXiv preprint arXiv:2610.xxxxx} -->
+    <pre id="bibtex-code" class="no-math"><code>@article{ahmed2026domino,
+  title   = {Domino: Joint Unmasking via First-order Markov Chain for Few-Step Masked Diffusion},
+  author  = {Ahmed, Mansoor and Chebbah, Lilia and Dinh, Jenny and Patterson, Murray and Venkateswara, Hemanth},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</code></pre>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>Domino &middot; Georgia State University &middot; Georgia Institute of Technology<br>The animations are rendered from the TikZ sources of the paper's figures.<br>Template from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener noreferrer">Academic Project Page</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChiMERa-Bench: A Benchmark Dataset for Epitope-Specific Antibody Design</title>
+  <meta name="description" content="ChiMERa-Bench is a benchmark for epitope-conditioned CDR sequence-structure co-design: 2,922 curated antibody-antigen complexes, three biologically motivated splits, five metric groups including epitope specificity, and eleven retrained generative baselines.">
+  <meta name="keywords" content="antibody design, CDR-H3, epitope, benchmark, generative models, diffusion, flow matching, equivariant GNN, SAbDab">
+  <meta name="author" content="Mansoor Ahmed, Nadeem Taj, Imdad Ullah Khan, Hemanth Venkateswara, Murray Patterson">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ChiMERa-Bench: A Benchmark Dataset for Epitope-Specific Antibody Design">
+  <meta property="og:description" content="A unified benchmark for epitope-conditioned antibody CDR co-design, with 2,922 complexes, three generalization splits and eleven retrained baselines.">
+  <!-- the absolute urls assume the page is served at https://mansoor181.github.io/chimera-bench/ ; change them if the folder name differs -->
+  <link rel="canonical" href="https://mansoor181.github.io/chimera-bench/">
+  <meta property="og:url" content="https://mansoor181.github.io/chimera-bench/">
+  <meta property="og:image" content="https://mansoor181.github.io/chimera-bench/static/images/scene.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], ignoredClasses: ['no-math'], throwOnError: false});"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/scene-data.js"></script>
+  <script defer src="static/js/scene.js"></script>
+  <script defer src="static/js/index.js"></script>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProg"></div>
+<button class="scroll-to-top" title="Back to top" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+<main>
+<!-- ================================================================== title, authors, links -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title hero-fade hero-fade-1">ChiMERa-Bench</h1>
+          <h2 class="subtitle is-4 publication-subtitle hero-fade hero-fade-1">A Benchmark Dataset for Epitope-Specific Antibody Design</h2>
+          <div class="is-size-5 publication-authors hero-fade hero-fade-2">
+            <span class="author-block"><a href="https://mansoor181.github.io/" title="Mansoor Ahmed's website" target="_blank" rel="noopener">Mansoor Ahmed</a><sup>1,2,*</sup>,</span>
+            <!-- PLACEHOLDER: add homepage links for the co-authors below -->
+            <span class="author-block">Nadeem Taj<sup>3</sup>,</span>
+            <span class="author-block">Imdad Ullah Khan<sup>4,5</sup>,</span>
+            <span class="author-block">Hemanth Venkateswara<sup>1</sup>,</span>
+            <span class="author-block">Murray Patterson<sup>1,*</sup></span>
+          </div>
+          <div class="affiliations hero-fade hero-fade-3">
+            <span class="author-block"><sup>1</sup>Georgia State University</span>
+            <span class="author-block"><sup>2</sup>Georgia Institute of Technology</span>
+            <span class="author-block"><sup>3</sup>University of Engineering and Technology, Lahore</span>
+            <span class="author-block"><sup>4</sup>Islamic University of Madinah</span>
+            <span class="author-block"><sup>5</sup>Lahore University of Management Sciences</span>
+          </div>
+          <p class="author-note hero-fade hero-fade-3"><sup>*</sup>Corresponding authors</p>
+          <p class="author-note hero-fade hero-fade-3"><strong>Transactions on Machine Learning Research</strong>, 2026</p>
+          <div class="publication-links hero-fade hero-fade-4">
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://openreview.net/forum?id=3m8uaq7luq" target="_blank" rel="noopener noreferrer" title="The paper on OpenReview"><span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://arxiv.org/abs/2603.13431" target="_blank" rel="noopener noreferrer" title="The preprint on arXiv"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://github.com/mansoor181/chimera-bench" target="_blank" rel="noopener noreferrer" title="The code on GitHub"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://huggingface.co/datasets/mansoorbaloch/chimera-bench" target="_blank" rel="noopener noreferrer" title="The dataset on Hugging Face"><span class="icon"><i class="fas fa-database"></i></span><span>Dataset</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="#BibTeX" title="Jump to the BibTeX citation"><span class="icon"><i class="fas fa-quote-left"></i></span><span>BibTeX</span></a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== teaser: the animated figure of how the benchmark works -->
+<section class="hero teaser">
+  <div class="container is-max-widescreen">
+    <div class="hero-body hero-fade hero-fade-5">
+      <figure class="scene-figure">
+        <div id="cb-scene" class="cb-scene" role="img" aria-label="An animated figure of the benchmark: SAbDab entries are curated and split three ways, one held-out complex is annotated with its epitope and its CDR-H3 loop, and a method designs that loop and is scored against the deposited one."></div>
+        <figcaption class="teaser-caption"><strong>How the benchmark works.</strong> We curate 20,509 SAbDab entries down to 2,922 complexes and release three splits, each withholding a different kind of structure. A held-out complex carries its antigen, the epitope at a 4.5&nbsp;&#8491; contact cutoff and the antibody framework. A method is given all of that and designs the CDR-H3 loop, which five metric groups score against the deposited one. The molecules are the coordinates of PDB 7N3C, a complex of the test partition, and the last row counts the epitope residues that a loop comes within 8&nbsp;&#8491; of, the cutoff the interface metrics use. The deposited loop reaches 8 of the 18, since the remaining epitope residues are contacted by the other CDR loops and the light chain. Click the figure to pause it.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<nav class="section-nav" aria-label="Page sections">
+  <a href="#problem">Problem</a>
+  <a href="#dataset">Dataset</a>
+  <a href="#task">Task</a>
+  <a href="#results">Results</a>
+  <a href="#structures">Structures</a>
+  <a href="#data">Get the data</a>
+  <a href="#BibTeX">BibTeX</a>
+</nav>
+
+<!-- ================================================================== tl;dr and abstract -->
+<section class="section">
+  <div class="container is-max-desktop content">
+    <div class="tldr reveal"><p><span class="tldr-label">TL;DR</span>Antibody design methods are trained on different SAbDab snapshots, tested on non-overlapping sets and scored with incompatible metrics, so their numbers cannot be compared. ChiMERa-Bench fixes the task, the data and the metrics: one canonical formulation of epitope-conditioned CDR sequence-structure co-design, 2,922 curated complexes under three generalization splits, five metric groups including new epitope-specificity measures, and eleven methods retrained under identical conditions.</p></div>
+    <details class="paper-details reveal">
+      <summary>Abstract</summary>
+      <div class="details-body">
+        <p>Computational antibody design has seen rapid methodological progress, with dozens of deep generative methods proposed in the past three years, yet the field lacks a standardized benchmark for fair comparison and model development. These methods are evaluated on different SAbDab snapshots, non-overlapping test sets, and incompatible metrics, and the literature fragments the design problem into numerous sub-tasks with no common definition. We introduce ChiMERa-Bench (<strong>C</strong>DR <strong>M</strong>odeling with <strong>E</strong>pitope-guided <strong>R</strong>edesign), a unified benchmark built around a single canonical task: <em>epitope-conditioned CDR sequence-structure co-design</em>. ChiMERa-Bench provides three components. The first is a curated, deduplicated dataset of <strong>2,922</strong> antibody-antigen complexes with epitope and paratope annotations. The second is a set of three biologically motivated stratified splits that test generalization to unseen epitopes, unseen antigen folds, and prospective temporal targets. The third is a comprehensive evaluation protocol with five metric groups, including novel epitope-specificity measures. We benchmark methods spanning six generative paradigms and report results across all splits. ChiMERa-Bench is the largest dataset of its kind for the epitope-conditioned antibody CDR co-design problem, allowing the community to develop and test novel methods and evaluate their generalizability.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== the problem -->
+<section class="section is-light" id="problem">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Nothing in this field is comparable</h2>
+    <p>Antibodies bind an antigen through six complementarity-determining regions (CDRs), and CDR-H3, the third heavy-chain loop, is the most variable of them and the primary determinant of specificity. Deep generative models have taken over this design problem, with diffusion models, flow matching, equivariant graph neural networks and autoregressive decoders all proposed within three years. Their reported numbers, however, do not compare.</p>
+    <p>Methods train on different snapshots of the Structural Antibody Database (SAbDab) under different filters, they test on non-overlapping hold-outs, and they score with metrics computed under different definitions, since contact cutoffs range from 4.5 to 6.6&nbsp;&#8491; and root mean square deviation (RMSD) is reported with or without Kabsch alignment. They also consume incompatible input formats, so a head-to-head comparison means building a separate data pipeline for every method.</p>
+    <p>Underneath the bookkeeping lies a deeper problem. The literature splits antibody design into inverse folding, structure prediction, co-design, docking, affinity optimization, de novo generation and epitope-conditioned design, and each method addresses a different subset. Two papers can therefore report the same metric and still measure different things.</p>
+    <div class="takeaway">In a therapeutic setting the target epitope is known, so we take <strong>epitope-conditioned CDR sequence-structure co-design</strong> as the canonical task. It subsumes the other formulations as special cases, and every baseline maps onto it.</div>
+  </div>
+</section>
+
+<!-- ================================================================== the dataset -->
+<section class="section" id="dataset">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">A curated dataset of 2,922 complexes</h2>
+    <p>We rebuild the dataset from SAbDab through the six stages drawn above. Quality filters keep protein and peptide antigens with paired heavy and light chains at a resolution of 4.0&nbsp;&#8491; or better, MMseqs2 clusters the concatenated variable domains at 95% sequence identity with 80% coverage and keeps the highest-resolution representative of each cluster, and validation discards complexes whose numbering, conserved residues, CDRs or backbone are incomplete. Epitope and paratope residues are annotated at a 4.5&nbsp;&#8491; heavy-atom cutoff.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="num">2,922</div><div class="cap">complexes from 2,721 PDB entries</div></div>
+      <div class="stat"><div class="num">2.72 &#8491;</div><div class="cap">median resolution</div></div>
+      <div class="stat"><div class="num">17.9</div><div class="cap">epitope residues per complex</div></div>
+      <div class="stat"><div class="num">20.5</div><div class="cap">paratope residues per complex</div></div>
+      <div class="stat"><div class="num">45.6</div><div class="cap">residue contact pairs per complex</div></div>
+    </div>
+    <p>Antigen length varies widely at $288 \pm 278$ residues, from viral surface proteins down to short peptides, while the antibody variable domains are uniform at $121 \pm 5$ (heavy) and $108 \pm 3$ (light). CDR-H3 is by far the most variable loop at $14.6 \pm 4.3$ residues with a range of 3 to 63, whereas CDR-H1 and CDR-H2 sit near 8 residues with little spread.</p>
+    <figure class="paper-figure">
+      <img src="static/images/dataset_overview_violin.png" alt="Distributions of chain lengths, interface statistics and CDR lengths across the dataset" loading="lazy">
+      <figcaption><strong>What the dataset contains.</strong> (a) Heavy, light and antigen chain lengths. (b) Interface statistics, namely epitope size, paratope size and the number of residue contacts per complex. (c) CDR lengths under IMGT numbering, where CDR-H3 shows the widest variability, consistent with its role as the primary determinant of antigen specificity.</figcaption>
+    </figure>
+
+    <h3 class="title is-4">Many antibodies, one antigen, different epitopes</h3>
+    <p>Of the 2,470 unique antigen sequences, 258 are bound at two or more distinct epitopes, and those antigens account for 710 of the 2,922 complexes. The most promiscuous antigen is targeted at 30 distinct sites. A model therefore cannot succeed by reconstructing a plausible interface. It has to reconstruct the interface at the <em>requested</em> site, which is what the epitope-group split and the epitope-specificity metrics measure.</p>
+
+    <h3 class="title is-4">Three splits, three kinds of generalization</h3>
+    <p>Every split assigns whole clusters to one partition, so no cluster spans training and test. Clusters are packed greedily into the partition with the largest remaining deficit against an 80/10/10 target.</p>
+    <div class="split-cards">
+      <div class="split-card">
+        <h4>Epitope-group</h4>
+        <p>Complexes are clustered by the three-dimensional shape of the epitope patch, through the Kabsch-aligned RMSD of its C&alpha; coordinates, so the test set holds epitope geometries never seen in training.</p>
+        <p class="counts">2,338 train &middot; 292 val &middot; 292 test</p>
+      </div>
+      <div class="split-card">
+        <h4>Antigen-fold</h4>
+        <p>Antigen chains are clustered by structural fold with Foldseek at a TM-score of 0.5 and bidirectional coverage of 50%, ignoring sequence identity, so the test set holds folds absent from training.</p>
+        <p class="counts">2,338 train &middot; 292 val &middot; 292 test</p>
+      </div>
+      <div class="split-card">
+        <h4>Temporal</h4>
+        <p>Complexes are ordered by deposition date, with the oldest in training and the most recent in test, which simulates prospective deployment on targets deposited after the training period.</p>
+        <p class="counts">2,337 train &middot; 292 val &middot; 293 test</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== task and metrics -->
+<section class="section is-light" id="task">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">One task, five metric groups</h2>
+    <p>Given an antigen structure $A$, a target epitope $E \subseteq V_A$ and an antibody framework $F$, the task is to design the CDR residues that are most probable under the model while contacting the target epitope and nothing else,</p>
+    <div class="math-box">$$R^* = \operatorname*{arg\,max}_{R} \; p_\theta\bigl(R \mid A, E, F\bigr), \quad \text{s.t.} \;\; \mathcal{C}(R, A) \cap E \neq \emptyset, \;\; \mathcal{C}(R, A) \subseteq E,$$</div>
+    <p>where each designed residue carries an amino acid type, a C&alpha; coordinate and a local frame orientation, and $\mathcal{C}(R, A)$ is the set of antigen residues that the designed CDRs contact. Inverse folding fixes the backbone, structure prediction fixes the sequence, unconditional co-design sets $E = V_A$, and docking quality is read off DockQ and interface RMSD, so the sub-tasks of the literature are special cases of this one formulation.</p>
+    <div class="task-box">
+      <div class="task-line"><b>Track 1</b><span>CDR-H3 co-design, required of every method, since CDR-H3 determines specificity.</span></div>
+      <div class="task-line"><b>Track 2</b><span>All-CDR co-design, for the methods that generate all six loops at once.</span></div>
+    </div>
+    <div class="metric-groups">
+      <div class="metric-group"><h4>Sequence quality</h4><p>Amino acid recovery (AAR), contact AAR restricted to paratope residues, and perplexity for the models that produce sequence likelihoods.</p></div>
+      <div class="metric-group"><h4>Structural quality</h4><p>C&alpha; RMSD after Kabsch alignment and TM-score, both standardized so that differing implementations no longer change the ranking.</p></div>
+      <div class="metric-group"><h4>Interface quality</h4><p>Fraction of native contacts (Fnat), interface RMSD over contact residues, and the DockQ composite score.</p></div>
+      <div class="metric-group is-new"><span class="tagline">New in this benchmark</span><h4>Epitope specificity</h4><p>Epitope precision, recall and F1, which measure whether a design contacts the site it was asked to target.</p></div>
+      <div class="metric-group"><h4>Designability</h4><p>The count of known sequence liability motifs that are associated with manufacturing problems.</p></div>
+    </div>
+    <p>Two contact definitions serve two purposes. Dataset annotations, the paratope mask and contact AAR use the strict 4.5&nbsp;&#8491; heavy-atom cutoff of the epitope annotation literature. The interface and epitope metrics instead use the 8&nbsp;&#8491; C&alpha; cutoff of CAPRI, computed symmetrically on the native and the predicted structure, which tolerates the coordinate error of generative models without rewarding atom-level clashes.</p>
+  </div>
+</section>
+
+<!-- ================================================================== results -->
+<section class="section" id="results">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Eleven methods, retrained from scratch</h2>
+    <p>We retrain eleven methods across six generative paradigms with the authors' released code, adapted for ChiMERa-Bench: equivariant graph neural networks (RAAD, MEAN, dyMEAN), diffusion models and their extensions (DiffAb, AbMEGD, RADAb, AbFlowNet), flow matching (dyAb), autoregressive generation (RefineGNN), hierarchical equivariant networks (AbDockGen) and conjoined ordinary differential equations (AbODE). All training and inference runs on one NVIDIA H100.</p>
+    <figure class="paper-figure">
+      <img src="static/images/fig6_metric_leaderboards.png" alt="CDR-H3 design performance of every method on the three test splits across eight metrics" loading="lazy">
+      <figcaption><strong>No method wins everywhere.</strong> CDR-H3 performance on the three test splits (EG: epitope-group, AF: antigen-fold, TP: temporal). The ordering under sequence recovery is not the ordering under the interface metrics, and no method takes more than four of the eight metrics on any one split.</figcaption>
+    </figure>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>Epitope-group split</th><th>AAR&uarr;</th><th>CAAR&uarr;</th><th>RMSD&darr;</th><th>Fnat&uarr;</th><th>DockQ&uarr;</th><th>EpiF1&uarr;</th></tr></thead>
+        <tbody>
+          <tr><td>RAAD</td><td class="second">0.38</td><td class="second">0.21</td><td class="best">1.95</td><td>0.49</td><td class="second">0.64</td><td class="second">0.67</td></tr>
+          <tr><td>MEAN</td><td class="best">0.42</td><td class="second">0.21</td><td class="second">2.01</td><td>0.48</td><td>0.63</td><td class="second">0.67</td></tr>
+          <tr><td>dyMEAN</td><td>0.35</td><td>0.17</td><td>2.60</td><td>0.41</td><td>0.56</td><td>0.55</td></tr>
+          <tr class="sep"><td>DiffAb</td><td>0.22</td><td>0.11</td><td>2.64</td><td>0.48</td><td>0.58</td><td>0.56</td></tr>
+          <tr><td>AbFlowNet</td><td>0.22</td><td>0.13</td><td>2.70</td><td>0.49</td><td>0.57</td><td>0.55</td></tr>
+          <tr><td>AbMEGD</td><td>0.22</td><td>0.11</td><td>2.76</td><td class="second">0.50</td><td>0.57</td><td>0.56</td></tr>
+          <tr><td>RADAb</td><td>0.22</td><td>0.09</td><td>12.28</td><td>0.47</td><td>0.57</td><td>0.57</td></tr>
+          <tr><td>dyAb</td><td>0.27</td><td>0.12</td><td>3.31</td><td>0.35</td><td>0.54</td><td>0.50</td></tr>
+          <tr class="sep"><td>RefineGNN</td><td>0.20</td><td>0.08</td><td>2.86</td><td class="best">0.54</td><td class="best">0.66</td><td class="best">0.71</td></tr>
+          <tr><td>AbDockGen</td><td>0.23</td><td>0.09</td><td>3.93</td><td>0.34</td><td>0.52</td><td>0.62</td></tr>
+          <tr><td>AbODE</td><td>0.31</td><td class="best">0.22</td><td>16.40</td><td>0.08</td><td>0.34</td><td>0.20</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">CDR-H3 results on the epitope-group split, our primary setting. Best in bold, second best underlined. The paper reports the standard deviations, perplexity, TM-score, interface RMSD and the liability counts, together with the full tables for the antigen-fold and temporal splits.</p>
+
+    <h3 class="title is-4">Sequence recovery is a poor proxy for binding</h3>
+    <p>Equivariant graph neural networks lead sequence recovery, with CDR-H3 AAR between 0.35 and 0.42, well above the diffusion and flow-matching methods between 0.22 and 0.27. The interface metrics reorder the field. RefineGNN recovers the most native contacts and the best docking quality despite the lowest sequence recovery of the set, while RAAD and MEAN trail it on Fnat. AbODE is the extreme case: it reaches the best contact-residue recovery and still returns a degenerate backbone with a CDR-H3 RMSD of 16.40&nbsp;&#8491;, which we trace to its polar-coordinate loop parameterization.</p>
+
+    <h3 class="title is-4">Novel epitopes are where the methods break</h3>
+    <p>Sequence recovery barely notices which split it is measured on, since RAAD reaches an AAR of 0.38 on all three. The interface and epitope metrics drop sharply once entire epitope clusters are held out, with RAAD falling from an Fnat of 0.62 to 0.49 and an EpiF1 of 0.78 to 0.67, and nearly every method moves in the same direction. The epitope-group split withholds the epitope <em>geometry</em>, which is exactly the signal a model must use to place its contacts, whereas local patch geometry recurs across different antigen folds. The gap is smallest for structure-conditioned autoregressive generation, which places contacts residue by residue, and largest for one-shot denoising.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th rowspan="2">Method</th><th colspan="2">AAR&uarr;</th><th colspan="2">Fnat&uarr;</th><th colspan="2">EpiF1&uarr;</th></tr><tr><th>EG</th><th>AF</th><th>EG</th><th>AF</th><th>EG</th><th>AF</th></tr></thead>
+        <tbody>
+          <tr><td>RAAD</td><td>0.38</td><td>0.38</td><td>0.49</td><td>0.62</td><td>0.67</td><td>0.78</td></tr>
+          <tr><td>MEAN</td><td>0.42</td><td>0.40</td><td>0.48</td><td>0.62</td><td>0.67</td><td>0.78</td></tr>
+          <tr><td>DiffAb</td><td>0.22</td><td>0.23</td><td>0.48</td><td>0.52</td><td>0.56</td><td>0.65</td></tr>
+          <tr><td>dyAb</td><td>0.27</td><td>0.28</td><td>0.35</td><td>0.56</td><td>0.50</td><td>0.72</td></tr>
+          <tr><td>RefineGNN</td><td>0.20</td><td>0.22</td><td>0.54</td><td>0.68</td><td>0.71</td><td>0.83</td></tr>
+          <tr><td>AbODE</td><td>0.31</td><td>0.27</td><td>0.08</td><td>0.16</td><td>0.20</td><td>0.40</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Epitope-group (EG) against antigen-fold (AF). Sequence recovery is flat across the two, while the interface and epitope metrics are consistently lower on the epitope-group split. Part of that margin reflects a covariate shift, because the antigen-fold test partition also skews toward smaller antigens and epitopes, which are easier on the interface metrics.</p>
+
+    <h3 class="title is-4">Length drives difficulty, capacity does not</h3>
+    <p>CDR-H3 length is the dominant difficulty axis. Sequence recovery, backbone accuracy and native-contact recovery all degrade as the loop lengthens, and the methods separate most in the long-loop regime, where RefineGNN degrades least. Antigen size and epitope size barely move sequence recovery, although native-contact recovery peaks on medium epitopes of 7 to 15 residues and falls off on both sides.</p>
+    <figure class="paper-figure">
+      <img src="static/images/strat_combined.jpg" alt="CDR-H3 design quality on the epitope-group split stratified by CDR-H3 length, antigen size and epitope size" loading="lazy">
+      <figcaption><strong>Where the difficulty lies.</strong> CDR-H3 design quality on the epitope-group split, stratified by CDR-H3 length, antigen size and epitope size (rows) across sequence recovery, backbone accuracy and native-contact recovery (columns). All three metrics degrade as CDR-H3 lengthens, whereas AAR is nearly flat across antigen and epitope size.</figcaption>
+    </figure>
+    <p>Model capacity and training compute do not predict design quality. MEAN, the smallest model at 0.7M parameters, matches or beats the diffusion models on CDR-H3 across all three splits, including RADAb, which adds a frozen 650M-parameter ESM-2 encoder and a retrieval stage for no measurable gain over plain DiffAb. MEAN and RAAD train in under 4 GPU-hours, against 6 to 11 for the diffusion models, and inference cost spans three orders of magnitude, from under a minute per split to roughly two to three hours for RADAb.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>Method</th><th>Type</th><th>Parameters</th><th>Train (GPU-h)</th><th>Inference (min)</th><th>AAR&uarr;</th><th>Fnat&uarr;</th></tr></thead>
+        <tbody>
+          <tr><td>MEAN</td><td>Equivariant GNN</td><td>0.7M</td><td>3.5</td><td>0.5</td><td>0.42</td><td>0.48</td></tr>
+          <tr><td>RAAD</td><td>Equivariant GNN</td><td>6.8M</td><td>2.8</td><td>0.8</td><td>0.38</td><td>0.49</td></tr>
+          <tr><td>DiffAb</td><td>Diffusion</td><td>4.0M</td><td>7.4</td><td>8.5</td><td>0.22</td><td>0.48</td></tr>
+          <tr><td>RADAb</td><td>Retrieval and diffusion</td><td>661M</td><td>6.5</td><td>119.6</td><td>0.22</td><td>0.47</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Four of the eleven methods on the epitope-group split, chosen to show the span. Training time is wall-clock on one H100 and inference time covers the whole test split.</p>
+    <div class="takeaway">The open problem is generalization to novel epitopes rather than raw sequence recovery, and the highest-value regime for new methods is long CDR-H3 loops scored with interface metrics, where structure-conditioned autoregressive inductive biases beat the larger models.</div>
+  </div>
+</section>
+
+<!-- ================================================================== structures -->
+<section class="section is-light" id="structures">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">What the designs look like</h2>
+    <p>Three complexes of the epitope-group test split, in order of increasing CDR-H3 length. Panel (a) holds the full antigen-antibody complex with the native CDR-H3 boxed and the epitope painted on the antigen surface, and the remaining panels overlay the loop that each method designs on the native loop in cyan. Every panel turns about the antibody-to-antigen axis in step, so a prediction that looks close from one side rarely stays close through the turn.</p>
+    <div class="samples-head">
+      <h3 class="title is-4" style="margin: 0;">CDR-H3 predictions on the test set</h3>
+      <div class="tabs-mini" data-tabs="structs">
+        <button class="tab-btn is-active" data-tab="7jks">7JKS &middot; 14 residues</button>
+        <button class="tab-btn" data-tab="4j4p">4J4P &middot; 17 residues</button>
+        <button class="tab-btn" data-tab="4xmp">4XMP &middot; 25 residues</button>
+      </div>
+    </div>
+    <div data-tab-pane="structs" data-tab="7jks">
+      <figure class="paper-figure">
+        <video class="figure-video" muted loop playsinline preload="metadata" poster="static/images/struct_7jks.jpg" aria-label="Turntable of the CDR-H3 designs for PDB 7JKS">
+          <source src="static/videos/struct_7jks.mp4" type="video/mp4">
+          <img src="static/images/struct_7jks.jpg" alt="CDR-H3 designs for PDB 7JKS">
+        </video>
+        <figcaption><strong>7JKS, a typical case.</strong> With a CDR-H3 of 14 residues, the equivariant graph networks recover the native sequence well, with an AAR near 0.36 at an RMSD near 1.6&nbsp;&#8491;, while the diffusion models reach an AAR of 0.17 to 0.33 at a slightly higher RMSD. AbODE returns an extended chain rather than a closed loop, the degenerate case behind its CDR-H3 RMSD of 16.40&nbsp;&#8491;.</figcaption>
+      </figure>
+    </div>
+    <div data-tab-pane="structs" data-tab="4j4p" hidden>
+      <figure class="paper-figure">
+        <video class="figure-video" muted loop playsinline preload="metadata" poster="static/images/struct_4j4p.jpg" aria-label="Turntable of the CDR-H3 designs for PDB 4J4P">
+          <source src="static/videos/struct_4j4p.mp4" type="video/mp4">
+          <img src="static/images/struct_4j4p.jpg" alt="CDR-H3 designs for PDB 4J4P">
+        </video>
+        <figcaption><strong>4J4P, where the paradigms disagree.</strong> At 17 residues, dyMEAN reaches the highest sequence recovery of the panel at an AAR of 0.71, while the diffusion models recover far fewer residues, between 0.13 and 0.27. The longer loop amplifies both the sequence and the structural error.</figcaption>
+      </figure>
+    </div>
+    <div data-tab-pane="structs" data-tab="4xmp" hidden>
+      <figure class="paper-figure">
+        <video class="figure-video" muted loop playsinline preload="metadata" poster="static/images/struct_4xmp.jpg" aria-label="Turntable of the CDR-H3 designs for PDB 4XMP">
+          <source src="static/videos/struct_4xmp.mp4" type="video/mp4">
+          <img src="static/images/struct_4xmp.jpg" alt="CDR-H3 designs for PDB 4XMP">
+        </video>
+        <figcaption><strong>4XMP, the long-loop regime.</strong> A CDR-H3 of 25 residues defeats every method, with sequence recovery below 0.18 throughout and the largest structural deviations coming from the diffusion models. This is the regime where new methods have the most to gain.</figcaption>
+      </figure>
+    </div>
+    <p class="legend-note">Rendered with <a href="https://www.cgl.ucsf.edu/chimerax/" target="_blank" rel="noopener noreferrer">UCSF ChimeraX</a> from the deposited structures behind the paper's qualitative comparison. Each panel shares one viewing direction, and each loop keeps one colour across the three complexes.</p>
+  </div>
+</section>
+
+<!-- ================================================================== data and code -->
+<section class="section" id="data">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Get the data</h2>
+    <p>The curation pipeline, the evaluation protocol and the retraining setup of all eleven baselines are public. The pipeline is parameterized through a single configuration file, so the benchmark can be regenerated against any future SAbDab snapshot. We also ship the precomputed heterogeneous residue graphs that the graph-based methods consume, with sequential, spatial and contact edges and per-residue language-model embeddings.</p>
+    <div class="data-links">
+      <a class="data-link" href="https://github.com/mansoor181/chimera-bench" target="_blank" rel="noopener noreferrer"><strong><span class="icon"><i class="fab fa-github"></i></span> Code</strong><span>Curation pipeline, evaluation harness and the eleven baselines, MIT licensed.</span></a>
+      <a class="data-link" href="https://huggingface.co/datasets/mansoorbaloch/chimera-bench" target="_blank" rel="noopener noreferrer"><strong><span class="icon"><i class="fas fa-database"></i></span> Hugging Face</strong><span>The dataset with the three splits, annotations and residue graphs, CC BY 4.0.</span></a>
+      <a class="data-link" href="https://zenodo.org/records/20598827" target="_blank" rel="noopener noreferrer"><strong><span class="icon"><i class="ai ai-zenodo"></i></span> Zenodo</strong><span>Archived release with a citable DOI.</span></a>
+      <a class="data-link" href="https://colab.research.google.com/github/mansoor181/chimera-bench/blob/main/notebooks/demo.ipynb" target="_blank" rel="noopener noreferrer"><strong><span class="icon"><i class="fas fa-play"></i></span> Colab demo</strong><span>Load a split, run the metrics and score a design in the browser.</span></a>
+    </div>
+    <h3 class="title is-4">Limitations</h3>
+    <p>We score designs against static crystallographic structures, so the benchmark does not model conformational flexibility, solvent effects or measured binding affinity, and a high score is necessary but not sufficient evidence of a viable binder. The dataset also inherits the biases of SAbDab and the PDB toward viral surface antigens, human-derived antibodies and X-ray crystallography. Coupling ChiMERa-Bench to affinity datasets for a joint structure-and-affinity track, adding a flexible-target track that scores against multiple conformations, and regenerating the benchmark against newer SAbDab snapshots are the natural next steps.</p>
+  </div>
+</section>
+
+<!-- ================================================================== bibtex -->
+<section class="section is-light" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <div class="bibtex-header">
+      <h2 class="title">BibTeX</h2>
+      <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard"><i class="fas fa-copy"></i> <span class="copy-text">Copy</span></button>
+    </div>
+    <pre id="bibtex-code" class="no-math"><code>@article{ahmed2026chimerabench,
+  title   = {{ChiMERa-Bench}: A Benchmark Dataset for Epitope-Specific Antibody Design},
+  author  = {Ahmed, Mansoor and Taj, Nadeem and Khan, Imdad Ullah and Venkateswara, Hemanth and Patterson, Murray},
+  journal = {Transactions on Machine Learning Research},
+  issn    = {2835-8856},
+  year    = {2026},
+  url     = {https://openreview.net/forum?id=3m8uaq7luq}
+}</code></pre>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>ChiMERa-Bench &middot; Georgia State University &middot; Georgia Institute of Technology<br>The figure at the top is drawn live in the browser from the coordinates of PDB 7N3C, and the structure animations are rendered from the deposited complexes with UCSF ChimeraX.<br>Template from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener noreferrer">Academic Project Page</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

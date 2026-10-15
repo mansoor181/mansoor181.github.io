@@ -58,3 +58,17 @@ var observer = new IntersectionObserver(function(entries) {
 document.querySelectorAll('[data-animate]').forEach(function(el) {
     observer.observe(el);
 });
+
+// Publication videos: load and play only while on screen
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var videoObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) entry.target.play().catch(function() {});
+            else entry.target.pause();
+        });
+    }, { threshold: 0.4 });
+
+    document.querySelectorAll('.pub-fig video').forEach(function(v) {
+        videoObserver.observe(v);
+    });
+}

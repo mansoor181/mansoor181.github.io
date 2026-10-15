@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ConTact: Contact-First Antibody CDR Design via Explicit Interface Reasoning</title>
+  <meta name="description" content="ConTact decomposes antibody CDR design into predicting which loop positions will touch the antigen and then designing those positions, which gives the best backbone accuracy, native-contact recovery, DockQ and epitope F1 on all three splits of ChiMERa-Bench.">
+  <meta name="keywords" content="antibody design, CDR-H3, contact prediction, epitope, equivariant GNN, cross-attention, protein design">
+  <meta name="author" content="Mansoor Ahmed, Spencer VonBank, Nadeem Taj, Avais Jan, Sujin Lee, Naila Jan, Murray Patterson">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ConTact: Contact-First Antibody CDR Design via Explicit Interface Reasoning">
+  <meta property="og:description" content="Predict where the loop will touch the antigen, then design what goes there.">
+  <!-- the absolute urls assume the page is served at https://mansoor181.github.io/contact/ ; change them if the folder name differs -->
+  <link rel="canonical" href="https://mansoor181.github.io/contact/">
+  <meta property="og:url" content="https://mansoor181.github.io/contact/">
+  <meta property="og:image" content="https://mansoor181.github.io/contact/static/images/architecture.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], ignoredClasses: ['no-math'], throwOnError: false});"></script>
+  <script defer src="static/js/figdata.js"></script>
+  <script>window.CB_DESIGN_STYLE = { label: "ConTact", color: "#1F6FB2" };</script>
+  <script defer src="static/js/figwalk.js"></script>
+  <script defer src="static/js/designdata.js"></script>
+  <script defer src="static/js/designs.js"></script>
+  <script defer src="static/js/index.js"></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6zM14 2v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arxiv" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" d="M5 3h9l5 5v13H5zM14 3v5h5M8 13h8M8 17h5"/></symbol>
+  <symbol id="i-review" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M3 5h18v12H8l-5 4z"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.59.23 2.76.12 3.05.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.07.78 2.16 0 1.56-.01 2.82-.01 3.2 0 .31.2.68.8.56C20.71 21.38 24 17.08 24 12 24 5.73 18.27.5 12 .5z"/></symbol>
+  <symbol id="i-quote" viewBox="0 0 24 24"><path fill="currentColor" d="M9 7H5a2 2 0 0 0-2 2v4h4l-2 4h4l2-4V9a2 2 0 0 0-2-2zM20 7h-4a2 2 0 0 0-2 2v4h4l-2 4h4l2-4V9a2 2 0 0 0-2-2z"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M12 19V6M5 12l7-7 7 7"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M9 9h11v11H9zM4 15V4h11"/></symbol>
+</svg>
+
+<div class="scroll-progress" id="scrollProg"></div>
+<button class="scroll-to-top" title="Back to top" aria-label="Back to top"><svg class="ico" aria-hidden="true"><use href="#i-up"/></svg></button>
+
+<main>
+<!-- ================================================================== title, authors, links -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title hero-fade hero-fade-1">ConTact</h1>
+          <h2 class="subtitle is-4 publication-subtitle hero-fade hero-fade-1">Contact-First Antibody CDR Design via Explicit Interface Reasoning</h2>
+          <div class="is-size-5 publication-authors hero-fade hero-fade-2">
+            <span class="author-block"><a href="https://mansoor181.github.io/" title="Mansoor Ahmed's website">Mansoor Ahmed</a><sup>1,2,*</sup>,</span>
+            <!-- PLACEHOLDER: add homepage links for the co-authors below -->
+            <span class="author-block">Spencer VonBank<sup>3</sup>,</span>
+            <span class="author-block">Nadeem Taj<sup>4</sup>,</span>
+            <span class="author-block">Avais Jan<sup>1</sup>,</span>
+            <span class="author-block">Sujin Lee<sup>2</sup>,</span>
+            <span class="author-block">Naila Jan<sup>5</sup>,</span>
+            <span class="author-block">Murray Patterson<sup>1,*</sup></span>
+          </div>
+          <div class="affiliations hero-fade hero-fade-3">
+            <span class="author-block"><sup>1</sup>Georgia State University</span>
+            <span class="author-block"><sup>2</sup>Georgia Institute of Technology</span>
+            <span class="author-block"><sup>3</sup>DePauw University</span>
+            <span class="author-block"><sup>4</sup>University of Engineering and Technology, Lahore</span>
+            <span class="author-block"><sup>5</sup>Accenture</span>
+          </div>
+          <p class="author-note hero-fade hero-fade-3"><sup>*</sup>Corresponding authors</p>
+          <p class="author-note hero-fade hero-fade-3"><strong>ICML 2026 Workshop on Generative and Agentic AI for Biology</strong>, poster</p>
+          <div class="publication-links hero-fade hero-fade-4">
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://arxiv.org/pdf/2605.21600" target="_blank" rel="noopener noreferrer" title="The paper as a PDF"><svg class="ico" aria-hidden="true"><use href="#i-paper"/></svg><span>Paper</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://arxiv.org/abs/2605.21600" target="_blank" rel="noopener noreferrer" title="The preprint on arXiv"><svg class="ico" aria-hidden="true"><use href="#i-arxiv"/></svg><span>arXiv</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://openreview.net/forum?id=c36TRdJayj" target="_blank" rel="noopener noreferrer" title="The workshop record on OpenReview"><svg class="ico" aria-hidden="true"><use href="#i-review"/></svg><span>OpenReview</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://github.com/mansoor181/ConTact" target="_blank" rel="noopener noreferrer" title="The code on GitHub"><svg class="ico" aria-hidden="true"><use href="#i-github"/></svg><span>Code</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="#BibTeX" title="Jump to the BibTeX citation"><svg class="ico" aria-hidden="true"><use href="#i-quote"/></svg><span>BibTeX</span></a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== teaser: the architecture, walked through -->
+<section class="hero teaser">
+  <div class="container is-max-widescreen">
+    <div class="hero-body hero-fade hero-fade-5">
+      <figure class="figwalk" id="figwalk"></figure>
+    </div>
+  </div>
+</section>
+
+<nav class="section-nav" aria-label="Page sections">
+  <a href="#problem">Problem</a>
+  <a href="#method">Method</a>
+  <a href="#results">Results</a>
+  <a href="#ablations">Ablations</a>
+  <a href="#designs">Designs</a>
+  <a href="#wall">Why sequence saturates</a>
+  <a href="#BibTeX">BibTeX</a>
+</nav>
+
+<!-- ================================================================== tl;dr and abstract -->
+<section class="section">
+  <div class="container is-max-desktop content">
+    <div class="tldr reveal"><p><span class="tldr-label">TL;DR</span>Designing an antibody loop asks two different questions at once: which positions will touch the antigen, and what amino acid belongs at each of them. Existing models answer both in one head, so antigen signal is spread evenly over positions that mostly do not bind. ConTact answers the first question explicitly, with a supervised contact predictor, and uses its confidence to gate how much antigen information each position receives. That lifts every interface metric on all three splits of ChiMERa-Bench, and the ablations show the gain comes from the cascade rather than from any sequence prior.</p></div>
+    <details class="paper-details reveal">
+      <summary>Abstract</summary>
+      <div class="details-body">
+        <p>Computational antibody CDR design methods condition on antigen structure to generate binding loops. Yet, the existing architectures conflate two fundamentally distinct sub-problems: identifying which CDR positions will contact the antigen, and selecting amino acids at those positions. This forces models to learn contact reasoning implicitly through uniform message passing, diluting antigen signal across all positions equally. We introduce ConTact, a contact-then-act architecture that explicitly decomposes CDR design into three cascaded stages: learning surface complementarity fingerprints, predicting CDR-antigen contacts, and injecting contact-gated antigen features into the prediction head. A distance-biased cross-attention module encodes geometric priors favoring spatial neighbors, a contact-weighted cross-entropy loss concentrates gradient signal on binding-critical positions, and a standoff-aware contact-recovery loss places the designed loop against its native epitope. On the ChiMERa-Bench dataset, ConTact attains the best backbone RMSD, fraction of native contacts, interface RMSD, DockQ, and epitope F1 on all three splits, improving native-contact recovery by 11 to 16% relative over the strongest baseline, while matching the best sequence recovery.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== the problem -->
+<section class="section is-light" id="problem">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Two questions, one head</h2>
+    <p>A CDR design model is handed an antigen, a target epitope and an antibody framework, and has to fill in the loop. That task hides two problems of different kinds. The first is geometric, namely <em>where</em> the loop will touch the antigen, which positions form binding interactions at all. The second is chemical, namely <em>what</em> amino acid belongs at each of those positions, given the pocket it faces.</p>
+    <p>Current architectures answer both at once. Equivariant graph networks propagate antigen information through uniform message passing that treats every antigen residue alike. Diffusion models concatenate antibody and antigen residues into one flat graph with a fragment-type embedding to tell them apart. In every case a single cross-entropy spreads learning capacity evenly over the loop, so a glycine at the apex that touches nothing is weighted exactly like a tryptophan buried in an antigen pocket.</p>
+    <p>That matters because the interface is sparse. A CDR-H3 of 10 to 25 residues typically forms only 5 to 15 contacts. The amino acid at a contact position is directly constrained by the chemistry of its partner, while the rest of the loop is constrained mostly by backbone geometry and stability. Spreading the antigen signal evenly spends most of it on the positions that need it least, which is one explanation for a well-documented failure: predictions barely change when the antigen is removed, and BLOSUM substitution matrices explain model outputs about as well as learned likelihoods do.</p>
+    <div class="takeaway">ConTact answers <strong>where</strong> before <strong>what</strong>. A supervised head predicts which positions will contact the antigen, and its confidence then gates how much antigen information reaches each position, both in the forward pass and in the loss.</div>
+  </div>
+</section>
+
+<!-- ================================================================== method -->
+<section class="section" id="method">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">A three-stage cascade</h2>
+    <p>The encoder is a relation-aware E(3)-equivariant graph network over the antibody-antigen complex, with ten edge types and three virtual nodes. Each virtual node is wired to every epitope residue and every CDR position, which puts any epitope residue two hops from any loop position and removes the bottleneck that sequential message passing otherwise creates.</p>
+    <p>Cross-attention then combines the loop with the antigen. Plain cross-attention scores a residue 5&nbsp;&#8491; away and one 30&nbsp;&#8491; away by feature similarity alone, so ConTact adds a Gaussian spatial bias to the logits, with the distance taken from the coordinates the encoder has just updated,</p>
+    <div class="math-box">$$\alpha_{ij}^{(h)} = \operatorname{softmax}_j\!\left(\frac{(\mathbf{q}_i^{(h)})^\top \mathbf{k}_j^{(h)}}{\sqrt{D_h}} + \beta_{ij}\right), \qquad \beta_{ij} = \exp\!\left(-\frac{d_{ij}^2}{2\sigma^2}\right).$$</div>
+    <p>The bias is near one inside van der Waals range, falls to about 0.14 at twice the bandwidth, which is roughly the contact threshold, and is negligible beyond three times it. The three decoder stages then run in order.</p>
+    <div class="props">
+      <div class="prop"><h4>Stage 1: complementarity fingerprint</h4><p>A small vector summarizes the binding environment each position faces. It is trained contrastively, with the nearest antigen residue as the positive and distant ones as negatives, so it encodes what kind of pocket a position sits against.</p></div>
+      <div class="prop"><h4>Stage 2: contact prediction</h4><p>A supervised head reads the position embedding, its nearest antigen neighbours, the distance to the antigen and the fingerprint, and emits a contact probability. A focal loss handles the 3 to 5 times class imbalance between non-contacts and contacts.</p></div>
+      <div class="prop"><h4>Stage 3: contact-gated injection</h4><p>Local antigen features are added to each position in proportion to its predicted contact confidence, so distant antigen noise is shut out where the model expects no contact and the full local chemistry flows in where it does.</p></div>
+    </div>
+    <div class="math-box">$$\mathbf{h}_i^\text{enriched} = \mathbf{h}_i^\text{cdr} + \hat{c}_i \cdot \text{MLP}_\text{proj}(\mathbf{h}_i^\text{local}).$$</div>
+    <p>The same confidence reweights the sequence loss, with $w_i = 1 + \alpha\,\hat c_i$ and $\alpha = 3$, so gradient concentrates where the antigen actually constrains the residue. A fifth term, the contact-recovery loss, supervises where the loop sits rather than where each residue lands in absolute space. For every position that contacts the antigen natively, a one-sided hinge pulls its distance to the nearest native epitope partner under the 8&nbsp;&#8491; cutoff with a 0.5&nbsp;&#8491; standoff margin, and a 4&nbsp;&#8491; floor stops the loop collapsing into the antigen,</p>
+    <div class="math-box">$$\mathcal{L}_\text{crl} = \frac{1}{|\mathcal{C}|}\sum_{k \in \mathcal{C}} \Big[ \max(0,\, d_k - d_c + \delta) + \max(0,\, d_\text{min} - d_k) \Big].$$</div>
+    <p>Because it constrains a distance to the binding partner instead of an absolute coordinate, it improves placement without over-constraining the loop's conformation.</p>
+    <details class="paper-details">
+      <summary>Two variants, and what separates them</summary>
+      <div class="details-body">
+        <p>CDR-H3 inherits a positional signature from V(D)J recombination, strongest at the conserved J-anchor. <strong>ConTact-G</strong> adds a germline log-prior to the sequence logits, conditioned on the ANARCI-assigned J-gene and the IMGT position and estimated from training counts alone, with a single learnable scale that converges near 0.88 on all three splits. It changes only the logits, so it cannot move the backbone. We report the two variants separately so that the sequence gain and the interface gain are never conflated: the prior buys 3 to 4 points of sequence recovery and leaves the interface metrics within seed noise.</p>
+        <p>The model has 9.68M trainable parameters, and a single run takes about 2.5 hours on one A100.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== results -->
+<section class="section is-light" id="results">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Best interface on every split</h2>
+    <p>All methods are retrained on <a href="https://mansoor181.github.io/chimera-bench/">ChiMERa-Bench</a>, which holds 2,922 antibody-antigen complexes under three splits that withhold unseen epitope shapes, unseen antigen folds and later depositions. Every number below is CDR-H3, the hardest loop.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>Epitope-group split</th><th>AAR&uarr;</th><th>PPL&darr;</th><th>RMSD&darr;</th><th>fnat&uarr;</th><th>iRMSD&darr;</th><th>DockQ&uarr;</th><th>epiF1&uarr;</th></tr></thead>
+        <tbody>
+          <tr><td>MEAN</td><td class="best">0.42</td><td class="best">3.00</td><td>2.01</td><td>0.48</td><td>1.66</td><td>0.63</td><td>0.67</td></tr>
+          <tr><td>RAAD</td><td>0.38</td><td>3.31</td><td>1.95</td><td>0.49</td><td>1.64</td><td class="second">0.64</td><td>0.67</td></tr>
+          <tr><td>dyAb</td><td>0.27</td><td>&ndash;</td><td>3.31</td><td>0.35</td><td>2.27</td><td>0.54</td><td>0.50</td></tr>
+          <tr><td>DiffAb</td><td>0.22</td><td>&ndash;</td><td>2.64</td><td>0.48</td><td>2.27</td><td>0.58</td><td>0.56</td></tr>
+          <tr><td>AbFlowNet</td><td>0.22</td><td>&ndash;</td><td>2.70</td><td>0.49</td><td>2.37</td><td>0.57</td><td>0.55</td></tr>
+          <tr><td>AbMEGD</td><td>0.22</td><td>&ndash;</td><td>2.76</td><td class="second">0.50</td><td>2.41</td><td>0.57</td><td>0.56</td></tr>
+          <tr><td>AbDockGen</td><td>0.25</td><td>7.41</td><td>3.97</td><td>0.35</td><td>2.72</td><td>0.52</td><td>0.63</td></tr>
+          <tr class="sep ours-row"><td>ConTact</td><td>0.38</td><td>3.48</td><td class="best">1.90</td><td class="best">0.58</td><td class="best">1.60</td><td class="best">0.67</td><td class="best">0.69</td></tr>
+          <tr class="ours-row"><td>ConTact-G</td><td class="second">0.41</td><td class="second">3.25</td><td class="second">1.92</td><td class="second">0.50</td><td class="second">1.62</td><td class="second">0.64</td><td class="second">0.68</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Best in bold, second best underlined. The antigen-fold and temporal splits are in the paper and follow the same pattern, with ConTact and ConTact-G taking first and second place on the interface metrics in every table.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="num">11 to 16%</div><div class="cap">relative gain in native-contact recovery over the strongest baseline, across the three splits</div></div>
+      <div class="stat"><div class="num">1.58 &#8491;</div><div class="cap">best CDR-H3 backbone RMSD, on the antigen-fold split</div></div>
+      <div class="stat"><div class="num">+3 points</div><div class="cap">DockQ over the best baseline on each split</div></div>
+      <div class="stat"><div class="num">0.82</div><div class="cap">best epitope F1, on the antigen-fold split</div></div>
+    </div>
+    <h3 class="title is-4">The interface separates methods more sharply than RMSD</h3>
+    <p>RAAD and MEAN reach comparable backbone accuracy yet recover 7 to 10 fewer native contacts per hundred, so their loops are correctly shaped and imprecisely placed. The widest gap is on fnat, the fraction of native contacts a design reproduces, which is exactly the quantity the cascade and the contact-recovery loss optimize. Epitope F1 tells the same story from the antigen side: it asks whether the loop contacts the residues it was asked to target rather than an adjacent patch, and ConTact leads it on all three splits.</p>
+    <p>Sequence recovery is the one axis where the field is flat. ConTact-G reaches 0.40 to 0.41, the best on two splits and within a point of MEAN on the third, while base ConTact sits 3 to 4 points lower. The entire difference is the germline prior. Why no architecture moves this number is the subject of the last section.</p>
+  </div>
+</section>
+
+<!-- ================================================================== ablations -->
+<section class="section" id="ablations">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">What the cascade actually buys</h2>
+    <p>Each row changes one design choice against a reference that keeps the contact-recovery loss and switches the cascade off, on a fixed seed and a single codebase. The reference starts higher than the main table, so the rows are read against each other.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>Configuration</th><th>cascade</th><th>$\alpha$</th><th>germline</th><th>AAR&uarr;</th><th>RMSD&darr;</th><th>fnat&uarr;</th><th>iRMSD&darr;</th><th>DockQ&uarr;</th><th>epiF1&uarr;</th></tr></thead>
+        <tbody>
+          <tr><td>Reference, contact-recovery loss only</td><td>no</td><td>0</td><td>yes</td><td>0.407</td><td class="best">1.887</td><td>0.565</td><td class="best">1.537</td><td>0.667</td><td>0.705</td></tr>
+          <tr class="ours-row"><td>Full cascade</td><td>yes</td><td>3</td><td>yes</td><td>0.407</td><td>1.912</td><td class="best">0.593</td><td>1.586</td><td class="best">0.674</td><td class="best">0.724</td></tr>
+          <tr class="sep"><td>Cascade with a weaker contact weight</td><td>yes</td><td>2</td><td>yes</td><td class="best">0.408</td><td>1.930</td><td>0.539</td><td>1.617</td><td>0.653</td><td>0.681</td></tr>
+          <tr><td>Interface distogram in place of the cascade</td><td>no</td><td>0</td><td>yes</td><td>0.407</td><td>1.976</td><td>0.579</td><td>1.651</td><td>0.662</td><td>0.700</td></tr>
+          <tr><td>Cascade without the germline prior</td><td>yes</td><td>3</td><td>no</td><td>0.377</td><td>1.909</td><td>0.579</td><td>1.573</td><td>0.670</td><td>0.719</td></tr>
+          <tr><td>&nbsp;&nbsp;and with a KL to the repertoire</td><td>yes</td><td>3</td><td>no</td><td>0.367</td><td>1.888</td><td>0.585</td><td>1.587</td><td>0.670</td><td>0.706</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Epitope-group split, CDR-H3, seed 42. Best in bold.</p>
+    <div class="metric-groups">
+      <div class="metric-group"><h4>The cascade moves the interface</h4><p>Switching it on raises fnat from 0.565 to 0.593 and epitope F1 from 0.705 to 0.724 at flat sequence recovery. The gain comes from the auxiliary losses shaping the shared encoder, since a disabled contact head emits a constant 0.5 and the contact weighting is then inert.</p></div>
+      <div class="metric-group"><h4>The contact weight has to be strong</h4><p>Dropping $\alpha$ from 3 to 2 regresses every interface metric and leaves AAR untouched. A weak reweighting spreads gradient back toward the positions that do not bind.</p></div>
+      <div class="metric-group"><h4>Exact distances are not a substitute</h4><p>Replacing the cascade with a distogram loss that matches native interface distances holds fnat and DockQ at the reference and worsens both RMSD and iRMSD, the two metrics it supervises most directly.</p></div>
+      <div class="metric-group is-new"><span class="tagline">the separation that matters</span><h4>The interface is germline-independent</h4><p>Removing the prior costs 3 points of sequence recovery and leaves fnat, iRMSD, DockQ and epitope F1 within seed noise. The interface gains owe nothing to the sequence prior, so the two contributions are separable.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== designs -->
+<section class="section is-light" id="designs">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">What the designs look like</h2>
+    <p>Everything in this section is read from the per-complex outputs that the evaluation harness stored for the epitope-group test split, the run whose mean recovery and backbone error reproduce the ConTact row of the table above. Nothing here is redrawn by hand.</p>
+
+    <h3 class="title is-4">One loop, placed against its epitope</h3>
+    <p>PDB 7X7T, a CDR-H3 of 14 residues on a 187-residue antigen. The left picture is the whole complex with the epitope painted on the antigen surface, and the dashed window is what the right picture magnifies. Each loop is drawn from the coordinates the method produced, in the frame of the deposited complex.</p>
+    <div id="design-loop"></div>
+    <p class="table-note">Distances are the alpha-carbon RMSD of each designed loop against the deposited one, and the reach counts the epitope residues a loop comes within 8&nbsp;&#8491; of, the cutoff the interface metrics use. DiffAb is left out of this picture because the harness stored its coordinates in a different frame, which a check in the extraction script catches.</p>
+
+    <h3 class="title is-4">Designed sequences, against the deposited ones</h3>
+    <p>Matched positions are shaded. The amber underline marks the positions that touch the antigen in the deposited structure, which is where the contact cascade concentrates its gradient and where the chemistry is most constrained.</p>
+    <div id="design-seq"></div>
+    <div class="takeaway">The pattern the probes predict is visible by eye. Recovery is respectable overall and thin exactly at the contact positions, which is the gap that the apex backbone error leaves open.</div>
+
+    <h3 class="title is-4">Which amino acids the designs reach for</h3>
+    <p>Counted over all 292 designed loops of the split. The deposited loops spread their mass across the alphabet, while the structure-conditioned models concentrate it on a few residues, tyrosine and glycine above all. ConTact is a structural method and inherits that behaviour, which is consistent with its gains sitting on the interface axis rather than the sequence axis.</p>
+    <div id="design-usage"></div>
+    <p class="table-note">Frequency of each amino acid across the designed CDR-H3 loops of the epitope-group test split.</p>
+  </div>
+</section>
+
+<!-- ================================================================== the placement wall -->
+<section class="section" id="wall">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Why sequence recovery saturates</h2>
+    <p>Every architecture in the tables lands within a few points of the same sequence recovery, and our ablations move the interface while leaving it flat. Four probes trace both ceilings to a single cause: no model in this setting resolves the CDR-H3 apex backbone better than about 2.4&nbsp;&#8491; from the framework, the antigen and the masked loop alone.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>Inverse-folding probe</th><th>overall</th><th>apex</th><th>contact</th><th>anchor</th></tr></thead>
+        <tbody>
+          <tr><td>Position only</td><td>0.328</td><td>0.177</td><td>0.186</td><td>0.519</td></tr>
+          <tr><td>&nbsp;&nbsp;with the true torsions</td><td>0.419</td><td>0.280</td><td>0.276</td><td>0.606</td></tr>
+          <tr><td>&nbsp;&nbsp;with local Cartesian geometry</td><td class="best">0.461</td><td class="best">0.339</td><td class="best">0.333</td><td class="best">0.629</td></tr>
+          <tr class="sep"><td>Shuffle control</td><td>&ndash;</td><td>0.177</td><td>0.184</td><td>&ndash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Recovery of a probe that predicts each residue from geometry alone. Giving it the deposited backbone lifts apex and contact recovery by 15 to 16 points, and shuffling the structure-sequence pairing collapses the gain to the position-only floor.</p>
+    <p>So the missing sequence signal is real geometry, and it lives in the antibody's own backbone. The trouble is that the predicted backbone is worst exactly where that signal is richest. Breaking the error down along the loop, the apex averages 2.41&nbsp;&#8491; while the last three J-anchor positions average 1.12&nbsp;&#8491;, and the structure-to-sequence signal turns net negative once backbone error passes 2&nbsp;&#8491;. The model builds precisely the segment it cannot then read a sequence from.</p>
+    <div class="props">
+      <div class="prop"><h4>Co-design does not break it</h4><p>A torsion head that rebuilds the loop by NeRF is exact under true internal coordinates, with a round trip of 0.06&nbsp;&#8491;, yet learns apex torsions only to 47 degrees against the roughly 15 needed, and feeding them to the sequence head changes nothing.</p></div>
+      <div class="prop"><h4>The apex is not retrievable</h4><p>Superimposing every same-length training loop on the test stem, an oracle picking the best one reaches 2.05&nbsp;&#8491; median apex error against 2.41&nbsp;&#8491; for plain mean regression. Ranking by stem similarity gives 7.70&nbsp;&#8491;, and the oracle loop sits at median rank 38.</p></div>
+      <div class="prop"><h4>The interface rides the same wall</h4><p>fnat, epitope F1, iRMSD and DockQ are all functions of the same coordinates through an 8&nbsp;&#8491; contact graph. Tightening the contact-recovery margin trades fnat up and iRMSD down along a DockQ contour pinned near 0.67, so loss reweighting slides along the frontier without moving it.</p></div>
+    </div>
+    <div class="takeaway">Position, germline, framework flanks, antigen microenvironment, torsion co-design and library retrieval are each dead ends for the apex. Raising sequence recovery calls for a sharper apex generator or an external evolutionary signal, such as a protein language model, rather than further loss engineering.</div>
+    <p>That last sentence is the starting point of a companion paper. <a href="https://mansoor181.github.io/evostruct/">EvoStruct</a> brings ESM-2 into the sequence head through a structural adapter and recovers the vocabulary that structure-only models lose.</p>
+  </div>
+</section>
+
+<!-- ================================================================== bibtex -->
+<section class="section is-light" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <div class="bibtex-header">
+      <h2 class="title">BibTeX</h2>
+      <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard"><svg class="ico" aria-hidden="true"><use href="#i-copy"/></svg> <span class="copy-text">Copy</span></button>
+    </div>
+    <pre id="bibtex-code" class="no-math"><code>@inproceedings{ahmed2026contact,
+  title     = {{ConTact}: Contact-First Antibody {CDR} Design via Explicit Interface Reasoning},
+  author    = {Ahmed, Mansoor and VonBank, Spencer and Taj, Nadeem and Jan, Avais and Lee, Sujin and Jan, Naila and Patterson, Murray},
+  booktitle = {ICML 2026 Workshop on Generative and Agentic AI for Biology},
+  year      = {2026},
+  url       = {https://openreview.net/forum?id=c36TRdJayj}
+}</code></pre>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>ConTact &middot; Georgia State University &middot; Georgia Institute of Technology<br>The architecture figure is the one printed in the paper, with a walkthrough drawn over it.<br>Companion pages: <a href="https://mansoor181.github.io/chimera-bench/">ChiMERa-Bench</a> and <a href="https://mansoor181.github.io/evostruct/">EvoStruct</a>.<br>Template from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener noreferrer">Academic Project Page</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

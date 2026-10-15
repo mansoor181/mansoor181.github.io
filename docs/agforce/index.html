@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AgForce: Antigen-conditioned Generative Antibody Design</title>
+  <meta name="description" content="Antibody CDR design models condition on the antigen and then decode greedily, which strips the antigen information out of the output. AgForce diagnoses the failure and intervenes at the encoder, the sequence head and the objective, leading all four interface metrics on the Chimera-Bench splits.">
+  <meta name="keywords" content="antibody design, CDR-H3, antigen conditioning, equivariant graph neural network, mixture density network, Potts coupling, hyperbolic attention, Chimera-Bench">
+  <meta name="author" content="Mansoor Ahmed, Murray Patterson">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AgForce: Antigen-conditioned Generative Antibody Design">
+  <meta property="og:description" content="Greedy decoding hides the antigen information that CDR design models learn. AgForce keeps several modes of the sequence posterior alive and supervises the interface directly.">
+  <!-- the absolute urls assume the page is served at https://mansoor181.github.io/agforce/ ; change them if the folder name differs -->
+  <link rel="canonical" href="https://mansoor181.github.io/agforce/">
+  <meta property="og:url" content="https://mansoor181.github.io/agforce/">
+  <meta property="og:image" content="https://mansoor181.github.io/agforce/static/images/agforce_arch.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], ignoredClasses: ['no-math'], throwOnError: false});"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProg"></div>
+<button class="scroll-to-top" title="Back to top" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+<main>
+<!-- ================================================================== title, authors, links -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title hero-fade hero-fade-1">AgForce</h1>
+          <h2 class="subtitle is-4 publication-subtitle hero-fade hero-fade-1">Antigen-conditioned Generative Antibody Design</h2>
+          <!-- PLACEHOLDER: the live manuscript carries the template's author block, so this list comes from the earlier de-anonymized draft. Confirm the final list and add the co-author homepage links. -->
+          <div class="is-size-5 publication-authors hero-fade hero-fade-2">
+            <span class="author-block"><a href="https://mansoor181.github.io/" title="Mansoor Ahmed's website">Mansoor Ahmed</a><sup>1,2,*</sup>,</span>
+            <span class="author-block">Murray Patterson<sup>1,*</sup></span>
+          </div>
+          <div class="affiliations hero-fade hero-fade-3">
+            <span class="author-block"><sup>1</sup>Georgia State University</span>
+            <span class="author-block"><sup>2</sup>Georgia Institute of Technology</span>
+          </div>
+          <p class="author-note hero-fade hero-fade-3"><sup>*</sup>Corresponding authors</p>
+          <div class="publication-links hero-fade hero-fade-4">
+            <!-- PLACEHOLDER: replace href="#" with the paper and arXiv links once they are public, and drop the is-placeholder class -->
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://github.com/mansoor181/ag-force" target="_blank" rel="noopener noreferrer" title="Source code on GitHub"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://github.com/mansoor181/chimera-bench" target="_blank" rel="noopener noreferrer" title="The benchmark we evaluate on"><span class="icon"><i class="fas fa-database"></i></span><span>Chimera-Bench</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="#BibTeX" title="Jump to the BibTeX citation"><span class="icon"><i class="fas fa-quote-left"></i></span><span>BibTeX</span></a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== teaser: the architecture, animated -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body hero-fade hero-fade-5">
+      <video class="figure-video" autoplay muted loop playsinline preload="auto" poster="static/images/agforce_arch.png" aria-label="Animation of the AgForce architecture">
+        <source src="static/videos/agforce_arch.mp4" type="video/mp4">
+        <img src="static/images/agforce_arch.png" alt="The AgForce architecture">
+      </video>
+      <p class="teaser-caption"><strong>AgForce end to end.</strong> The molecular panels are the deposited complex 3MJ9 and the loop AgForce designed for it, projected onto the plane that puts the binding axis up the page. <strong>(1)</strong> The encoder sees the antigen, the antibody Fv and a masked CDR-H3, and zeroes heavy-chain framework embeddings with probability 0.3. <strong>(2)</strong> A relation-aware equivariant network passes messages over the residue graph of the complex for five layers, with three virtual nodes bridging the epitope and the loop. <strong>(3)</strong> CDR residues attend to epitope residues along the geodesics of a hyperbolic disk, where the distance sets the weight. <strong>(4)</strong> A gate decides how much antigen context reaches the sequence head. <strong>(5)</strong> Four Potts-coupled components keep several modes of the sequence posterior alive, and the temperature of the annealed objective sharpens the mixture during training. <strong>(6)</strong> The designed loop on the epitope, teal where it matches the native residue. The animation follows that order and ends on the figure.</p>
+    </div>
+  </div>
+</section>
+
+<nav class="section-nav" aria-label="Page sections">
+  <a href="#problem">Problem</a>
+  <a href="#method">Method</a>
+  <a href="#results">Results</a>
+  <a href="#designs">Designs</a>
+  <a href="#ablations">Ablations</a>
+  <a href="#BibTeX">BibTeX</a>
+</nav>
+
+<!-- ================================================================== tl;dr and abstract -->
+<section class="section">
+  <div class="container is-max-desktop content">
+    <div class="tldr reveal"><p><span class="tldr-label">TL;DR</span>Antibody design methods condition on the antigen, yet the complementarity-determining regions (CDRs) they emit barely depend on it. We show the training loss is not at fault, since the learned distribution does carry antigen information, and greedy decoding discards it. AgForce intervenes at the encoder, the sequence head and the objective, and leads all four interface metrics on the three splits of Chimera-Bench while holding more amino acid diversity than any method of comparable accuracy.</p></div>
+    <details class="paper-details reveal">
+      <summary>Abstract</summary>
+      <div class="details-body">
+        <p>Antibody design methods condition on antigen structure to generate complementarity-determining regions (CDR), yet a systematic evaluation of baseline methods reveals that they largely ignore the antigen input. We identify three failure modes that explain this behavior. <em>Antigen blindness</em> arises because models derive predictions from antibody framework context rather than antigen information: every method we test matches a positional-frequency null at $r = 0.59$ to $0.80$, and none recovers more than 22% of the residues that actually contact the antigen. <em>Vocabulary collapse</em> cuts the effective amino acid vocabulary to between 3.7 and 6.9 from a native 14.9, and the methods that collapse hardest are exactly the ones that top the recovery leaderboard. The <em>argmax bottleneck</em> ties the two together. Cross-entropy is a strictly proper scoring rule, so the trained distribution does absorb antigen information, and every method cuts perplexity to roughly a third of an antigen-blind null. Greedy decoding then discards it: a null predictor that sees only position and loop length recovers 35% of residues while emitting just 8 distinct amino acids, and no method beats it by more than 5 points. We propose a novel encoder-decoder architecture called AgForce, that uses a graph neural network (GNN) as the encoder and specialized decoders for sequence-structure co-design. Specifically, we apply framework dropout, gated bottlenecks, and hyperbolic cross attention that prevent the antibody shortcut path. In the decoder, a Mixture Density Network (MDN) sequence head with Potts-like pairwise coupling and annealed Multiple Choice Learning (aMCL) keeps several modes of the sequence posterior alive through decoding. An antigen cycle consistency head routes gradients through the sequence decoder, forcing predicted distributions to encode antigen identity. On the Chimera-Bench benchmark, AgForce leads every interface metric on all three splits (fnat, iRMSD, DockQ, and epitope F1) together with structure, while preserving a larger effective vocabulary than any method that competes with it on recovery.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== the problem -->
+<section class="section is-light" id="problem">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Three failure modes, one cause</h2>
+    <p>Designing a CDR means choosing the residues and the backbone of a loop that binds a given epitope, so the output should change when the target changes. We retrained ten CDR-H3 design methods on <a href="https://github.com/mansoor181/chimera-bench" target="_blank" rel="noopener noreferrer">Chimera-Bench</a> and measured how much of the antigen actually reaches the decoded loop. Three failure modes appear together, and the third explains the first two.</p>
+    <div class="props">
+      <div class="prop"><h4><span class="icon"><i class="fas fa-eye-slash"></i></span>Antigen blindness</h4><p>The substitution pattern of each method matches a positional frequency table at $r = 0.59$ to $0.80$ and the BLOSUM45 matrix at $|r| \le 0.12$. MEAN recovers 48.4% of residues away from the interface and 20.3% of those that contact the antigen, and no method passes 21.7% at contacts.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-compress-alt"></i></span>Vocabulary collapse</h4><p>Native CDR-H3 loops carry an effective vocabulary of 14.9 amino acids. Graph networks with greedy decoding emit 3.7 to 6.9, overrepresent tyrosine and glycine, and place tryptophan, cysteine and methionine at close to zero frequency. The six least diverse methods are the six most accurate ones.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-filter"></i></span>The argmax bottleneck</h4><p>Cross-entropy is a strictly proper scoring rule, so conditioning on the antigen lowers it and the learned distribution does hold antigen information. We lose it when we decode with the argmax. A null that sees only the position and the loop length reaches 0.349 recovery with 8 distinct residues, and no method improves on it by more than 0.05.</p></div>
+    </div>
+    <figure class="paper-figure">
+      <img src="static/images/h3_positional_trio.png" alt="Heatmaps of the amino acid distribution along CDR-H3 for native loops, dyMEAN and AgForce" loading="lazy">
+      <figcaption><strong>What the decoder emits.</strong> Frequency of each amino acid along the normalized CDR-H3 position, for the native loops, for dyMEAN and for AgForce. Native loops spread their mass over the alphabet, dyMEAN concentrates it on two rows, and AgForce lands in between. Each panel prints the effective vocabulary it measures.</figcaption>
+    </figure>
+    <p>The sharpest way to see the failure is to hold the antibody fixed and change the target. We took the saved designs of each retrained model on the test split and measured how often the design for one target matches the design for another of the same loop length. Native loops agree at 0.26. dyMEAN agrees at 0.99, and returns the identical loop for 80% of such pairs. AgForce agrees at 0.53, the lowest of the methods that compete on recovery, against 0.62 for MEAN and 0.72 for RAAD.</p>
+    <figure class="paper-figure">
+      <video class="figure-video" muted loop playsinline preload="none" poster="static/images/agforce_concept.png" aria-label="Animation comparing the designs that dyMEAN and AgForce return for two different targets">
+        <source src="static/videos/agforce_concept.mp4" type="video/mp4">
+        <img src="static/images/agforce_concept.png" alt="Two targets, the designs each method returns for them, and the agreement between designs for different targets">
+      </video>
+      <figcaption><strong>What changes in AgForce.</strong> Two held-out targets meet the same antibody framework, and the structures are the deposited complexes 3MJ9 and 5UCB. dyMEAN returns the same ten residues for both. AgForce changes three of them, two at positions where the loop contacts the antigen. The axis at the foot gives the agreement between the designs a method returns for two different targets, measured over the 292 test complexes from the saved predictions, with the native loops as the reference.</figcaption>
+    </figure>
+    <p>The diagnosis also sets what a fix can claim. Greedy decoding emits a deterministic function of the conditioning, so the diversity of the output is bounded by the number of modes a model realizes, however much entropy the underlying distribution holds. A method therefore has to keep several modes alive through decoding and to supervise the interface directly, rather than hoping that message passing carries the antigen to the sequence head.</p>
+    <div class="takeaway">Collapsing onto positional modes is what raises recovery. Recovery is decided on residues away from the interface and it moves independently of binding quality, so we judge a CDR design method on the interface as well.</div>
+  </div>
+</section>
+
+<!-- ================================================================== the method -->
+<section class="section" id="method">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Five interventions, one model</h2>
+    <p>AgForce represents the complex as a heterogeneous graph over heavy-chain, light-chain and antigen residues, three global tokens and three virtual nodes, with ten edge types covering intra-chain, inter-chain, global and virtual-node connectivity. The encoder is a five-layer relation-aware equivariant graph network that updates residue features and coordinates together. Each intervention below targets one of the failure modes above.</p>
+
+    <h3 class="title is-4">Framework dropout against the antibody shortcut</h3>
+    <p>During training we set each heavy-chain framework embedding to zero with probability $p = 0.3$ before message passing, so the corruption propagates through all five layers and the model has to reach for the antigen pathway instead of the framework context it would otherwise lean on.</p>
+
+    <h3 class="title is-4">Hyperbolic cross-attention and an antigen gate</h3>
+    <p>CDR residues attend to epitope residues on the Lorentz hyperboloid with curvature $c = 1$ and four heads, where volume grows exponentially with distance and the global geometry of an epitope can constrain a local residue choice,</p>
+    <div class="math-box">$$d_{\mathcal H}(\mathbf q,\mathbf k)=\operatorname{arccosh}\!\big(-\langle \mathbf q,\mathbf k\rangle_{\mathcal L}\big),\qquad \alpha_{ij}=\operatorname*{softmax}_j\Big(\tfrac{-d_{\mathcal H}(\mathbf q_i,\mathbf k_j)}{\sqrt{D/H}}\Big).$$</div>
+    <p>A gate then decides how much of that antigen context enters the sequence head, where $\mathbf o_i$ is the attention output and $\alpha$ a learnable mixing coefficient,</p>
+    <div class="math-box">$$\mathbf g_i=\sigma(\mathbf W_g\mathbf o_i+\mathbf b_g),\qquad \tilde{\mathbf h}_i=\alpha\,(\mathbf h_i^{\text{cdr}}\odot\mathbf g_i)+(1-\alpha)\,\mathbf h_i^{\text{cdr}}.$$</div>
+
+    <h3 class="title is-4">A mixture head that keeps more than one mode</h3>
+    <p>The sequence head is a mixture density network with $K = 4$ components and per-position mixing weights. Each component carries a symmetric $20\times 20$ coupling matrix $\mathbf J_k$ in the manner of a Potts model, and two rounds of belief propagation refine its logits with messages from the neighboring positions. Annealed multiple choice learning weights the components by their own loss, with the temperature falling from 2.0 to 0.1 over twenty epochs,</p>
+    <div class="math-box">$$w_k=\frac{\exp(-\ell_k/\tau)}{\sum_{k'}\exp(-\ell_{k'}/\tau)},\qquad \mathcal L_{\text{seq}}=\sum_{k=1}^{K}w_k\,\ell_k .$$</div>
+    <p>At high temperature the components explore together, and as $\tau$ falls the assignment sharpens toward winner-take-all, so each component converges to the conditional distribution of the subset it wins.</p>
+
+    <h3 class="title is-4">An antigen term that reaches the decoder</h3>
+    <p>To force the predicted distributions themselves to carry antigen identity, we embed the soft sequence $\mathbf p_i$ through the learnable amino acid table $\mathbf E_{\text{AA}}$ and match it to the mean-pooled antigen embedding $\mathbf a_i$ with an InfoNCE objective over the batch,</p>
+    <div class="math-box">$$\mathbf c_i=\operatorname{MLP}\Big(\tfrac{1}{L_i}\textstyle\sum_j \mathbf p_i[j]\,\mathbf E_{\text{AA}}\Big),\qquad \mathcal L_{\text{cls}}=-\frac{1}{B}\sum_{i=1}^{B}\log\frac{\exp(\mathbf c_i^{\top}\mathbf a_i)}{\sum_{k}\exp(\mathbf c_i^{\top}\mathbf a_k)}.$$</div>
+    <p>If the model emitted the same CDR for all targets, the embeddings would coincide and the classification would fall to chance. The gradient flows through the softmax output of the sequence head, which separates this term from contrastive losses that act on embeddings and bypass the decoder.</p>
+
+    <h3 class="title is-4">The objective</h3>
+    <p>Five terms train the model together: the mixture sequence loss, a Huber loss on the C$\alpha$ coordinates, the shadow paratope loss that holds the designed backbone at the right distance from the epitope surface, a determinantal point process term that matches the eigenvalue spectrum of the predicted residue distribution to the native one, and the antigen term above.</p>
+    <div class="math-box">$$\mathcal L=\mathcal L_{\text{seq}}+\alpha\,\mathcal L_{\text{coord}}+\delta\,\mathcal L_{\text{shadow}}+\epsilon\,\mathcal L_{\text{GDPP}}+\lambda\,\mathcal L_{\text{cls}},\qquad \alpha=1.3,\ \delta=0.664,\ \epsilon=0.05,\ \lambda=0.2 .$$</div>
+    <p class="table-note">Coordinate predictions are SE(3)-equivariant and sequence predictions SE(3)-invariant. The group is SE(3) rather than E(3) by design, since the orientation features are built from cross products and a reflection flips them, which is the correct behavior for chiral L-amino acid backbones.</p>
+  </div>
+</section>
+
+<!-- ================================================================== results -->
+<section class="section is-light" id="results">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Results on Chimera-Bench</h2>
+    <p>We report CDR-H3 on the antigen-fold split, which holds out whole antigen folds and so measures generalization to unseen target families, with 2,338 complexes for training and 292 each for validation and test. Sequence quality is amino acid recovery (AAR) and perplexity (PPL), structure quality is C$\alpha$ RMSD, and binding quality is the fraction of native contacts (fnat), the interface RMSD (iRMSD), DockQ and epitope F1. All baselines were retrained with their published configurations.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead>
+          <tr><th>Method</th><th>AAR&uarr;</th><th>PPL&darr;</th><th>RMSD&darr;</th><th>fnat&uarr;</th><th>iRMSD&darr;</th><th>DockQ&uarr;</th><th>epiF1&uarr;</th></tr>
+        </thead>
+        <tbody>
+          <tr class="group-row"><td colspan="8">Equivariant graph networks</td></tr>
+          <tr><td>RAAD</td><td class="second">.38</td><td class="second">3.06</td><td class="second">1.65</td><td class="second">.62</td><td class="second">1.42</td><td class="second">.70</td><td class="second">.78</td></tr>
+          <tr><td>MEAN</td><td class="best">.40</td><td class="best">2.79</td><td>1.66</td><td class="second">.62</td><td class="second">1.42</td><td class="second">.70</td><td class="second">.78</td></tr>
+          <tr><td>dyMEAN</td><td>.37</td><td>3.35</td><td>2.06</td><td>.61</td><td>1.79</td><td>.66</td><td>.75</td></tr>
+          <tr class="group-row"><td colspan="8">Diffusion and flow</td></tr>
+          <tr><td>DiffAb</td><td>.23</td><td>&ndash;</td><td>2.24</td><td>.52</td><td>2.10</td><td>.58</td><td>.65</td></tr>
+          <tr><td>AbFlowNet</td><td>.23</td><td>&ndash;</td><td>2.70</td><td>.56</td><td>2.46</td><td>.60</td><td>.65</td></tr>
+          <tr><td>AbMEGD</td><td>.24</td><td>&ndash;</td><td>2.25</td><td>.55</td><td>2.13</td><td>.59</td><td>.65</td></tr>
+          <tr><td>RADAb</td><td>.25</td><td>&ndash;</td><td>7.79</td><td>.51</td><td>4.78</td><td>.57</td><td>.65</td></tr>
+          <tr><td>dyAb</td><td>.28</td><td>&ndash;</td><td>2.40</td><td>.56</td><td>1.81</td><td>.65</td><td>.72</td></tr>
+          <tr class="group-row"><td colspan="8">Other paradigms</td></tr>
+          <tr><td>AbODE</td><td>.27</td><td>10.78</td><td>13.17</td><td>.16</td><td>4.00</td><td>.39</td><td>.40</td></tr>
+          <tr><td>AbDockGen</td><td>.24</td><td>7.89</td><td>3.65</td><td>.46</td><td>2.41</td><td>.57</td><td>.75</td></tr>
+          <tr class="ours-row"><td>AgForce (ours)</td><td class="second">.38</td><td>3.17</td><td class="best">1.55</td><td class="best">.69</td><td class="best">1.27</td><td class="best">.74</td><td class="best">.82</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">CDR-H3 on the antigen-fold split of Chimera-Bench, 292 test complexes, means over the test set. Bold marks the best value in a column and underline the second best. AbODE's structural metrics are not comparable, since its decoder collapses to degenerate geometry, and it is scored on the 64 complexes its released pipeline completed. The paper reports the standard deviations.</p>
+    <p>AgForce takes five of the seven columns. It reaches the lowest backbone error at 1.55&nbsp;&Aring; and the best value on all four interface measures, raising fnat from 0.62 to 0.69, DockQ from 0.70 to 0.74 and epitope F1 from 0.78 to 0.82, while cutting interface RMSD from 1.42 to 1.27&nbsp;&Aring;. Structure and binding improve together rather than trading against each other.</p>
+    <p>AgForce does not win raw recovery. MEAN reaches 0.40 against 0.38, and that gap measures collapse rather than design quality. MEAN emits an effective vocabulary of 6.7 against 8.9 for AgForce, and the diagnosis above shows that recovery under greedy decoding is maximized by collapsing onto positional modes. AgForce gives up 2 points of recovery for 7 points of fnat and 4 points of epitope F1.</p>
+    <figure class="paper-figure">
+      <img src="static/images/veff_vs_aar.png" alt="Recovery against effective vocabulary for ten CDR-H3 design methods, with marker area showing backbone RMSD" loading="lazy">
+      <figcaption><strong>The trade-off the leaderboard hides.</strong> Amino acid recovery against effective vocabulary, with marker area showing backbone RMSD. The accurate methods crowd the collapsed left edge and the diverse methods give up recovery. AgForce holds the upper right of the usable region with a small marker, which is where accuracy, diversity and geometry agree.</figcaption>
+    </figure>
+    <details class="paper-details">
+      <summary>The other two splits, and per-CDR results</summary>
+      <div class="details-body">
+        <p>The epitope-group split holds out clusters of related epitopes and the temporal split holds out complexes deposited after a cutoff date. AgForce leads fnat, iRMSD, DockQ and epitope F1 on both, and adds perplexity and RMSD on both. MEAN again leads recovery on epitope-group, 0.42 against 0.39, and ties on temporal at 0.39.</p>
+        <div class="table-wrap">
+          <table class="results-table">
+            <thead>
+              <tr><th>Split</th><th>Method</th><th>AAR&uarr;</th><th>PPL&darr;</th><th>RMSD&darr;</th><th>fnat&uarr;</th><th>iRMSD&darr;</th><th>DockQ&uarr;</th><th>epiF1&uarr;</th></tr>
+            </thead>
+            <tbody>
+              <tr><td rowspan="3">Epitope-group</td><td>RAAD</td><td>.38</td><td>3.31</td><td class="second">1.95</td><td>.49</td><td class="second">1.64</td><td class="second">.64</td><td class="second">.67</td></tr>
+              <tr><td>MEAN</td><td class="best">.42</td><td class="second">3.00</td><td>2.01</td><td>.48</td><td>1.66</td><td>.63</td><td class="second">.67</td></tr>
+              <tr class="ours-row"><td>AgForce</td><td class="second">.39</td><td class="best">2.99</td><td class="best">1.88</td><td class="best">.53</td><td class="best">1.56</td><td class="best">.66</td><td class="best">.70</td></tr>
+              <tr><td rowspan="3">Temporal</td><td>RAAD</td><td class="second">.38</td><td class="second">3.24</td><td class="second">1.81</td><td class="second">.61</td><td class="second">1.46</td><td class="second">.71</td><td class="second">.74</td></tr>
+              <tr><td>MEAN</td><td class="best">.39</td><td>3.31</td><td>1.84</td><td>.60</td><td>1.44</td><td class="second">.71</td><td>.73</td></tr>
+              <tr class="ours-row"><td>AgForce</td><td class="best">.39</td><td class="best">3.07</td><td class="best">1.71</td><td class="best">.64</td><td class="best">1.36</td><td class="best">.73</td><td class="best">.76</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note">The two strongest baselines of each split against AgForce. The paper reports all ten methods.</p>
+        <p>On the shorter and more constrained loops, AgForce matches the strongest baseline and takes the backbone. It reaches 0.70 recovery on CDR-H1 against 0.69 for RAAD with 0.50&nbsp;&Aring; RMSD against 0.54&nbsp;&Aring;, and 0.59 on CDR-H2 against 0.60 with 0.45&nbsp;&Aring; against 0.49&nbsp;&Aring;. The methods separate on H3, where the design problem is open.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== designs on test complexes -->
+<section class="section" id="designs">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Designs on held-out complexes</h2>
+    <p>We ran the trained AgForce model on the test complexes of the antigen-fold split, whose antigen folds are absent from training. Each video turns one complex about the axis from the epitope to the antibody and pushes in to the interface, where the designed loop lies over the native one. The antigen carries its surface with the epitope painted on it (<span class="legend-key epi"></span>), the variable domains of the antibody appear as a cartoon (<span class="legend-key fv"></span>), and the two C$\alpha$ traces compare the native loop (<span class="legend-key nat"></span>) with the design, colored by whether each residue matches the native one (<span class="legend-key match"></span>&nbsp;matches, <span class="legend-key miss"></span>&nbsp;differs).</p>
+    <div class="complex-head">
+      <div class="tabs-mini" data-tabs="complexes" role="tablist">
+        <button class="tab-btn is-active" data-tab="3mj9" role="tab" aria-selected="true">Adhesion molecule</button>
+        <button class="tab-btn" data-tab="4rdq" role="tab" aria-selected="false">Bestrophin-1</button>
+        <button class="tab-btn" data-tab="5ucb" role="tab" aria-selected="false">Histone chaperone</button>
+        <button class="tab-btn" data-tab="8oxw" role="tab" aria-selected="false">Transglutaminase</button>
+      </div>
+    </div>
+    <div class="complex-pane is-active" data-tab-pane="complexes" data-tab="3mj9">
+      <div class="complex-card">
+        <video class="figure-video" autoplay muted loop playsinline preload="auto" poster="static/images/complex_3mj9.jpg" aria-label="AgForce design of CDR-H3 on PDB 3MJ9">
+          <source src="static/videos/complex_3mj9.mp4" type="video/mp4">
+          <img src="static/images/complex_3mj9.jpg" alt="AgForce design of CDR-H3 on PDB 3MJ9">
+        </video>
+        <div class="complex-meta">
+          <h4>Junctional adhesion molecule-like with its antibody (PDB 3MJ9)</h4>
+          <p>The designed loop recovers 6 of the 10 native residues and traces the native backbone to 0.45&nbsp;&Aring;, the best interface of the four complexes here. Three of its four substitutions fall at the positions whose C$\alpha$ lies within 8&nbsp;&Aring; of the antigen, which is the gap between overall recovery and contact recovery that the diagnosis predicts.</p>
+          <div class="metric-row"><span class="metric">recovery 0.60</span><span class="metric">RMSD 0.45 &Aring;</span><span class="metric">fnat 0.94</span><span class="metric">DockQ 0.96</span><span class="metric split">antigen-fold test split</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="complex-pane" data-tab-pane="complexes" data-tab="4rdq">
+      <div class="complex-card">
+        <video class="figure-video" muted loop playsinline preload="none" poster="static/images/complex_4rdq.jpg" aria-label="AgForce design of CDR-H3 on PDB 4RDQ">
+          <source src="static/videos/complex_4rdq.mp4" type="video/mp4">
+          <img src="static/images/complex_4rdq.jpg" alt="AgForce design of CDR-H3 on PDB 4RDQ">
+        </video>
+        <div class="complex-meta">
+          <h4>Bestrophin-1 with the Fab of its crystallization chaperone (PDB 4RDQ)</h4>
+          <p>The highest recovery among the complexes shown here, 8 of 9 positions, and the one substitution falls at a contacting position, where valine gives way to arginine. The designed loop still reproduces the contacts of the native one, so the epitope F1 reaches 1.00.</p>
+          <div class="metric-row"><span class="metric">recovery 0.89</span><span class="metric">RMSD 0.44 &Aring;</span><span class="metric">fnat 0.83</span><span class="metric">DockQ 0.91</span><span class="metric split">antigen-fold test split</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="complex-pane" data-tab-pane="complexes" data-tab="5ucb">
+      <div class="complex-card">
+        <video class="figure-video" muted loop playsinline preload="none" poster="static/images/complex_5ucb.jpg" aria-label="AgForce design of CDR-H3 on PDB 5UCB">
+          <source src="static/videos/complex_5ucb.mp4" type="video/mp4">
+          <img src="static/images/complex_5ucb.jpg" alt="AgForce design of CDR-H3 on PDB 5UCB">
+        </video>
+        <div class="complex-meta">
+          <h4>Histone chaperone Asf1 with its antibody (PDB 5UCB)</h4>
+          <p>This complex is resolved to 1.52&nbsp;&Aring;, the sharpest of the four, and its epitope covers 38 residues. The design recovers 6 of 10 positions and traces the backbone to 0.64&nbsp;&Aring;, and it shows the collapse the diagnosis describes: it replaces the tryptophan and the tyrosine that contact the antigen with glycine, one of the two residues the decoders overproduce.</p>
+          <div class="metric-row"><span class="metric">recovery 0.60</span><span class="metric">RMSD 0.64 &Aring;</span><span class="metric">fnat 0.87</span><span class="metric">DockQ 0.92</span><span class="metric split">antigen-fold test split</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="complex-pane" data-tab-pane="complexes" data-tab="8oxw">
+      <div class="complex-card">
+        <video class="figure-video" muted loop playsinline preload="none" poster="static/images/complex_8oxw.jpg" aria-label="AgForce design of CDR-H3 on PDB 8OXW">
+          <source src="static/videos/complex_8oxw.mp4" type="video/mp4">
+          <img src="static/images/complex_8oxw.jpg" alt="AgForce design of CDR-H3 on PDB 8OXW">
+        </video>
+        <div class="complex-meta">
+          <h4>Transglutaminase E with its antibody (PDB 8OXW)</h4>
+          <p>A 679-residue antigen, the largest here, on which the 25-residue epitope is a small patch. The 15-residue design recovers 9 positions and holds 0.88 of the native contacts. Across the contact face it lays a run of five serines where the native loop alternates leucine, glycine, serine and aspartate, so it reaches the interface without reaching the chemistry.</p>
+          <div class="metric-row"><span class="metric">recovery 0.60</span><span class="metric">RMSD 1.02 &Aring;</span><span class="metric">fnat 0.88</span><span class="metric">DockQ 0.90</span><span class="metric split">antigen-fold test split</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="table-note">The model predicts the C$\alpha$ trace of the loop, which is what the videos draw. Over the 292 test complexes of this split, AgForce averages 0.38 recovery, 1.55&nbsp;&Aring; backbone RMSD and 0.74 DockQ; these four complexes rank among the best of the split on the interface.</p>
+  </div>
+</section>
+
+<!-- ================================================================== ablations -->
+<section class="section is-light" id="ablations">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">The components that earn their place</h2>
+    <p>We changed one component at a time on the epitope-group split, where two training runs of the full model differ by 0.002 recovery and 0.016&nbsp;&Aring; RMSD, which sets the noise floor. We report the negative results as plainly as the positive ones.</p>
+    <h3 class="title is-4">Depth and evolutionary context</h3>
+    <p>Depth is the structural lever and the one component whose effect reproduces on both splits. Three layers lose 2.9 points of fnat, 0.10&nbsp;&Aring; of interface RMSD and 0.09&nbsp;&Aring; of backbone RMSD, and seven layers recover all three. Removing the frozen ESM-2 embeddings is the largest single effect on the sequence side, costing 3.1 points of recovery and 1.96 of effective vocabulary, so evolutionary context supplies accuracy and diversity together rather than buying one with the other.</p>
+    <h3 class="title is-4">The decoder head</h3>
+    <p>A plain linear head matches the full mixture head on each column, 0.394 recovery against 0.392 and 1.853&nbsp;&Aring; RMSD against 1.864&nbsp;&Aring;, and removing the pairwise term or the mixture term individually changes nothing beyond noise. Replacing hyperbolic attention with Euclidean attention leaves fnat and DockQ flat and raises effective vocabulary to 8.73, the highest in the table. The interface gains therefore trace to the shadow paratope supervision and to the encoder.</p>
+    <h3 class="title is-4">The antigen term</h3>
+    <p>Removing the InfoNCE term raises recovery from 0.392 to 0.402 and leaves effective vocabulary unchanged at 8.06, so the gain is not a collapse artifact. The term does not deliver the conditioning it was designed for. Removing framework dropout gives the highest recovery in the table, 0.403, alongside the second lowest effective vocabulary, 7.56, which is the pattern the argmax bottleneck predicts.</p>
+    <div class="takeaway">Effective vocabulary stays between 7.56 and 8.73 across the configurations against 15.2 for native loops, and its order does not track recovery. No component we tested closes the diversity gap, and isolating which encoder-side intervention carries the interface gain across several seeds is the next step.</div>
+  </div>
+</section>
+
+<!-- ================================================================== bibtex -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <div class="bibtex-header">
+      <h2 class="title">BibTeX</h2>
+      <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard"><i class="fas fa-copy"></i> <span class="copy-text">Copy</span></button>
+    </div>
+    <!-- PLACEHOLDER: add the arXiv identifier or the venue once they exist -->
+    <pre id="bibtex-code" class="no-math"><code>@article{ahmed2026agforce,
+  title   = {AgForce Enables Antigen-conditioned Generative Antibody Design},
+  author  = {Ahmed, Mansoor and Patterson, Murray},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</code></pre>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>AgForce &middot; Georgia State University &middot; Georgia Institute of Technology<br>The architecture animation is drawn from the figure of the paper, and the designs are rendered from the Chimera-Bench test complexes with the trained model.<br>Template from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener noreferrer">Academic Project Page</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

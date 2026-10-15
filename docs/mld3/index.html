@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MLD3: Mixture-of-Latents for Few-Step Discrete Diffusion Distillation</title>
+  <meta name="description" content="MLD3 distills a discrete diffusion teacher into a few-step student whose step is a small mixture of factorized kernels chosen by a learned router, so the likelihood of a teacher transition is exact and the student can learn correlated updates.">
+  <meta name="keywords" content="discrete diffusion, masked diffusion, distillation, few-step generation, mixture of latents, router, flow matching">
+  <meta name="author" content="Mansoor Ahmed, Sophia Tang, Hemanth Venkateswara, Murray Patterson">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="MLD3: Mixture-of-Latents for Few-Step Discrete Diffusion Distillation">
+  <meta property="og:description" content="A few-step discrete diffusion student whose step is a mixture of factorized kernels chosen by a router, with an exactly computable training objective.">
+  <!-- the absolute urls assume the page is served at https://mansoor181.github.io/mld3/ ; change them if the folder name differs -->
+  <link rel="canonical" href="https://mansoor181.github.io/mld3/">
+  <meta property="og:url" content="https://mansoor181.github.io/mld3/">
+  <meta property="og:image" content="https://mansoor181.github.io/mld3/static/images/mld3_concept.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], ignoredClasses: ['sample-text', 'no-math'], throwOnError: false});"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProg"></div>
+<button class="scroll-to-top" title="Back to top" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+<main>
+<!-- ================================================================== title, authors, links -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title hero-fade hero-fade-1">MLD3</h1>
+          <h2 class="subtitle is-4 publication-subtitle hero-fade hero-fade-1">Mixture-of-Latents for Few-Step Discrete Diffusion Distillation</h2>
+          <div class="is-size-5 publication-authors hero-fade hero-fade-2">
+            <span class="author-block"><a href="https://mansoor181.github.io/" title="Mansoor Ahmed's website" target="_blank" rel="noopener">Mansoor Ahmed</a><sup>1,2,*</sup>,</span>
+            <!-- PLACEHOLDER: add homepage links for the co-authors below -->
+            <span class="author-block"><a href="https://sophtang.github.io/" title="Sophia Tang's website" target="_blank" rel="noopener">Sophia Tang</a><sup>3</sup>,</span>
+            <span class="author-block">Hemanth Venkateswara<sup>1</sup>,</span>
+            <span class="author-block">Murray Patterson<sup>1,*</sup></span>
+          </div>
+          <div class="affiliations hero-fade hero-fade-3">
+            <span class="author-block"><sup>1</sup>Georgia State University</span>
+            <span class="author-block"><sup>2</sup>Georgia Institute of Technology</span>
+            <span class="author-block"><sup>3</sup>University of Pennsylvania</span>
+          </div>
+          <p class="author-note hero-fade hero-fade-3"><sup>*</sup>Correspondence to <a href="mailto:mahmed76@gsu.edu">mahmed76@gsu.edu</a> and <a href="mailto:mpatterson30@gsu.edu">mpatterson30@gsu.edu</a></p>
+          <div class="publication-links hero-fade hero-fade-4">
+            <!-- PLACEHOLDER: replace the Paper and arXiv href="#" once the preprint is public, and drop the is-placeholder class -->
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://github.com/mansoor181/mld3" title="Code on GitHub" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="#BibTeX" title="Jump to the BibTeX citation"><span class="icon"><i class="fas fa-quote-left"></i></span><span>BibTeX</span></a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== teaser: the toy picture, animated -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body hero-fade hero-fade-5">
+      <video class="figure-video" autoplay muted loop playsinline preload="auto" poster="static/images/mld3_concept.png" aria-label="Animation of the toy illustration, from noise to data, for a fixed latent prior and for a learned router">
+        <source src="static/videos/mld3_concept.mp4" type="video/mp4">
+        <img src="static/images/mld3_concept.png" alt="Toy illustration of correlated few-step generation and the role of the learned latent">
+      </video>
+      <p class="teaser-caption"><strong>One step fills two positions of the same sentence.</strong> Each axis is one position, and the three circled clusters are the only coherent ways to fill them. Both students go from noise at $t=0$ to data at $t=1$ in two steps, with the positions independent given a shared latent. <strong>Top:</strong> under surrogate collapse the latent does not separate the modes, so each position follows its own marginal and mass lands on incoherent pairs, in red. <strong>Bottom:</strong> MLD3 uses a finite latent $k\in\{1,2,3\}$ with router weights $w_k(\boldsymbol{x}_t,t)$. The coloured regions show which component the router prefers at each intermediate state, and the simplex on the right carries the weights it assigns.</p>
+    </div>
+  </div>
+</section>
+
+<nav class="section-nav" aria-label="Page sections">
+  <a href="#problem">Problem</a>
+  <a href="#method">Method</a>
+  <a href="#theory">Theory</a>
+  <a href="#results">Results</a>
+  <a href="#samples">Samples</a>
+  <a href="#BibTeX">BibTeX</a>
+</nav>
+
+<!-- ================================================================== tl;dr and abstract -->
+<section class="section">
+  <div class="container is-max-desktop content">
+    <div class="tldr reveal"><p><span class="tldr-label">TL;DR</span>A few-step student of a discrete diffusion teacher fills many positions in one step and draws them independently, so tokens that have to agree often do not. MLD3 replaces the single product by a small mixture of products chosen by a learned router. The likelihood of a sampled teacher transition is then available in closed form, so the student learns correlated updates directly, and one component recovers the standard masked diffusion student. Few-step quality improves by roughly 2 times across text, molecules, regulatory DNA and images.</p></div>
+    <details class="paper-details reveal">
+      <summary>Abstract</summary>
+      <div class="details-body">
+        <p>Discrete diffusion and flow models can generate high-quality sequences, but they usually require many denoising steps. Distilling them into few-step models is challenging because a single student step predicts many positions independently, which can lose important dependencies between tokens. We show that matching each position separately is not enough to reproduce the teacher's joint transition. Prior work addresses this issue with a shared continuous latent variable, but its training requires an approximation that can fail to make effective use of the latent. We propose <strong>M</strong>ixture-of-<strong>L</strong>atents for <strong>D</strong>iscrete <strong>D</strong>iffusion <strong>D</strong>istillation (MLD3), which instead uses a small set of components selected by a parameterized router. This makes the likelihood of each sampled teacher transition <em>exactly</em> computable and allows the student to learn correlated updates directly. We also propose a novel sampling approach that exploits the mixture of components at almost no additional cost to that of a factorized step. Notably, MLD3 naturally reduces to a standard masked diffusion student with one component and adds minimal additional parameters as new components are added. Across text, molecules, regulatory DNA, and image generation, MLD3 consistently improves few-step generation quality by roughly $2\times$ over baselines, with the largest gains on tasks with stronger dependencies across positions.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== the problem -->
+<section class="section is-light" id="problem">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">One step, many positions, drawn independently</h2>
+    <p>A masked diffusion model reveals the positions of a sequence over many denoising steps. Given the state $\boldsymbol{x}_t$, a step samples every masked position from its own categorical distribution,</p>
+    <div class="math-box">$$p_{s\mid t}(\boldsymbol{x}_s\mid\boldsymbol{x}_t)\;=\;\prod_{i=1}^{L}P_i\big(x_s^{i}\mid\boldsymbol{x}_t,t\big).$$</div>
+    <p>This factorization is exact when a step reveals one position at a time. A few-step sampler has to reveal several positions in each step, and positions revealed together are rarely independent. A student can match every per-position marginal of the teacher and still miss its joint structure, with an irreducible error given by the total correlation of the teacher's transition,</p>
+    <div class="math-box">$$\mathrm{TC}(q)\;=\;\mathrm{KL}\Big(q\,\Big\|\,\prod_{i}q_i\Big)\;=\;\sum_{i}\mathrm{H}(q_i)-\mathrm{H}(q).$$</div>
+    <p>In the toy picture above, the two positions are completed as <em>The&hellip;brown</em>, <em>A&hellip;big</em> or <em>My&hellip;old</em>. A product of the two marginals keeps all nine combinations, and a quarter of its samples land between the modes on pairs that no sentence of the data uses.</p>
+    <div class="takeaway">The error comes from the form of the step, not from the teacher. A product of per-position distributions cannot keep positions consistent within a step, however accurate its marginals are.</div>
+  </div>
+</section>
+
+<!-- ================================================================== the method -->
+<section class="section" id="method">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">A small mixture, chosen by a router</h2>
+    <p>MLD3 replaces the single product by a mixture of $M$ products. A router reads the current state and assigns the weight $w^{\theta}_k$ to component $k$, and each component keeps its own factorized step,</p>
+    <div class="math-box">$$p^{\theta}_{s\mid t}(\boldsymbol{x}_s\mid\boldsymbol{x}_t)\;=\;\sum_{k=1}^{M}w^{\theta}_{k}(\boldsymbol{x}_t,t)\prod_{i=1}^{L}P^{\theta}_{i,k}\big(x_s^{i}\mid\boldsymbol{x}_t,t\big).$$</div>
+    <p>To sample one step we draw a single index $k\sim w^{\theta}(\boldsymbol{x}_t,t)$ that all positions share, and then fill every masked position from component $k$. That one sequence-level draw is what couples the positions revealed together. Because the mixture is finite, the likelihood of a teacher transition is a closed-form sum over $M$ terms rather than an integral, so the student trains on it directly,</p>
+    <div class="math-box">$$\mathcal{L}\;=\;-\log\sum_{k=1}^{M}w^{\theta}_{k}(\boldsymbol{x}_t,t)\prod_{i=1}^{L}P^{\theta}_{i,k}\big(x_s^{i}\mid\boldsymbol{x}_t,t\big).$$</div>
+    <figure class="paper-figure">
+      <video class="figure-video" autoplay muted loop playsinline preload="metadata" poster="static/images/mld3_method.png" aria-label="Animation of training and inference in MLD3">
+        <source src="static/videos/mld3_method.mp4" type="video/mp4">
+        <img src="static/images/mld3_method.png" alt="Training and inference in MLD3">
+      </video>
+      <figcaption><strong>Training (a) and inference (b).</strong> From a masked state $\boldsymbol{x}_t$, the frozen teacher takes $T$ analytic sub-steps to produce the target $\boldsymbol{x}_s$, which the student has to reach in one pass. The trunk feeds a router, which gives the weights $w^{\theta}_k$, and $M$ heads, which give the factorized distributions $P^{\theta}_{i,k}$, and the gradient of the exact mixture likelihood reaches both. At sampling time each evaluated component gives one joint proposal, and the step advances with the proposal that scores highest under the mixture.</figcaption>
+    </figure>
+    <div class="props">
+      <div class="prop"><h4><span class="icon"><i class="fas fa-check-circle"></i></span>Exact, not a surrogate</h4><p>A finite latent turns the step likelihood into a closed-form sum, so the divergence to the teacher is differentiable without sampling the latent and the router receives a gradient.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-layer-group"></i></span>One component is the baseline</h4><p>At $M=1$ the objective reduces to the usual masked diffusion student, so the mixture is a strict generalization and every comparison has a matched control.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-feather-alt"></i></span>Cheap to widen</h4><p>Only the last $L_{\mathrm{lat}}$ blocks run once per component, on one shared set of weights. Adding a component costs an embedding vector and one scalar router output.</p></div>
+    </div>
+    <details class="paper-details">
+      <summary>Architecture and the forward pass</summary>
+      <div class="details-body">
+        <p class="anim-note">A single transformer trunk returns the router weights and the distributions of all components in one pass. The first $D-L_{\mathrm{lat}}=8$ blocks run once per state and give a shared representation, from which a two-layer head on the mean-pooled hidden states produces the weights. The remaining $L_{\mathrm{lat}}=4$ blocks hold one set of weights and run once per evaluated component, where the component enters only through the learned embedding $E_k$ added to the conditioning vector.</p>
+        <figure class="paper-figure">
+          <video class="figure-video" autoplay muted loop playsinline preload="none" poster="static/images/mld3_arch.png" aria-label="Animation of the MLD3 architecture and its forward pass">
+            <source src="static/videos/mld3_arch.mp4" type="video/mp4">
+            <img src="static/images/mld3_arch.png" alt="The MLD3 architecture and its forward pass">
+          </video>
+          <figcaption><strong>The forward pass.</strong> The state and the time enter together, the embedding feeds the shared blocks, and the shared representation then travels up to the router and down to the component blocks, where the weights and the posteriors meet at the mixture step.</figcaption>
+        </figure>
+      </div>
+    </details>
+    <details class="paper-details">
+      <summary>Sampling with the mixture</summary>
+      <div class="details-body">
+        <p>Our default sampler reveals a fixed number of positions per step in a spread order and evaluates only the two components that the router ranks highest, scoring their proposals under the mixture and keeping the best one. Cost is counted in block passes rather than in network calls, since a mixture step reuses the shared trunk. With $D=12$ blocks and $L_{\mathrm{lat}}=4$, a step costs 12 block passes at $M=1$ and 16 with two components evaluated, so a mixture step is about a third more expensive than a factorized one and far cheaper than evaluating all $M$ components.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== theory -->
+<section class="section is-light" id="theory">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Why a continuous latent collapses</h2>
+    <p>A shared continuous latent $\lambda$ gives the same coupling in principle, but its step likelihood integrates over $\lambda$ and is intractable. Prior work therefore trains on a Jensen bound estimated with a single Monte Carlo draw of the latent,</p>
+    <div class="math-box">$$\mathrm{KL}\Big(q\,\Big\|\,\mathbb{E}_{\lambda}\big[p^{\theta}(\cdot\,;\lambda)\big]\Big)\;\le\;\mathbb{E}_{\lambda}\Big[\mathrm{KL}\big(q\,\big\|\,p^{\theta}(\cdot\,;\lambda)\big)\Big].$$</div>
+    <p>The bound moves the mixture outside the divergence, which leaves an objective that separates across latents. We prove that this single-sample loss sends no gradient to the mixing weights and that its optimum places every component at the same factorized solution. The latent is therefore not merely underused but unreachable, a failure we call surrogate collapse, and it is what the top row of the toy picture shows. Replacing the continuous latent by a finite index removes the integral, so the mixture stays inside the divergence and the router is trained rather than bypassed.</p>
+    <div class="takeaway">A mixture helps only if its weights can be trained. With a single-sample surrogate they cannot, so the components converge to one factorized kernel and the step is no better than a product.</div>
+    <figure class="paper-figure is-narrow">
+      <img src="static/images/stepdep.png" alt="Teacher-side measures of dependence against the gain a mixture delivers, across six corpora" loading="lazy">
+      <figcaption><strong>Where a mixture is worth training.</strong> Both panels put a teacher-side measure of dependence against the gain the mixture delivers over its factorized control, measured before any student is trained, and the third shows how that dependence falls as the step count grows.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================================================================== results -->
+<section class="section" id="results">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Few-step generation</h2>
+    <p>We distill MDLM teachers on WikiText-103 and LM1B, PairFlow-recipe teachers on QM9 and ZINC-250k, a masked model on DeepSTARR regulatory DNA, and a MaskGIT teacher on ImageNet-256, and we compare against Di4C under its own sampler and against the $M=1$ control trained the same way. On WikiText-103 the $M=8$ student lowers generative perplexity from 265 to 159 at 8 NFEs, a 40 percent reduction against the control, and improves on the teacher at every budget. On LM1B it lowers it from 529 to 405 at the same budget.</p>
+    <figure class="paper-figure">
+      <img src="static/images/results_curves.png" alt="Generative perplexity and molecule validity against the number of function evaluations, for the teacher, Di4C and MLD3 with one, four and eight components" loading="lazy">
+      <figcaption><strong>Across budgets and corpora.</strong> Generative perplexity on LM1B and WikiText-103, where lower is better, and validity on QM9 and ZINC-250k, where higher is better, against the number of function evaluations.</figcaption>
+    </figure>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>gen-PPL, WikiText-103</th><th>4 NFEs</th><th>8 NFEs</th><th>32 NFEs</th></tr></thead>
+        <tbody>
+          <tr><td>MDLM teacher</td><td>1403</td><td>600</td><td>209</td></tr>
+          <tr><td>Di4C</td><td>1039</td><td>473</td><td>198</td></tr>
+          <tr><td>MLD3 ($M=1$, control)</td><td>481</td><td>265</td><td>177</td></tr>
+          <tr><td>MLD3 ($M=4$)</td><td>439</td><td>198</td><td>112</td></tr>
+          <tr class="ours-row"><td>MLD3 ($M=8$)</td><td>319</td><td>159</td><td>97</td></tr>
+        </tbody>
+      </table>
+      <p class="table-note">The student rows use our sampler, and the teacher and Di4C rows use their own. The full grid, LM1B, and the decoding ablations are in the paper.</p>
+    </div>
+    <figure class="paper-figure is-narrow">
+      <img src="static/images/wikitext_bars.png" alt="Generative perplexity on WikiText-103 at one, two, four and eight function evaluations" loading="lazy">
+      <figcaption><strong>The few-step regime.</strong> Generative perplexity on WikiText-103 at the budgets where the factorization hurts most.</figcaption>
+    </figure>
+    <p>The ordering follows the dependence in the task rather than the modality. Molecules gain most, where validity at 4 NFEs rises from 0.139 to 0.444 on ZINC-250k and from 0.257 to 0.574 on QM9 against the matched control. On DeepSTARR, where the steps carry almost no dependence between positions, the mixture improves the Fr&eacute;chet biological distance by up to 21 percent, a smaller gain that the teacher-side test predicts in advance. On ImageNet-256 the $M=8$ student improves FID over Di4C at every budget under the same sampler, mainly by recovering recall.</p>
+    <figure class="paper-figure is-narrow">
+      <img src="static/images/entropy.png" alt="Positional entropy against the number of function evaluations, with held-out data as a dotted line" loading="lazy">
+      <figcaption><strong>Diversity is kept.</strong> Positional entropy against the budget, with held-out data as the dotted line. The gains do not come from a collapse onto a few safe continuations.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================================================================== samples -->
+<section class="section is-light" id="samples">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Samples</h2>
+    <figure class="paper-figure">
+      <img src="static/images/mol_grid.jpg" alt="Held-out molecules beside molecules generated by the eight-component student at 32 NFEs, for QM9 and ZINC-250k" loading="lazy">
+      <figcaption><strong>Molecules at 32 NFEs.</strong> For each dataset, held-out molecules above and samples from the $M=8$ student below, matched by heavy-atom count so the two rows are comparable rather than paired.</figcaption>
+    </figure>
+    <figure class="paper-figure">
+      <img src="static/images/image_completion.jpg" alt="ImageNet-256 completions from a quarter of the validation tokens, for the teacher, MLD3 and Di4C" loading="lazy">
+      <figcaption><strong>ImageNet-256 completions.</strong> Every row is handed the same quarter of the validation tokens and fills the rest, which our students do without any change to the kernel and without retraining.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ================================================================== bibtex -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content reveal">
+    <div class="bibtex-header">
+      <h2 class="title is-3">BibTeX</h2>
+      <button class="button is-small is-rounded copy-bibtex-btn" onclick="copyBibTeX()"><span class="icon"><i class="fas fa-copy"></i></span><span class="copy-text">Copy</span></button>
+    </div>
+    <!-- PLACEHOLDER: add the arXiv identifier, e.g. journal = {arXiv preprint arXiv:2610.xxxxx} -->
+    <pre><code id="bibtex-code" class="no-math">@article{ahmed2026mld3,
+  title   = {Mixture-of-Latents for Few-Step Discrete Diffusion Distillation},
+  author  = {Ahmed, Mansoor and Tang, Sophia and Venkateswara, Hemanth and Patterson, Murray},
+  year    = {2026},
+  note    = {Preprint}
+}</code></pre>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container is-max-desktop has-text-centered content">
+    <p>The page is built on the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener">Academic Project Page template</a>, which is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. The animations are the paper's own figures, with time as the animation variable.</p>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EpiFormer: Learning Antigen-Antibody Interactions for Epitope Prediction via Geometric Deep Learning</title>
+  <meta name="description" content="EpiFormer predicts the epitope that a given antibody binds on an antigen. It interleaves bidirectional cross-attention between the antigen and the antibody inside each layer of a geometric graph encoder and trains with objectives built for sparse labels.">
+  <meta name="keywords" content="epitope prediction, antibody, antigen, geometric deep learning, equivariant graph neural network, cross-attention, AsEP">
+  <meta name="author" content="Mansoor Ahmed, Huirong Chai, Haoxin Wang, Hemanth Venkateswara, Murray Patterson">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="EpiFormer: Learning Antigen-Antibody Interactions for Epitope Prediction via Geometric Deep Learning">
+  <meta property="og:description" content="Antibody-aware epitope prediction with cross-attention between the antigen and the antibody inside each layer of a geometric graph encoder.">
+  <!-- the absolute urls assume the page is served at https://mansoor181.github.io/epiformer/ ; change them if the folder name differs -->
+  <link rel="canonical" href="https://mansoor181.github.io/epiformer/">
+  <meta property="og:url" content="https://mansoor181.github.io/epiformer/">
+  <meta property="og:image" content="https://mansoor181.github.io/epiformer/static/images/epiformer_architecture.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], ignoredClasses: ['no-math'], throwOnError: false});"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+</head>
+<body>
+<div class="scroll-progress" id="scrollProg"></div>
+<button class="scroll-to-top" title="Back to top" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+
+<main>
+<!-- ================================================================== title, authors, links -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title hero-fade hero-fade-1">EpiFormer</h1>
+          <h2 class="subtitle is-4 publication-subtitle hero-fade hero-fade-1">Learning Antigen-Antibody Interactions for Epitope Prediction via Geometric Deep Learning</h2>
+          <div class="is-size-5 publication-authors hero-fade hero-fade-2">
+            <span class="author-block"><a href="https://mansoor181.github.io/" title="Mansoor Ahmed's website" target="_blank" rel="noopener">Mansoor Ahmed</a><sup>1,2,*</sup>,</span>
+            <!-- PLACEHOLDER: add homepage links for the co-authors below -->
+            <span class="author-block">Huirong Chai<sup>1</sup>,</span>
+            <span class="author-block">Haoxin Wang<sup>1</sup>,</span>
+            <span class="author-block">Hemanth Venkateswara<sup>1</sup>,</span>
+            <span class="author-block">Murray Patterson<sup>1,*</sup></span>
+          </div>
+          <div class="affiliations hero-fade hero-fade-3">
+            <span class="author-block"><sup>1</sup>Georgia State University</span>
+            <span class="author-block"><sup>2</sup>Georgia Institute of Technology</span>
+          </div>
+          <p class="author-note hero-fade hero-fade-3"><sup>*</sup>Corresponding authors</p>
+          <div class="publication-links hero-fade hero-fade-4">
+            <!-- PLACEHOLDER: replace href="#" with the paper and arXiv links once they are public, and drop the is-placeholder class -->
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://github.com/mansoor181/epiformer" target="_blank" rel="noopener noreferrer" title="Source code on GitHub"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="#BibTeX" title="Jump to the BibTeX citation"><span class="icon"><i class="fas fa-quote-left"></i></span><span>BibTeX</span></a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== teaser: the concept figure, animated -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body hero-fade hero-fade-5">
+      <video class="figure-video" autoplay muted loop playsinline preload="auto" poster="static/images/epiformer_concept.png" aria-label="Animation of where the antibody enters the representation of an antigen residue">
+        <source src="static/videos/epiformer_concept.mp4" type="video/mp4">
+        <img src="static/images/epiformer_concept.png" alt="Antigen-only prediction, late fusion and EpiFormer, unrolled over the layers of a graph network">
+      </video>
+      <p class="teaser-caption"><strong>Where the antibody enters.</strong> Three ways to predict an epitope, unrolled over the layers of a graph network from the input residues (bottom) to the predicted epitope (top). The color of a node shows whose information its representation carries. (a) An antigen-only predictor does not see the antibody and returns the same answer for any antibody. (b) Late fusion encodes the two chains apart and mixes them once, after the last layer. (c) EpiFormer interleaves cross-attention with message passing, and the antigen and the antibody therefore shape each other's representation at each layer.</p>
+    </div>
+  </div>
+</section>
+
+<nav class="section-nav" aria-label="Page sections">
+  <a href="#problem">Problem</a>
+  <a href="#method">Method</a>
+  <a href="#results">Results</a>
+  <a href="#predictions">Predictions</a>
+  <a href="#analysis">Analysis</a>
+  <a href="#BibTeX">BibTeX</a>
+</nav>
+
+<!-- ================================================================== tl;dr and abstract -->
+<section class="section">
+  <div class="container is-max-desktop content">
+    <div class="tldr reveal"><p><span class="tldr-label">TL;DR</span>An epitope depends on the antibody that binds it, yet antibody-aware predictors encode the antigen and the antibody separately and fuse them only at the end. EpiFormer lets the two chains attend to each other inside each layer of a geometric graph encoder and trains with objectives built for sparse labels. On the AsEP benchmark, it raises F1 from 0.337 to 0.482 over the strongest of 19 baselines. On the harder epitope-group split, whose test epitopes are absent from training, it raises F1 from 0.254 to 0.305.</p></div>
+    <details class="paper-details reveal">
+      <summary>Abstract</summary>
+      <div class="details-body">
+        <p>Antibodies neutralize foreign antigens by binding to specific surface regions called epitopes. Computational epitope prediction is critical for understanding immune recognition and guiding antibody engineering. However, existing methods face three fundamental challenges: antibody-aware models encode each chain independently and combine them only at a late stage, failing to capture co-dependent structural features that define binding interfaces, whereas severe class imbalance and scarcity of known antibody-antigen complexes render standard training objectives ineffective. We propose <em>EpiFormer</em>, a general encoder-decoder framework that addresses these challenges jointly. Our key design principle is interleaved cross-attention within GNN encoding layers, enabling bidirectional antigen-antibody information flow throughout representation learning rather than only at the output. This early-fusion principle is backbone-agnostic, providing consistent gains across GNN architectures from simple GCNs to equivariant models. We further show that sparsity-aware objectives are effective when paired with early-fusion architectures for the epitope prediction task. <em>EpiFormer</em> improves over the previous best method by over 40% in F1 score on standard benchmarks, demonstrating generalizability and cross-dataset transferability. Notably, two behaviors of <em>EpiFormer</em> emerge from end-to-end training alone, where the learned cross-attention gates favor antigen-to-antibody information flow, consistent with the asymmetric roles of the two chains at the binding interface, and the model's preference for geometric over evolutionary features aligns with the established finding that epitope residues are not evolutionarily conserved.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== the problem -->
+<section class="section is-light" id="problem">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">The epitope depends on the antibody</h2>
+    <p>An epitope is the region of an antigen's surface that a given antibody binds. The AsEP benchmark labels an antigen surface residue as epitope when it lies within 4.5&nbsp;&Aring; of the antibody, and asks a model to predict these labels from the structures of the two chains. Different antibodies bind different regions of the same antigen. Hence, a predictor that scores the antigen alone can at best find surface that tends to be bound by some antibody, not the epitope of the antibody at hand.</p>
+    <p>Antibody-aware methods condition on the antibody, but they encode the two chains independently and combine them only after encoding, a design we call late fusion. The structural features that define a binding interface depend on both chains, since the complementarity-determining regions (CDRs) of the antibody adapt their conformation to the epitope. The labels are also sparse. In the median complex of the epitope-ratio test split, 9% of the antigen surface residues belong to the epitope, and AsEP holds 1,721 complexes in total.</p>
+    <div class="takeaway">Late fusion encodes each chain without knowledge of the other. EpiFormer lets the two chains exchange information in each encoder block and pairs this early fusion with objectives designed for sparse labels.</div>
+  </div>
+</section>
+
+<!-- ================================================================== the method -->
+<section class="section" id="method">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Interleaved cross-attention in a geometric encoder</h2>
+    <figure class="paper-figure">
+      <video class="figure-video" autoplay muted loop playsinline preload="metadata" poster="static/images/epiformer_architecture.png" aria-label="Animation of EpiFormer on a held-out complex">
+        <source src="static/videos/epiformer_architecture.mp4" type="video/mp4">
+        <img src="static/images/epiformer_architecture.png" alt="The EpiFormer architecture on the test complex 7KFY">
+      </video>
+      <figcaption><strong>EpiFormer on a held-out complex (PDB 7KFY).</strong> The surface residues of the antigen and the CDR residues of the antibody become residue graphs with four edge relations. In each encoder block, EGNN-R passes messages within each chain while cross-attention exchanges information between the chains, and learned gates, drawn to scale, add it back into each stream. The decoder scores each pair of an antigen and an antibody residue, the mean of the two largest scores of an antigen residue is its epitope probability, and training compares these outputs with the true epitope and contacts. The attention weights, the gates, the interaction map, and the prediction are the released model's outputs on this complex.</figcaption>
+    </figure>
+    <p>We represent each chain as a residue graph with one node per residue, placed at its C$\alpha$ atom. Each node carries geometric features that encode its residue type and the local geometry of its backbone. Edges carry four relations, namely sequential neighbors ($\rho_1$), short-range sequence coupling ($\rho_2$), $K$-nearest neighbors ($\rho_3$), and contacts within 8&nbsp;&Aring; ($\rho_4$). EpiFormer takes the antigen graph $\mathcal G_{\text{ag}}$ and the antibody graph $\mathcal G_{\text{ab}}$ and returns, for each antigen residue, the probability that it belongs to the epitope.</p>
+    <p><strong>Encoder.</strong> Two parallel encoders process the antigen and the antibody. Within each block, a relation-aware E(3)-equivariant graph neural network (EGNN-R) passes messages along the edges of one chain, with a separate message function for each relation, and updates both the residue features and their coordinates,</p>
+    <div class="math-box">$$m_{ij}^{\rho}=\phi_m^{\rho}\big(\mathbf h_i^{\ell},\mathbf h_j^{\ell},\gamma(d_{ij}),\mathbf f_{ij}\big),\qquad \mathbf h_i^{\ell+1}=\mathbf h_i^{\ell}+\phi_h\Big(\mathbf h_i^{\ell},\sum_{j\in\mathcal N(i)}\sum_{\rho\in\mathbf r_{ij}}m_{ij}^{\rho}\Big),\qquad \mathbf x_i^{\ell+1}=\mathbf x_i^{\ell}+\sum_{j\in\mathcal N(i)}\sum_{\rho\in\mathbf r_{ij}}\frac{\boldsymbol\delta_{ij}}{\sqrt{d_{ij}+\varepsilon}}\,\phi_x^{\rho}\big(m_{ij}^{\rho}\big),$$</div>
+    <p>where $d_{ij}$ is the squared distance between residues $i$ and $j$, $\boldsymbol\delta_{ij}$ their displacement, $\mathbf f_{ij}$ the edge features, and $\gamma$ a radial basis expansion. In parallel, multi-head cross-attention (MHCA) lets each chain attend to the residues of the other, and a learnable gate $\alpha_c$ balances the geometric update $\mathbf H_c^{\text{intra}}$ with the cross-chain context,</p>
+    <div class="math-box">$$\mathbf H_c^{\ell+1}=\mathbf H_c^{\ell}+\mathbf H_c^{\text{intra}}+\alpha_c\,\operatorname{FFN}\big(\operatorname{MHCA}(\mathbf H_c^{\ell},\mathbf H_{\bar c}^{\ell})\big),\qquad c\in\{\text{ag},\text{ab}\},$$</div>
+    <p>where $\bar c$ denotes the other chain and FFN is a two-layer feed-forward network.</p>
+    <p><strong>Decoder.</strong> The decoder refines the two embeddings with $J$ further layers of bidirectional cross-attention and then scores each pair of an antigen and an antibody residue in both directions,</p>
+    <div class="math-box">$$\mathbf S_{\text{ag}\to\text{ab}}=\frac{(\mathbf H_{\text{ag}}^{J}\mathbf W_Q)(\mathbf H_{\text{ab}}^{J}\mathbf W_K)^{\top}}{\sqrt{d_k}},\qquad \mathbf S_{\text{ab}\to\text{ag}}=\frac{(\mathbf H_{\text{ab}}^{J}\mathbf W'_Q)(\mathbf H_{\text{ag}}^{J}\mathbf W'_K)^{\top}}{\sqrt{d_k}}.$$</div>
+    <p>A learnable combination of the two score maps yields the interaction map $\hat{\mathcal E}_{\text{bg}}=\sigma(\mathbf Z)\in[0,1]^{n\times m}$ between the $n$ antigen and $m$ antibody residues, and the mean of the two largest entries in each row yields the epitope probability of each antigen residue,</p>
+    <div class="math-box">$$(\hat y_{\text{ag}})_i=\frac{1}{2}\sum_{j\in\operatorname{top}_2(i)}\big(\hat{\mathcal E}_{\text{bg}}\big)_{ij},$$</div>
+    <p>where $\operatorname{top}_2(i)$ holds the two antibody residues with the highest interaction probability for antigen residue $i$.</p>
+    <p><strong>Joint objective.</strong> We train EpiFormer with a joint objective. The node term combines a class-reweighted binary cross-entropy, a Dice loss that measures the overlap between the predicted and the true epitope, and a sparsity term that matches the predicted epitope size to the true one. Two auxiliary terms supervise the interaction map with the true contacts and classify inter-chain distances into four bins,</p>
+    <div class="math-box">$$\mathcal L=\lambda_{\text{node}}\big(\beta_{\text{BCE}}\mathcal L_{\text{BCE}}+\beta_{\text{Dice}}\mathcal L_{\text{Dice}}+\beta_{\text{sparsity}}\mathcal L_{\text{sparsity}}\big)+\lambda_{\text{edge}}\mathcal L_{\text{edge}}+\lambda_{\text{geo}}\mathcal L_{\text{geo}}.$$</div>
+    <div class="props">
+      <div class="prop"><h4><span class="icon"><i class="fas fa-exchange-alt"></i></span>Early fusion</h4><p>The antigen and the antibody exchange information in each encoder block, rather than only in the decoder.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-layer-group"></i></span>Backbone-agnostic</h4><p>With a plain GCN in place of EGNN-R, the framework still reaches 0.447 F1 and outperforms all 19 baselines.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-bullseye"></i></span>Built for sparse labels</h4><p>The sparsity term alone raises F1 from 0.329 to 0.461, since it keeps the model from labeling most residues as epitope.</p></div>
+    </div>
+    <details class="paper-details">
+      <summary>The loss terms</summary>
+      <div class="details-body">
+        <p>With $y_i$ the label of antigen residue $i$, $\hat y_i$ its predicted probability and $\pi_{\text{epi}}&gt;1$ a weight on the positive class, the node terms are</p>
+        <div class="math-box">$$\mathcal L_{\text{BCE}}=-\frac{1}{n}\sum_{i=1}^{n}\big[\pi_{\text{epi}}\,y_i\log\hat y_i+(1-y_i)\log(1-\hat y_i)\big],\qquad \mathcal L_{\text{Dice}}=1-\frac{2\sum_i\hat y_iy_i+\epsilon}{\sum_i\hat y_i+\sum_iy_i+\epsilon},\qquad \mathcal L_{\text{sparsity}}=\big\|\hat{\mathbf y}-\mathbf y\big\|_1.$$</div>
+        <p>The edge term applies a positive-class-reweighted binary cross-entropy to all antigen-antibody residue pairs, with $E_{ij}=1$ when the two residues lie within 4.5&nbsp;&Aring;,</p>
+        <div class="math-box">$$\mathcal L_{\text{edge}}=-\frac{1}{nm}\sum_{i,j}\big[\pi_{\text{edge}}E_{ij}\log\hat E_{ij}+(1-E_{ij})\log(1-\hat E_{ij})\big].$$</div>
+        <p>The geometric term $\mathcal L_{\text{geo}}$ classifies the distance between near-contact residue pairs into the bins 0&ndash;4, 4&ndash;8, 8&ndash;16, and 16&ndash;32&nbsp;&Aring; with a class-balanced cross-entropy. Distances enter only as training targets and do not reach the model at inference.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== results -->
+<section class="section is-light" id="results">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Results on AsEP</h2>
+    <p>We compare EpiFormer with 19 baselines from five families, namely epitope and paratope predictors, protein binding-site predictors, protein interaction and docking models, structure and affinity predictors, and a molecular property model. We retrained each baseline on AsEP with its published configuration. AsEP comes with two splits. The epitope-ratio split balances the fraction of epitope residues across the partitions, and the epitope-group split keeps the test epitopes out of training.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead>
+          <tr><th rowspan="2">Method</th><th colspan="3">Epitope-ratio split</th><th colspan="3">Epitope-group split</th></tr>
+          <tr class="sub"><th>AUC</th><th>F1</th><th>MCC</th><th>AUC</th><th>F1</th><th>MCC</th></tr>
+        </thead>
+        <tbody>
+          <tr class="group-row"><td colspan="7">Epitope and paratope prediction</td></tr>
+          <tr><td>EpiGraph</td><td>.790</td><td>.064</td><td>.089</td><td>.779</td><td>.056</td><td>.096</td></tr>
+          <tr><td>MIPE</td><td class="second">.827</td><td class="second">.337</td><td class="second">.356</td><td>.740</td><td>.172</td><td class="second">.206</td></tr>
+          <tr><td>WALLE</td><td>.808</td><td>.203</td><td>.208</td><td>.713</td><td>.170</td><td>.143</td></tr>
+          <tr><td>DiscoTope3</td><td>.821</td><td>.251</td><td>.247</td><td>.763</td><td>.210</td><td>.189</td></tr>
+          <tr><td>GraphBepi</td><td>.783</td><td>.079</td><td>.118</td><td class="second">.781</td><td>.144</td><td>.161</td></tr>
+          <tr><td>PECAN</td><td>.740</td><td>.229</td><td>.182</td><td>.729</td><td class="second">.254</td><td>.195</td></tr>
+          <tr class="group-row"><td colspan="7">Protein binding-site prediction</td></tr>
+          <tr><td>EquiPocket</td><td>.761</td><td>.202</td><td>.183</td><td>.711</td><td>.194</td><td>.159</td></tr>
+          <tr class="group-row"><td colspan="7">Protein interaction and docking</td></tr>
+          <tr><td>ATProt</td><td>.798</td><td>.252</td><td>.237</td><td>.710</td><td>.200</td><td>.160</td></tr>
+          <tr><td>DiffDock-PP</td><td>.735</td><td>.192</td><td>.169</td><td>.650</td><td>.165</td><td>.120</td></tr>
+          <tr class="group-row"><td colspan="7">Structure and affinity prediction</td></tr>
+          <tr><td>Boltz-2</td><td>.798</td><td>.255</td><td>.232</td><td>.702</td><td>.220</td><td>.156</td></tr>
+          <tr><td>AlphaFold3 (no MSA)</td><td>.562</td><td>.153</td><td>.071</td><td>.570</td><td>.155</td><td>.079</td></tr>
+          <tr><td>GearBind</td><td>.799</td><td>.244</td><td>.236</td><td>.734</td><td>.206</td><td>.169</td></tr>
+          <tr class="group-row"><td colspan="7">Molecular property prediction</td></tr>
+          <tr><td>EquiformerV2</td><td class="second">.827</td><td>.260</td><td>.262</td><td>.729</td><td>.212</td><td>.169</td></tr>
+          <tr class="ours-row"><td>EpiFormer (ours)</td><td class="best">.924</td><td class="best">.482</td><td class="best">.464</td><td class="best">.826</td><td class="best">.305</td><td class="best">.290</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">AUC is the area under the ROC curve, and F1 and the Matthews correlation coefficient (MCC) use a threshold of 0.3. Epitope-ratio values are means over three seeds. Bold marks the best value in each column and underline the second best. The paper reports all 19 baselines and three further metrics.</p>
+    <p>EpiFormer leads on both splits. On the epitope-ratio split, it improves F1 from 0.337 to 0.482 and MCC from 0.356 to 0.464 over MIPE, the strongest baseline. Models from neighboring tasks such as Boltz-2, GearBind, and EquiformerV2 reach competitive AUC but low F1, because they have no mechanism for the class imbalance of epitope prediction.</p>
+    <figure class="paper-figure">
+      <img src="static/images/per_sample_boxplots.png" alt="Per-complex AUROC, AUPRC, F1, MCC, precision and recall of EpiFormer, MIPE and WALLE on the epitope-ratio test split" loading="lazy">
+      <figcaption><strong>Per-complex metrics.</strong> Distributions of six metrics over the 170 complexes of the epitope-ratio test split for EpiFormer, MIPE, and WALLE.</figcaption>
+    </figure>
+
+    <h3 class="title is-4">Other datasets and inputs</h3>
+    <p>We also evaluated EpiFormer on three external benchmarks without retraining. Its AUC averages 0.786 across SAbDab, CoV-AbDab, and ANABAG, against 0.688 for MIPE. Fine-tuning on the two other external datasets (LODO, for leave-one-dataset-out) raises it further.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead>
+          <tr><th rowspan="2">Dataset</th><th rowspan="2">Method</th><th colspan="2">Zero-shot</th><th colspan="2">LODO</th></tr>
+          <tr class="sub"><th>AUC</th><th>F1</th><th>AUC</th><th>F1</th></tr>
+        </thead>
+        <tbody>
+          <tr class="ours-row"><td>SAbDab (494)</td><td>EpiFormer</td><td class="best">.782</td><td class="best">.297</td><td class="best">.858</td><td class="best">.364</td></tr>
+          <tr><td></td><td>MIPE</td><td>.614</td><td>.140</td><td>.746</td><td>.190</td></tr>
+          <tr class="ours-row"><td>CoV-AbDab (170)</td><td>EpiFormer</td><td class="best">.819</td><td class="best">.358</td><td class="best">.890</td><td class="best">.359</td></tr>
+          <tr><td></td><td>MIPE</td><td>.730</td><td>.175</td><td>.813</td><td>.212</td></tr>
+          <tr class="ours-row"><td>ANABAG (499)</td><td>EpiFormer</td><td class="best">.758</td><td class="best">.301</td><td class="best">.837</td><td class="best">.367</td></tr>
+          <tr><td></td><td>MIPE</td><td>.719</td><td>.220</td><td>.772</td><td>.217</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">The number of complexes is given in parentheses. Bold marks the better model on each dataset.</p>
+    <p>Before a complex is solved, a practitioner has at best a predicted antigen structure or one bound by a different antibody. Replacing the antigen with the conformation it adopts against a different antibody costs 0.010 AUC on the epitope-ratio split, and 2&nbsp;&Aring; of correlated backbone error costs 0.007 AUC. On a stricter family-based split, which keeps antigen families and antibody lineages apart, EpiFormer reaches 0.407 F1, while the same model with late fusion only reaches 0.196.</p>
+  </div>
+</section>
+
+<!-- ================================================================== predictions on test complexes -->
+<section class="section" id="predictions">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Predictions on held-out complexes</h2>
+    <p>We ran the released EpiFormer checkpoints on the test complexes of AsEP. Each video shows the antigen surface twice, colored by the true epitope on the left and by the probability that EpiFormer assigns to each residue on the right. The variable domains of the antibody appear as a cartoon (<span class="legend-key heavy"></span>&nbsp;heavy chain, <span class="legend-key light"></span>&nbsp;light chain), and lift off midway through each loop to expose the epitope.</p>
+    <div class="complex-head">
+      <div class="tabs-mini" data-tabs="complexes" role="tablist">
+        <button class="tab-btn is-active" data-tab="7kfy" role="tab" aria-selected="true">SARS-CoV-2 RBD</button>
+        <button class="tab-btn" data-tab="1dqj" role="tab" aria-selected="false">Lysozyme</button>
+        <button class="tab-btn" data-tab="6xcm" role="tab" aria-selected="false">SARS-CoV-2 spike</button>
+        <button class="tab-btn" data-tab="5veb" role="tab" aria-selected="false">Cadherin-6</button>
+      </div>
+    </div>
+    <div class="complex-pane is-active" data-tab-pane="complexes" data-tab="7kfy">
+      <div class="complex-card">
+        <video class="figure-video" autoplay muted loop playsinline preload="metadata" poster="static/images/complex_7kfy.jpg" aria-label="True and predicted epitope of PDB 7KFY">
+          <source src="static/videos/complex_7kfy.mp4" type="video/mp4">
+          <img src="static/images/complex_7kfy.jpg" alt="True and predicted epitope of PDB 7KFY">
+        </video>
+        <div class="complex-meta">
+          <h4>SARS-CoV-2 spike receptor-binding domain with antibody C1A-F10 (PDB 7KFY)</h4>
+          <p>The receptor-binding domain (RBD) of the SARS-CoV-2 spike, bound by the human antibody C1A-F10. EpiFormer assigns a probability above 0.3 to 30 of the 32 epitope residues and to 14 of the other 145 surface residues.</p>
+          <div class="metric-row"><span class="metric">F1 0.79</span><span class="metric">MCC 0.75</span><span class="metric">AUC 0.98</span><span class="metric split">epitope-ratio test split</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="complex-pane" data-tab-pane="complexes" data-tab="1dqj">
+      <div class="complex-card">
+        <video class="figure-video" muted loop playsinline preload="none" poster="static/images/complex_1dqj.jpg" aria-label="True and predicted epitope of PDB 1DQJ">
+          <source src="static/videos/complex_1dqj.mp4" type="video/mp4">
+          <img src="static/images/complex_1dqj.jpg" alt="True and predicted epitope of PDB 1DQJ">
+        </video>
+        <div class="complex-meta">
+          <h4>Hen egg-white lysozyme with antibody HyHEL-63 (PDB 1DQJ)</h4>
+          <p>Lysozyme is a model antigen of structural immunology, here bound by the mouse antibody HyHEL-63. EpiFormer recovers all 21 epitope residues and assigns a probability above 0.3 to 10 of the other 94 surface residues.</p>
+          <div class="metric-row"><span class="metric">F1 0.81</span><span class="metric">MCC 0.78</span><span class="metric">AUC 0.99</span><span class="metric split">epitope-ratio test split</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="complex-pane" data-tab-pane="complexes" data-tab="6xcm">
+      <div class="complex-card">
+        <video class="figure-video" muted loop playsinline preload="none" poster="static/images/complex_6xcm.jpg" aria-label="True and predicted epitope of PDB 6XCM">
+          <source src="static/videos/complex_6xcm.mp4" type="video/mp4">
+          <img src="static/images/complex_6xcm.jpg" alt="True and predicted epitope of PDB 6XCM">
+        </video>
+        <div class="complex-meta">
+          <h4>SARS-CoV-2 spike glycoprotein with antibody C105 (PDB 6XCM)</h4>
+          <p>One protomer of the spike, with 898 surface residues, of which 25 form the epitope of the human antibody C105 on the receptor-binding domain. EpiFormer assigns a probability above 0.3 to 18 of these 25 residues and to 7 of the other 873.</p>
+          <div class="metric-row"><span class="metric">F1 0.72</span><span class="metric">MCC 0.71</span><span class="metric">AUC 0.99</span><span class="metric split">epitope-ratio test split</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="complex-pane" data-tab-pane="complexes" data-tab="5veb">
+      <div class="complex-card">
+        <video class="figure-video" muted loop playsinline preload="none" poster="static/images/complex_5veb.jpg" aria-label="True and predicted epitope of PDB 5VEB">
+          <source src="static/videos/complex_5veb.mp4" type="video/mp4">
+          <img src="static/images/complex_5veb.jpg" alt="True and predicted epitope of PDB 5VEB">
+        </video>
+        <div class="complex-meta">
+          <h4>Cadherin-6 with an anti-CDH6 Fab (PDB 5VEB)</h4>
+          <p>A complex from the epitope-group split, whose test epitopes are absent from training. Its antigen, the fifth extracellular domain of cadherin-6, shares at most 28% sequence identity with any training antigen. EpiFormer recovers 24 of the 25 epitope residues and assigns a probability above 0.3 to 24 of the other 74 surface residues.</p>
+          <div class="metric-row"><span class="metric">F1 0.66</span><span class="metric">MCC 0.55</span><span class="metric">AUC 0.90</span><span class="metric split">epitope-group test split</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="table-note">These four complexes rank among the 15 best of their test split by F1. Across all 170 complexes of the epitope-ratio test split, the released checkpoint reaches a median F1 of 0.51, and across the 169 complexes of the epitope-group split a median of 0.36.</p>
+  </div>
+</section>
+
+<!-- ================================================================== analysis -->
+<section class="section is-light" id="analysis">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">What drives the gains</h2>
+    <h3 class="title is-4">The framework, more than the backbone</h3>
+    <p>We replaced EGNN-R with other graph networks while keeping the cross-attention, the decoder, and the objective fixed. Each backbone reaches between 0.408 and 0.482 F1, and even a plain GCN outperforms all 19 baselines. Equivariant message passing, multi-relational edges, and learned coordinate updates add smaller but consistent gains on top.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>Encoder</th><th>Equivariant</th><th>Multi-relational</th><th>Coordinate updates</th><th>AUC</th><th>AUPRC</th><th>F1</th><th>MCC</th></tr></thead>
+        <tbody>
+          <tr><td>GCN</td><td>no</td><td>no</td><td>no</td><td>.905</td><td>.397</td><td>.447</td><td>.424</td></tr>
+          <tr><td>GIN</td><td>no</td><td>no</td><td>no</td><td>.890</td><td>.349</td><td>.408</td><td>.369</td></tr>
+          <tr><td>GAT</td><td>no</td><td>no</td><td>no</td><td>.908</td><td>.399</td><td>.452</td><td>.424</td></tr>
+          <tr><td>RGCN</td><td>no</td><td>yes</td><td>no</td><td>.910</td><td>.405</td><td>.454</td><td>.422</td></tr>
+          <tr><td>EGNN</td><td>yes</td><td>no</td><td>yes</td><td class="second">.912</td><td class="second">.421</td><td class="second">.470</td><td class="second">.455</td></tr>
+          <tr><td>EGNN-R, coordinates frozen</td><td>partly</td><td>yes</td><td>no</td><td>.908</td><td>.412</td><td>.465</td><td>.441</td></tr>
+          <tr class="ours-row"><td>EGNN-R (ours)</td><td>yes</td><td>yes</td><td>yes</td><td class="best">.924</td><td class="best">.493</td><td class="best">.482</td><td class="best">.464</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Epitope-ratio split. All encoders share the cross-attention decoder and the joint objective.</p>
+
+    <h3 class="title is-4">Architecture and objective, designed together</h3>
+    <p>The sparsity-aware objective helps only when the two chains are fused early. Added to six baselines, it raises F1 for WALLE, EquiformerV2, and DiscoTope3 but lowers it for PECAN, MIPE, and CheapNet. EpiFormer with a plain cross-entropy loss reaches 0.336 F1, and our objective in the best late-fusion baseline reaches 0.332, while the two together reach 0.482.</p>
+
+    <h3 class="title is-4">Geometric features over language model embeddings</h3>
+    <p>EpiFormer reaches 0.924 AUC with geometric features and 0.889 with embeddings from protein language models (PLMs). The baselines move the other way, since removing their PLM embeddings costs DiscoTope3 0.133 AUC, WALLE 0.122, and MIPE 0.088. Epitope residues are not evolutionarily conserved, which limits the value of the conservation signal that PLMs encode.</p>
+
+    <h3 class="title is-4">An asymmetric exchange between the chains</h3>
+    <p>The cross-attention gates are learned without supervision. With the gates initialized at 0 or 0.05, the antibody gate exceeds the antigen gate in all four encoder blocks. Hence, the antibody stream draws more on the antigen than the antigen stream draws on the antibody. This direction matches the roles of the two chains, since the CDR loops of the antibody adapt to a given epitope. Initializing the gates at zero instead of 0.05 lowers F1 from 0.496 to 0.454.</p>
+  </div>
+</section>
+
+<!-- ================================================================== bibtex -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <div class="bibtex-header">
+      <h2 class="title">BibTeX</h2>
+      <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard"><i class="fas fa-copy"></i> <span class="copy-text">Copy</span></button>
+    </div>
+    <!-- PLACEHOLDER: add the arXiv identifier or the venue, e.g. journal = {arXiv preprint arXiv:2610.xxxxx} -->
+    <pre id="bibtex-code" class="no-math"><code>@article{ahmed2026epiformer,
+  title   = {EpiFormer: Learning Antigen-Antibody Interactions for Epitope Prediction via Geometric Deep Learning},
+  author  = {Ahmed, Mansoor and Chai, Huirong and Wang, Haoxin and Venkateswara, Hemanth and Patterson, Murray},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</code></pre>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>EpiFormer &middot; Georgia State University &middot; Georgia Institute of Technology<br>The figures are drawn in TikZ from the released model's outputs on a test complex, and the structures are rendered with PyMOL from the AsEP test complexes.<br>Template from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener noreferrer">Academic Project Page</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

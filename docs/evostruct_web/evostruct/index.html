@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EvoStruct: Bridging Evolutionary and Structural Priors for Antibody CDR Design</title>
+  <meta name="description" content="EvoStruct bridges a frozen ESM-2 with an equivariant GNN through a cross-attention adapter, which breaks the vocabulary collapse of structure-only CDR design: the highest sequence recovery and the lowest perplexity on ChiMERa-Bench at 2.3 times the amino acid diversity of the best GNN baselines.">
+  <meta name="keywords" content="antibody design, CDR-H3, protein language model, ESM-2, adapter, vocabulary collapse, equivariant GNN">
+  <meta name="author" content="Mansoor Ahmed, Sujin Lee, Umar Khayaz, Murray Patterson">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="EvoStruct: Bridging Evolutionary and Structural Priors for Antibody CDR Design">
+  <meta property="og:description" content="A frozen protein language model, given structure through a cross-attention adapter, keeps its amino acid vocabulary while designing antibody loops.">
+  <!-- the absolute urls assume the page is served at https://mansoor181.github.io/evostruct/ ; change them if the folder name differs -->
+  <link rel="canonical" href="https://mansoor181.github.io/evostruct/">
+  <meta property="og:url" content="https://mansoor181.github.io/evostruct/">
+  <meta property="og:image" content="https://mansoor181.github.io/evostruct/static/images/architecture.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], ignoredClasses: ['no-math'], throwOnError: false});"></script>
+  <script defer src="static/js/figdata.js"></script>
+  <script>window.CB_DESIGN_STYLE = { label: "EvoStruct", color: "#7A4FA3" };</script>
+  <script defer src="static/js/figwalk.js"></script>
+  <script defer src="static/js/designdata.js"></script>
+  <script defer src="static/js/designs.js"></script>
+  <script defer src="static/js/index.js"></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-paper" viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6zM14 2v4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arxiv" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" d="M5 3h9l5 5v13H5zM14 3v5h5M8 13h8M8 17h5"/></symbol>
+  <symbol id="i-review" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M3 5h18v12H8l-5 4z"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.18-1.49 3.14-1.18 3.14-1.18.63 1.59.23 2.76.12 3.05.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.07.78 2.16 0 1.56-.01 2.82-.01 3.2 0 .31.2.68.8.56C20.71 21.38 24 17.08 24 12 24 5.73 18.27.5 12 .5z"/></symbol>
+  <symbol id="i-quote" viewBox="0 0 24 24"><path fill="currentColor" d="M9 7H5a2 2 0 0 0-2 2v4h4l-2 4h4l2-4V9a2 2 0 0 0-2-2zM20 7h-4a2 2 0 0 0-2 2v4h4l-2 4h4l2-4V9a2 2 0 0 0-2-2z"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M12 19V6M5 12l7-7 7 7"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M9 9h11v11H9zM4 15V4h11"/></symbol>
+</svg>
+
+<div class="scroll-progress" id="scrollProg"></div>
+<button class="scroll-to-top" title="Back to top" aria-label="Back to top"><svg class="ico" aria-hidden="true"><use href="#i-up"/></svg></button>
+
+<main>
+<!-- ================================================================== title, authors, links -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title hero-fade hero-fade-1">EvoStruct</h1>
+          <h2 class="subtitle is-4 publication-subtitle hero-fade hero-fade-1">Bridging Evolutionary and Structural Priors for Antibody CDR Design via Protein Language Model Adaptation</h2>
+          <div class="is-size-5 publication-authors hero-fade hero-fade-2">
+            <span class="author-block"><a href="https://mansoor181.github.io/" title="Mansoor Ahmed's website">Mansoor Ahmed</a><sup>1,2,*</sup>,</span>
+            <!-- PLACEHOLDER: add homepage links for the co-authors below -->
+            <span class="author-block">Sujin Lee<sup>2</sup>,</span>
+            <span class="author-block">Umar Khayaz<sup>2</sup>,</span>
+            <span class="author-block">Murray Patterson<sup>1</sup></span>
+          </div>
+          <div class="affiliations hero-fade hero-fade-3">
+            <span class="author-block"><sup>1</sup>Georgia State University</span>
+            <span class="author-block"><sup>2</sup>Georgia Institute of Technology</span>
+          </div>
+          <p class="author-note hero-fade hero-fade-3"><sup>*</sup>Corresponding author</p>
+          <p class="author-note hero-fade hero-fade-3"><strong>ICML 2026 Workshop on Generative and Agentic AI for Biology</strong></p>
+          <div class="publication-links hero-fade hero-fade-4">
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://arxiv.org/pdf/2605.21485" target="_blank" rel="noopener noreferrer" title="The paper as a PDF"><svg class="ico" aria-hidden="true"><use href="#i-paper"/></svg><span>Paper</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://arxiv.org/abs/2605.21485" target="_blank" rel="noopener noreferrer" title="The preprint on arXiv"><svg class="ico" aria-hidden="true"><use href="#i-arxiv"/></svg><span>arXiv</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://openreview.net/forum?id=7bAEJ3UMPi" target="_blank" rel="noopener noreferrer" title="The workshop record on OpenReview"><svg class="ico" aria-hidden="true"><use href="#i-review"/></svg><span>OpenReview</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://github.com/mansoor181/EvoStruct" target="_blank" rel="noopener noreferrer" title="The code on GitHub"><svg class="ico" aria-hidden="true"><use href="#i-github"/></svg><span>Code</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="#BibTeX" title="Jump to the BibTeX citation"><svg class="ico" aria-hidden="true"><use href="#i-quote"/></svg><span>BibTeX</span></a></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== teaser: the architecture, walked through -->
+<section class="hero teaser">
+  <div class="container is-max-widescreen">
+    <div class="hero-body hero-fade hero-fade-5">
+      <figure class="figwalk" id="figwalk"></figure>
+    </div>
+  </div>
+</section>
+
+<nav class="section-nav" aria-label="Page sections">
+  <a href="#problem">Problem</a>
+  <a href="#method">Method</a>
+  <a href="#results">Results</a>
+  <a href="#resolution">Failure modes</a>
+  <a href="#designs">Designs</a>
+  <a href="#BibTeX">BibTeX</a>
+</nav>
+
+<!-- ================================================================== tl;dr and abstract -->
+<section class="section">
+  <div class="container is-max-desktop content">
+    <div class="tldr reveal"><p><span class="tldr-label">TL;DR</span>Graph networks designing antibody loops learn their amino acid distribution from a few thousand complexes, and under greedy decoding they collapse onto tyrosine and glycine. A protein language model has already learned that distribution from hundreds of millions of sequences. EvoStruct keeps the sequence head inside ESM-2's representation space and feeds structure in through a cross-attention adapter, which raises sequence recovery by 16% and vocabulary diversity by 2.3 times over the best graph baselines at the same time.</p></div>
+    <details class="paper-details reveal">
+      <summary>Abstract</summary>
+      <div class="details-body">
+        <p>Equivariant graph neural network (GNN) methods for antibody complementarity-determining region (CDR) design achieve the highest sequence recovery but suffer from severe vocabulary collapse. The current best GNN methods over-predict very few amino acids, such as tyrosine and glycine, while ignoring functionally important residues. We trace this failure to GNN encoders learning amino acid distributions <em>de novo</em> from limited structural data, discarding substitution patterns encoded in evolutionary databases. To resolve this, we propose EvoStruct, which bridges a frozen protein language model (PLM) with 3D structural context from an E(3)-equivariant GNN via a cross-attention adapter. Unlike prior PLM-structure adapters for general protein design, EvoStruct targets the vocabulary collapse problem specific to CDR design through progressive PLM unfreezing and R-Drop consistency regularization. On the ChiMERa-Bench benchmark, EvoStruct achieves the highest amino acid recovery and lowest perplexity among several antibody design methods, improving sequence recovery by 16% and reducing perplexity by 43% relative to the best GNN baselines, while recovering 2.3 times greater amino acid diversity and the highest binding-pair correlation with ground truth.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================================================================== the problem -->
+<section class="section is-light" id="problem">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Three linked failures of structure-only design</h2>
+    <p>Evaluating CDR-H3 design on <a href="https://mansoor181.github.io/chimera-bench/">ChiMERa-Bench</a> turns up three symptoms that keep appearing together, and all three point at the same cause.</p>
+    <div class="metric-groups">
+      <div class="metric-group is-new"><span class="tagline">the headline symptom</span><h4>Vocabulary collapse</h4><p>Native loops use the alphabet broadly, with an effective vocabulary near 15.5. Graph networks with greedy decoding fall to 3.0 to 5.5, overpredicting tyrosine by 34% and glycine by 21% while tryptophan, cysteine and methionine almost disappear.</p></div>
+      <div class="metric-group"><h4>Binding pairs are not learned</h4><p>No baseline correlates better than $r = 0.69$ with the native paratope-epitope amino acid pairing, and one diffusion model is anti-correlated at $-0.29$, so antigen information is barely reaching the sequence head.</p></div>
+      <div class="metric-group"><h4>Contact positions are the weakest</h4><p>Every method recovers 8 to 23% at the positions that touch the antigen against 23 to 51% elsewhere, which is the opposite of what antigen conditioning should produce.</p></div>
+    </div>
+    <p>The common root is where the amino acid distribution is learned. A graph encoder has to discover substitution patterns from about 3,000 complexes, so it converges on the few residues that are most frequent at each position. A protein language model has already learned those patterns from hundreds of millions of sequences, and its output distribution assigns sensible probability to all twenty amino acids.</p>
+    <div class="takeaway">Keep the sequence head inside the language model's representation space, and feed structure into it rather than the other way round. The calibrated vocabulary then survives, and structure still decides.</div>
+  </div>
+</section>
+
+<!-- ================================================================== method -->
+<section class="section" id="method">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Two paths, joined by an adapter</h2>
+    <p>The structural path is a relation-aware E(3)-equivariant graph network over the whole complex, with eight edge types, which returns per-residue embeddings and updated backbone coordinates. The evolutionary path is ESM-2 with 650M parameters, reading the heavy chain with the loop masked,</p>
+    <div class="math-box">$$\mathbf{H}_\text{esm} = \text{ESM-2}\!\left(\text{mask}(s_\text{HC}, V_\text{CDR})\right) \big|_{V_\text{CDR}} \in \mathbb{R}^{L \times d_\text{esm}}.$$</div>
+    <p>Rather than giving the adapter the whole antigen, the nearest $K_\text{ag} = 128$ antigen residues are cropped as context, since a contact is necessarily close. The adapter is one cross-attention block and a feed-forward network, and the asymmetry of its projections carries the design principle,</p>
+    <div class="math-box">$$\mathbf{Q} = \mathbf{H}_\text{esm}\mathbf{W}_\text{down}, \qquad \mathbf{K}, \mathbf{V} = \mathbf{H}_\text{ctx}\mathbf{W}_\text{gnn}.$$</div>
+    <p>The queries come from the language model, which asks what structural environment each position sits in, and the keys and values come from the graph network, which answers. The refined representations are projected back to ESM-2's dimension, so the sequence head never leaves the space whose vocabulary we want to keep.</p>
+    <div class="props">
+      <div class="prop"><h4>Progressive unfreezing</h4><p>Three phases: the adapter, GNN and head train with ESM-2 frozen, then the top four transformer layers open, then everything fine-tunes at a low rate. The schedule keeps the evolutionary prior from being overwritten early.</p></div>
+      <div class="prop"><h4>R-Drop consistency</h4><p>Two forward passes per step under different dropout masks, with a penalty on the difference between their sequence losses, which pushes the model toward predictions that do not depend on which units were dropped.</p></div>
+      <div class="prop"><h4>Cost</h4><p>14.4M trainable parameters in the first phase, rising to 93.1M once the top ESM-2 layers open, and about 7 hours end to end on one H100.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================== results -->
+<section class="section is-light" id="results">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">Highest recovery, lowest perplexity</h2>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>CDR-H3</th><th>AAR&uarr;</th><th>CAAR&uarr;</th><th>PPL&darr;</th><th>RMSD&darr;</th><th>fnat&uarr;</th><th>DockQ&uarr;</th><th>EpiF1&uarr;</th></tr></thead>
+        <tbody>
+          <tr class="ours-row"><td>EvoStruct</td><td class="best">0.43</td><td class="second">0.22</td><td class="best">1.88</td><td class="second">1.84</td><td class="second">0.61</td><td class="second">0.70</td><td class="second">0.73</td></tr>
+          <tr class="sep"><td>RAAD</td><td class="second">0.37</td><td>0.21</td><td>3.27</td><td class="best">1.75</td><td>0.56</td><td>0.70</td><td>0.72</td></tr>
+          <tr><td>MEAN</td><td class="second">0.37</td><td class="best">0.24</td><td class="second">3.10</td><td>1.84</td><td>0.57</td><td>0.69</td><td>0.72</td></tr>
+          <tr><td>dyMEAN</td><td class="second">0.37</td><td class="second">0.22</td><td>3.29</td><td>2.22</td><td>0.53</td><td>0.65</td><td>0.64</td></tr>
+          <tr><td>DiffAb</td><td>0.23</td><td>0.14</td><td>&ndash;</td><td>2.49</td><td>0.59</td><td>0.65</td><td>0.64</td></tr>
+          <tr><td>AbFlowNet</td><td>0.23</td><td>0.14</td><td>&ndash;</td><td>2.38</td><td>0.60</td><td>0.66</td><td>0.65</td></tr>
+          <tr><td>AbMEGD</td><td>0.21</td><td>0.12</td><td>&ndash;</td><td>2.44</td><td>0.56</td><td>0.64</td><td>0.64</td></tr>
+          <tr><td>dyAb</td><td>0.19</td><td>0.09</td><td>&ndash;</td><td>2.34</td><td>0.14</td><td>0.45</td><td>0.24</td></tr>
+          <tr><td>RefineGNN</td><td>0.21</td><td>0.10</td><td>8.46</td><td>2.86</td><td class="best">0.65</td><td class="best">0.73</td><td class="best">0.76</td></tr>
+          <tr><td>AbDockGen</td><td>0.24</td><td>0.12</td><td>8.04</td><td>4.67</td><td>0.41</td><td>0.55</td><td>0.62</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Means over the test complexes, with the standard deviations in the paper. Best in bold, second best underlined. AbODE and RADAb are in the paper's table and are left out here because their backbone failures put them far outside the range of the others.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="num">+16%</div><div class="cap">relative sequence recovery over the best graph baselines</div></div>
+      <div class="stat"><div class="num">&minus;43%</div><div class="cap">perplexity against RAAD, at 1.88</div></div>
+      <div class="stat"><div class="num">2.3&times;</div><div class="cap">the amino acid diversity of the best graph baselines</div></div>
+      <div class="stat"><div class="num">0.73</div><div class="cap">correlation of paratope-epitope pairing with the deposited interfaces</div></div>
+    </div>
+    <p>Structurally EvoStruct lands with the graph networks rather than ahead of them, at 1.84&nbsp;&#8491; against RAAD's 1.75&nbsp;&#8491;, and its interface numbers sit in the same band. The honest reading is that the gain is on the sequence axis. RefineGNN, which never sees the antigen at all, still takes the best fnat and DockQ, which is the same uncomfortable result the benchmark reported and a reminder of how little antigen conditioning currently buys at the interface.</p>
+  </div>
+</section>
+
+<!-- ================================================================== failure mode resolution -->
+<section class="section" id="resolution">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">What happens to the three failures</h2>
+    <h3 class="title is-4">The vocabulary comes back</h3>
+    <p>EvoStruct reaches an effective vocabulary of 12.4, which is 80% of the native diversity, against 4.7 to 5.3 for the best graph baselines. It produces 282 distinct bigrams and 1,214 distinct trigrams, against 364 and 1,818 in the deposited loops and 52 and 110 for RAAD, and it covers all twenty of the most frequent native motifs.</p>
+    <figure class="paper-figure">
+      <img src="static/images/vocab.png" alt="Per-position amino acid frequency heatmaps for the deposited loops, MEAN, DiffAb and EvoStruct" loading="lazy">
+      <figcaption><strong>Vocabulary collapse, position by position.</strong> Amino acid frequency along a length-normalized CDR-H3. MEAN concentrates on a few rows, while EvoStruct keeps a spread close to the deposited loops.</figcaption>
+    </figure>
+    <h3 class="title is-4">Binding pairs are learned</h3>
+    <p>Interface enrichment correlates with the deposited structures at $r = 0.81$ against 0.68 for the next best, and the paratope-epitope pair correlation reaches $r = 0.73$ against 0.69. The structural adapter is therefore routing antigen information to the sequence head, which is exactly what the cross-attention was introduced to do.</p>
+    <figure class="paper-figure">
+      <img src="static/images/pairs.png" alt="Paratope-epitope amino acid pair frequency heatmaps for the deposited interfaces and three methods" loading="lazy">
+      <figcaption><strong>Which amino acid pairs with which.</strong> Paratope-epitope pair frequencies, with EvoStruct the closest to the deposited interfaces.</figcaption>
+    </figure>
+    <h3 class="title is-4">Contact positions improve, and stay the hardest</h3>
+    <p>Recovery rises at contact positions, from 20.6% to 22.6%, and further at non-contact positions, from 43.5% to 51.0%. The larger gain is at the positions the antigen does not constrain, which is where the evolutionary prior is strongest, and along the loop EvoStruct leads at the anchors, 71.2% against 60.7%, and at the hypervariable apex, 22.4% against 19.0%.</p>
+    <figure class="paper-figure">
+      <img src="static/images/positional.jpg" alt="Per-position amino acid recovery along CDR-H3 for EvoStruct and the baselines" loading="lazy">
+      <figcaption><strong>Recovery along the loop.</strong> EvoStruct leads at the anchor positions, where the evolutionary prior is strongest, and improves at the apex, where every method is weakest.</figcaption>
+    </figure>
+    <div class="takeaway">Contact recovery stays near 22% for every method, so the remaining gap is not vocabulary. It is the same wall that a <a href="https://mansoor181.github.io/contact/">companion paper</a> traces to apex backbone accuracy, and closing it will take more than a better sequence prior.</div>
+  </div>
+</section>
+
+<!-- ================================================================== designs -->
+<section class="section is-light" id="designs">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">What the designs look like</h2>
+    <p>Everything in this section is read from the per-complex outputs that the evaluation harness stored for the epitope-group test split. Nothing here is redrawn by hand.</p>
+
+    <h3 class="title is-4">One loop, placed against its epitope</h3>
+    <p>PDB 7X7T, a CDR-H3 of 14 residues on a 187-residue antigen. The left picture is the whole complex with the epitope painted on the antigen surface, and the dashed window is what the right picture magnifies. Each loop is drawn from the coordinates the method produced, in the frame of the deposited complex.</p>
+    <div id="design-loop"></div>
+    <p class="table-note">Distances are the alpha-carbon RMSD of each designed loop against the deposited one, and the reach counts the epitope residues a loop comes within 8&nbsp;&#8491; of, the cutoff the interface metrics use. DiffAb is left out of this picture because the harness stored its coordinates in a different frame, which a check in the extraction script catches.</p>
+
+    <h3 class="title is-4">Designed sequences, against the deposited ones</h3>
+    <p>Matched positions are shaded, and the amber underline marks the positions that touch the antigen in the deposited structure. The spread of residues EvoStruct reaches for is visible directly: where the graph baselines repeat glycine and tyrosine, EvoStruct varies.</p>
+    <div id="design-seq"></div>
+    <div class="takeaway">Recovery is highest at the anchors that open and close every loop, and thinnest at the contact positions, which is the pattern the positional profile above measures across the whole split.</div>
+
+    <h3 class="title is-4">Which amino acids the designs reach for</h3>
+    <p>Counted over all 292 designed loops of the split, from the stored predictions. The deposited loops spread their mass across the alphabet. RAAD and MEAN concentrate a third of it on glycine and another quarter on tyrosine, while EvoStruct keeps more of the alphabet in play, which is the collapse the paper set out to break.</p>
+    <div id="design-usage"></div>
+    <p class="table-note">Frequency of each amino acid across the designed CDR-H3 loops of the epitope-group test split. These counts are measured here from the stored predictions, so they are not the effective-vocabulary figures quoted above, which the paper computes with its own definition.</p>
+  </div>
+</section>
+
+<!-- ================================================================== bibtex -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <div class="bibtex-header">
+      <h2 class="title">BibTeX</h2>
+      <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard"><svg class="ico" aria-hidden="true"><use href="#i-copy"/></svg> <span class="copy-text">Copy</span></button>
+    </div>
+    <pre id="bibtex-code" class="no-math"><code>@inproceedings{ahmed2026evostruct,
+  title     = {{EvoStruct}: Bridging Evolutionary and Structural Priors for Antibody {CDR} Design via Protein Language Model Adaptation},
+  author    = {Ahmed, Mansoor and Lee, Sujin and Khayaz, Umar and Patterson, Murray},
+  booktitle = {ICML 2026 Workshop on Generative and Agentic AI for Biology},
+  year      = {2026},
+  url       = {https://openreview.net/forum?id=7bAEJ3UMPi}
+}</code></pre>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>EvoStruct &middot; Georgia State University &middot; Georgia Institute of Technology<br>The architecture figure is the one printed in the paper, with a walkthrough drawn over it.<br>Companion pages: <a href="https://mansoor181.github.io/chimera-bench/">ChiMERa-Bench</a> and <a href="https://mansoor181.github.io/contact/">ConTact</a>.<br>Template from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener noreferrer">Academic Project Page</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
