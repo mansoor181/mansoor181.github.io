@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MLD3: Mixture-of-Latents for Few-Step Discrete Diffusion Distillation</title>
-  <meta name="description" content="MLD3 distills a discrete diffusion teacher into a few-step student whose step is a small mixture of factorized kernels chosen by a learned router, so the likelihood of a teacher transition is exact and the student can learn correlated updates.">
-  <meta name="keywords" content="discrete diffusion, masked diffusion, distillation, few-step generation, mixture of latents, router, flow matching">
+  <meta name="description" content="MLD3 distills a discrete diffusion teacher into a few-step student whose step is a small mixture of factorized kernels chosen by a learned router, so the likelihood of a teacher transition is computable in closed form and the student learns correlated updates. It also improves released few-step students on OpenWebText and LM1B.">
+  <meta name="keywords" content="discrete diffusion, masked diffusion, uniform-state diffusion, distillation, few-step generation, mixture of latents, router, flow matching">
   <meta name="author" content="Mansoor Ahmed, Sophia Tang, Hemanth Venkateswara, Murray Patterson">
   <meta property="og:type" content="website">
   <meta property="og:title" content="MLD3: Mixture-of-Latents for Few-Step Discrete Diffusion Distillation">
-  <meta property="og:description" content="A few-step discrete diffusion student whose step is a mixture of factorized kernels chosen by a router, with an exactly computable training objective.">
+  <meta property="og:description" content="A few-step discrete diffusion student whose step is a mixture of factorized kernels chosen by a router, with a closed-form training objective.">
   <!-- the absolute urls assume the page is served at https://mansoor181.github.io/mld3/ ; change them if the folder name differs -->
-  <link rel="canonical" href="https://mansoor181.github.io/docs/mld3/">
-  <meta property="og:url" content="https://mansoor181.github.io/docs/mld3/">
-  <meta property="og:image" content="https://mansoor181.github.io/docs/mld3/static/images/mld3_concept.png">
+  <link rel="canonical" href="https://mansoor181.github.io/mld3/">
+  <meta property="og:url" content="https://mansoor181.github.io/mld3/">
+  <meta property="og:image" content="https://mansoor181.github.io/mld3/static/images/mld3_concept.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="static/images/favicon.svg">
 
@@ -44,9 +44,9 @@
           <h1 class="title is-1 publication-title hero-fade hero-fade-1">MLD3</h1>
           <h2 class="subtitle is-4 publication-subtitle hero-fade hero-fade-1">Mixture-of-Latents for Few-Step Discrete Diffusion Distillation</h2>
           <div class="is-size-5 publication-authors hero-fade hero-fade-2">
-            <span class="author-block"><a href="https://mansoor181.github.io/" title="Mansoor Ahmed's website" target="_blank" rel="noopener">Mansoor Ahmed</a><sup>1,2,*</sup>,</span>
+            <span class="author-block"><a href="https://mansoor181.github.io/" title="Mansoor Ahmed's website">Mansoor Ahmed</a><sup>1,2,*</sup>,</span>
             <!-- PLACEHOLDER: add homepage links for the co-authors below -->
-            <span class="author-block"><a href="https://sophtang.github.io/" title="Sophia Tang's website" target="_blank" rel="noopener">Sophia Tang</a><sup>3</sup>,</span>
+            <span class="author-block"><a href="https://sophtang.github.io/" title="Sophia Tang's website">Sophia Tang</a><sup>3</sup>,</span>
             <span class="author-block">Hemanth Venkateswara<sup>1</sup>,</span>
             <span class="author-block">Murray Patterson<sup>1,*</sup></span>
           </div>
@@ -60,7 +60,7 @@
             <!-- PLACEHOLDER: replace the Paper and arXiv href="#" once the preprint is public, and drop the is-placeholder class -->
             <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span></a></span>
             <span class="link-block"><a class="external-link button is-normal is-rounded is-dark is-placeholder" href="#" title="Link coming soon" aria-disabled="true"><span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span></a></span>
-            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://github.com/mansoor181/mld3" title="Code on GitHub" target="_blank" rel="noopener"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span>
+            <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="https://github.com/mansoor181/mld3" title="Code on GitHub"><span class="icon"><i class="fab fa-github"></i></span><span>Code</span></a></span>
             <span class="link-block"><a class="external-link button is-normal is-rounded is-dark" href="#BibTeX" title="Jump to the BibTeX citation"><span class="icon"><i class="fas fa-quote-left"></i></span><span>BibTeX</span></a></span>
           </div>
         </div>
@@ -73,11 +73,11 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body hero-fade hero-fade-5">
-      <video class="figure-video" autoplay muted loop playsinline preload="auto" poster="static/images/mld3_concept.png" aria-label="Animation of the toy illustration, from noise to data, for a fixed latent prior and for a learned router">
+      <video class="figure-video" autoplay muted loop playsinline preload="auto" poster="static/images/mld3_concept.png" aria-label="Animation of the toy illustration, from noise to data, under surrogate collapse and with a learned router">
         <source src="static/videos/mld3_concept.mp4" type="video/mp4">
-        <img src="static/images/mld3_concept.png" alt="Toy illustration of correlated few-step generation and the role of the learned latent">
+        <img src="static/images/mld3_concept.png" alt="Toy illustration of correlated few-step generation and the role of the learnable latent">
       </video>
-      <p class="teaser-caption"><strong>One step fills two positions of the same sentence.</strong> Each axis is one position, and the three circled clusters are the only coherent ways to fill them. Both students go from noise at $t=0$ to data at $t=1$ in two steps, with the positions independent given a shared latent. <strong>Top:</strong> under surrogate collapse the latent does not separate the modes, so each position follows its own marginal and mass lands on incoherent pairs, in red. <strong>Bottom:</strong> MLD3 uses a finite latent $k\in\{1,2,3\}$ with router weights $w_k(\boldsymbol{x}_t,t)$. The coloured regions show which component the router prefers at each intermediate state, and the simplex on the right carries the weights it assigns.</p>
+      <p class="teaser-caption"><strong>Correlated few-step generation and the role of the learnable latent.</strong> A single step has to fill two positions of the same sentence at once. Each axis is one position, and the three circled clusters are the only coherent ways to fill them, namely <em>The&hellip;brown</em> as in <em>The quick brown fox</em>, <em>A&hellip;big</em> as in <em>A very big dog</em>, and <em>My&hellip;old</em> as in <em>My dear old friend</em>. Both students go from noise at $t=0$ to data at $t=1$, with the positions conditionally independent given a shared latent. <strong>Top:</strong> under surrogate collapse the latent does not distinguish the modes, so each position follows its own marginal and mass lands on incoherent cross-mode pairs such as <em>A</em> with <em>old</em>, in red. <strong>Bottom:</strong> MLD3 uses a finite latent $k\in\{1,2,3\}$ with state-dependent router weights $w_k(\boldsymbol{x}_t,t)$. The coloured regions at $t=\tfrac{1}{2}$ show which component the router favours at each intermediate state, and the simplex on the right shows the weights. Sharing the selected component across positions couples their predictions and keeps the samples on the coherent modes.</p>
     </div>
   </div>
 </section>
@@ -87,18 +87,30 @@
   <a href="#method">Method</a>
   <a href="#theory">Theory</a>
   <a href="#results">Results</a>
+  <a href="#analysis">Analysis</a>
   <a href="#samples">Samples</a>
   <a href="#BibTeX">BibTeX</a>
 </nav>
 
-<!-- ================================================================== tl;dr and abstract -->
+<!-- ================================================================== tl;dr, abstract, contributions -->
 <section class="section">
   <div class="container is-max-desktop content">
-    <div class="tldr reveal"><p><span class="tldr-label">TL;DR</span>A few-step student of a discrete diffusion teacher fills many positions in one step and draws them independently, so tokens that have to agree often do not. MLD3 replaces the single product by a small mixture of products chosen by a learned router. The likelihood of a sampled teacher transition is then available in closed form, so the student learns correlated updates directly, and one component recovers the standard masked diffusion student. Few-step quality improves by roughly 2 times across text, molecules, regulatory DNA and images.</p></div>
+    <div class="tldr reveal"><p><span class="tldr-label">TL;DR</span>A few-step student of a discrete diffusion teacher fills many positions in one step and draws them independently, so tokens that have to agree often do not. MLD3 replaces the single product by a small mixture of products chosen by a learned router. The likelihood of a sampled teacher transition is then a closed-form sum over components, so the student learns correlated updates directly, and one component recovers the standard masked diffusion student. Across seven datasets in text, molecules, regulatory DNA and images, MLD3 improves few-step generation by roughly 2 times over the baselines, and distilled on top of released few-step students it reaches the lowest generative perplexity among recent distillation methods on OpenWebText from 8 NFEs on.</p></div>
     <details class="paper-details reveal">
       <summary>Abstract</summary>
       <div class="details-body">
-        <p>Discrete diffusion and flow models can generate high-quality sequences, but they usually require many denoising steps. Distilling them into few-step models is challenging because a single student step predicts many positions independently, which can lose important dependencies between tokens. We show that matching each position separately is not enough to reproduce the teacher's joint transition. Prior work addresses this issue with a shared continuous latent variable, but its training requires an approximation that can fail to make effective use of the latent. We propose <strong>M</strong>ixture-of-<strong>L</strong>atents for <strong>D</strong>iscrete <strong>D</strong>iffusion <strong>D</strong>istillation (MLD3), which instead uses a small set of components selected by a parameterized router. This makes the likelihood of each sampled teacher transition <em>exactly</em> computable and allows the student to learn correlated updates directly. We also propose a novel sampling approach that exploits the mixture of components at almost no additional cost to that of a factorized step. Notably, MLD3 naturally reduces to a standard masked diffusion student with one component and adds minimal additional parameters as new components are added. Across text, molecules, regulatory DNA, and image generation, MLD3 consistently improves few-step generation quality by roughly $2\times$ over baselines, with the largest gains on tasks with stronger dependencies across positions.</p>
+        <p>Discrete diffusion and flow models can generate high-quality sequences, but they usually require many denoising steps. Distilling them into few-step models is challenging because a single student step predicts many positions independently, which can lose important dependencies between tokens. We show that matching each position separately is not enough to reproduce the teacher's joint transition. Prior work addresses this issue with a shared continuous latent variable, but its training requires an approximation that can fail to make effective use of the latent. We propose <strong>M</strong>ixture-of-<strong>L</strong>atents for <strong>D</strong>iscrete <strong>D</strong>iffusion <strong>D</strong>istillation (MLD3), which instead uses a small finite set of components selected by a learned router. This makes the likelihood of each sampled teacher transition <em>exactly</em> computable and allows the student to model correlated updates directly. We also propose a novel sampling approach that exploits the mixture components at a cost close to that of a factorized step. Notably, MLD3 naturally reduces to a standard masked diffusion student with one component and adds negligible parameter overhead as new components are added. Across text, molecules, regulatory DNA, and image generation, MLD3 consistently improves few-step generation by roughly $2\times$ over the baselines, with the largest gains on tasks with stronger dependencies across positions.</p>
+      </div>
+    </details>
+    <details class="paper-details reveal">
+      <summary>Contributions</summary>
+      <div class="details-body">
+        <ol>
+          <li>We analyze two limitations of few-step distillation of discrete state-space models: the irreducible dependence error of factorized student transitions, and the collapse of the convexity bound through which latent-conditioned students are anchored to their teacher.</li>
+          <li>We propose MLD3, a finite mixture of factorized transition kernels with a learned router that enables exact marginalization over the shared latent during training.</li>
+          <li>We introduce an efficient spread-consensus sampler that exploits the learned mixture while evaluating only a small number of components per step.</li>
+          <li>Across seven benchmarks in text, molecules, DNA, and images, MLD3 improves few-step generation most strongly when the teacher's transitions contain cross-position dependence, and it improves released few-step students on OpenWebText and LM1B when they serve as its teacher.</li>
+        </ol>
       </div>
     </details>
   </div>
@@ -108,11 +120,11 @@
 <section class="section is-light" id="problem">
   <div class="container is-max-desktop content reveal">
     <h2 class="title is-3 has-text-centered">One step, many positions, drawn independently</h2>
-    <p>A masked diffusion model reveals the positions of a sequence over many denoising steps. Given the state $\boldsymbol{x}_t$, a step samples every masked position from its own categorical distribution,</p>
+    <p>A masked diffusion model unmasks a sequence over many denoising steps. Given the state $\boldsymbol{x}_t$, a step samples each masked position from its own categorical distribution, which we call a factorized transition kernel,</p>
     <div class="math-box">$$p_{s\mid t}(\boldsymbol{x}_s\mid\boldsymbol{x}_t)\;=\;\prod_{i=1}^{L}P_i\big(x_s^{i}\mid\boldsymbol{x}_t,t\big).$$</div>
-    <p>This factorization is exact when a step reveals one position at a time. A few-step sampler has to reveal several positions in each step, and positions revealed together are rarely independent. A student can match every per-position marginal of the teacher and still miss its joint structure, with an irreducible error given by the total correlation of the teacher's transition,</p>
-    <div class="math-box">$$\mathrm{TC}(q)\;=\;\mathrm{KL}\Big(q\,\Big\|\,\prod_{i}q_i\Big)\;=\;\sum_{i}\mathrm{H}(q_i)-\mathrm{H}(q).$$</div>
-    <p>In the toy picture above, the two positions are completed as <em>The&hellip;brown</em>, <em>A&hellip;big</em> or <em>My&hellip;old</em>. A product of the two marginals keeps all nine combinations, and a quarter of its samples land between the modes on pairs that no sentence of the data uses.</p>
+    <p>This factorization is exact when a step reveals one position at a time. A few-step sampler has to reveal several positions in each step, and positions revealed together are rarely independent. For any target transition $q$ with marginals $q_i$ and any factorized kernel $p=\prod_i p_i$, the divergence splits into the total correlation of the target and a sum of per-position terms,</p>
+    <div class="math-box">$$\mathrm{KL}(q\,\|\,p)\;=\;\mathrm{TC}(q)\;+\;\sum_{i=1}^{L}\mathrm{KL}(q_i\,\|\,p_i),\qquad \min_{p\ \text{factorized}}\mathrm{KL}(q\,\|\,p)\;=\;\mathrm{TC}(q)\;=\;\sum_{i}\mathrm{H}(q_i)-\mathrm{H}(q).$$</div>
+    <p>A student can therefore match each per-position marginal of the teacher and still miss its joint structure by $\mathrm{TC}(q)$. This error grows with the step size, which the number of steps fixes. The teacher pays it only over its many small sub-steps, whereas a few-step student has to reproduce the dependence those sub-steps build up within one step. In the toy picture above, the two positions are completed as <em>The&hellip;brown</em>, <em>A&hellip;big</em> or <em>My&hellip;old</em>. A product of the two marginals keeps all nine combinations, and a quarter of its samples land between the modes on pairs that no sentence of the data uses.</p>
     <div class="takeaway">The error comes from the form of the step, not from the teacher. A product of per-position distributions cannot keep positions consistent within a step, however accurate its marginals are.</div>
   </div>
 </section>
@@ -121,26 +133,29 @@
 <section class="section" id="method">
   <div class="container is-max-desktop content reveal">
     <h2 class="title is-3 has-text-centered">A small mixture, chosen by a router</h2>
-    <p>MLD3 replaces the single product by a mixture of $M$ products. A router reads the current state and assigns the weight $w^{\theta}_k$ to component $k$, and each component keeps its own factorized step,</p>
+    <p>MLD3 replaces the single product by a mixture of $M$ products. A router assigns the weight $w^{\theta}_k$ to component $k$ at the state $\boldsymbol{x}_t$, and each component keeps its own factorized step, obtained by applying the analytic reverse step of masked diffusion to its clean-token posterior,</p>
     <div class="math-box">$$p^{\theta}_{s\mid t}(\boldsymbol{x}_s\mid\boldsymbol{x}_t)\;=\;\sum_{k=1}^{M}w^{\theta}_{k}(\boldsymbol{x}_t,t)\prod_{i=1}^{L}P^{\theta}_{i,k}\big(x_s^{i}\mid\boldsymbol{x}_t,t\big).$$</div>
-    <p>To sample one step we draw a single index $k\sim w^{\theta}(\boldsymbol{x}_t,t)$ that all positions share, and then fill every masked position from component $k$. That one sequence-level draw is what couples the positions revealed together. Because the mixture is finite, the likelihood of a teacher transition is a closed-form sum over $M$ terms rather than an integral, so the student trains on it directly,</p>
-    <div class="math-box">$$\mathcal{L}\;=\;-\log\sum_{k=1}^{M}w^{\theta}_{k}(\boldsymbol{x}_t,t)\prod_{i=1}^{L}P^{\theta}_{i,k}\big(x_s^{i}\mid\boldsymbol{x}_t,t\big).$$</div>
+    <p>To sample one step we draw a single index $k\sim w^{\theta}(\boldsymbol{x}_t,t)$ that all positions share, and then fill each masked position from component $k$. That one sequence-level draw couples the positions revealed together. Because the index is finite, the likelihood of a step is a closed-form sum. With $\ell_k(\boldsymbol{x}_s)=\sum_{i\in\mathcal{M}(\boldsymbol{x}_t)}\log P^{\theta}_{i,k}(x_s^i\mid\boldsymbol{x}_t,t)$ the log-probability that component $k$ assigns to the newly revealed tokens,</p>
+    <div class="math-box">$$\log p^{\theta}_{s\mid t}(\boldsymbol{x}_s\mid\boldsymbol{x}_t)\;=\;\log\sum_{k=1}^{M}w^{\theta}_{k}(\boldsymbol{x}_t,t)\,e^{\ell_k(\boldsymbol{x}_s)}.$$</div>
+    <p>The sum over positions lies inside the sum over components, so the expression scores the probability that one shared component explains all revealed tokens jointly. It is differentiable and needs no sampling of $k$ during training. The family of kernels grows with $M$ and contains the factorized family, so a larger mixture is at least as expressive as a smaller one, and a single component reduces to an MDLM student. The network takes $(\boldsymbol{x}_t,t,k)$ as input, so one trained student runs at any number of steps without retraining.</p>
+    <p><strong>Training.</strong> We train the student against a frozen teacher without access to the data likelihood. From a masked state $\boldsymbol{x}_t$, the teacher advances from $t$ to $s$ in $T$ analytic sub-steps, and the student minimizes the negative log-likelihood of the final sequence of this rollout under the mixture, which equals the step KL divergence to the teacher up to a constant. The weights appear inside the logarithm and receive a gradient, so a component that explains the teacher's samples better than the others raises its own weight. An auxiliary loss matches the averaged per-position posterior to the teacher's, and an entropy regularizer keeps the router from settling on one component before the components specialize.</p>
     <figure class="paper-figure">
       <video class="figure-video" autoplay muted loop playsinline preload="metadata" poster="static/images/mld3_method.png" aria-label="Animation of training and inference in MLD3">
         <source src="static/videos/mld3_method.mp4" type="video/mp4">
         <img src="static/images/mld3_method.png" alt="Training and inference in MLD3">
       </video>
-      <figcaption><strong>Training (a) and inference (b).</strong> From a masked state $\boldsymbol{x}_t$, the frozen teacher takes $T$ analytic sub-steps to produce the target $\boldsymbol{x}_s$, which the student has to reach in one pass. The trunk feeds a router, which gives the weights $w^{\theta}_k$, and $M$ heads, which give the factorized distributions $P^{\theta}_{i,k}$, and the gradient of the exact mixture likelihood reaches both. At sampling time each evaluated component gives one joint proposal, and the step advances with the proposal that scores highest under the mixture.</figcaption>
+      <figcaption><strong>Training (a) and inference (b).</strong> From a masked state $\boldsymbol{x}_t$, the frozen teacher takes $T$ analytic sub-steps to produce the target $\boldsymbol{x}_s$, which the student learns to reach in a single forward pass. The trunk feeds a router, which outputs the weights $w^{\theta}_k$, and $M$ component heads, which output the factorized distributions $P^{\theta}_{i,k}$. At each of the $K$ sampling steps, each evaluated component proposes one joint continuation, and the consensus sampler scores the proposals under the mixture and advances with the highest-scoring one.</figcaption>
     </figure>
     <div class="props">
-      <div class="prop"><h4><span class="icon"><i class="fas fa-check-circle"></i></span>Exact, not a surrogate</h4><p>A finite latent turns the step likelihood into a closed-form sum, so the divergence to the teacher is differentiable without sampling the latent and the router receives a gradient.</p></div>
-      <div class="prop"><h4><span class="icon"><i class="fas fa-layer-group"></i></span>One component is the baseline</h4><p>At $M=1$ the objective reduces to the usual masked diffusion student, so the mixture is a strict generalization and every comparison has a matched control.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-check-circle"></i></span>Closed form, not a surrogate</h4><p>A finite latent turns the step likelihood into a sum of $M$ terms, so the divergence to the teacher is differentiable without sampling the latent and the router receives a gradient.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-layer-group"></i></span>One component is the baseline</h4><p>At $M=1$ the objective reduces to the usual masked diffusion student, so the mixture is a strict generalization and each comparison has a matched control.</p></div>
       <div class="prop"><h4><span class="icon"><i class="fas fa-feather-alt"></i></span>Cheap to widen</h4><p>Only the last $L_{\mathrm{lat}}$ blocks run once per component, on one shared set of weights. Adding a component costs an embedding vector and one scalar router output.</p></div>
+      <div class="prop"><h4><span class="icon"><i class="fas fa-random"></i></span>Any student can be the teacher</h4><p>MLD3 distills from any masked diffusion model, including a released few-step student, and a uniform-state version of the objective distills uniform-state teachers such as DUO.</p></div>
     </div>
     <details class="paper-details">
       <summary>Architecture and the forward pass</summary>
       <div class="details-body">
-        <p class="anim-note">A single transformer trunk returns the router weights and the distributions of all components in one pass. The first $D-L_{\mathrm{lat}}=8$ blocks run once per state and give a shared representation, from which a two-layer head on the mean-pooled hidden states produces the weights. The remaining $L_{\mathrm{lat}}=4$ blocks hold one set of weights and run once per evaluated component, where the component enters only through the learned embedding $E_k$ added to the conditioning vector.</p>
+        <p class="anim-note">A single transformer trunk returns the router weights and the distributions of all components in one pass. The first $D-L_{\mathrm{lat}}=8$ blocks run once per state and produce a shared representation, from which a two-layer head on the mean-pooled hidden states produces the weights. The remaining $L_{\mathrm{lat}}=4$ blocks hold one set of weights and run once per evaluated component, where the component enters only through the learned embedding $E_k$ added to the conditioning vector.</p>
         <figure class="paper-figure">
           <video class="figure-video" autoplay muted loop playsinline preload="none" poster="static/images/mld3_arch.png" aria-label="Animation of the MLD3 architecture and its forward pass">
             <source src="static/videos/mld3_arch.mp4" type="video/mp4">
@@ -151,9 +166,15 @@
       </div>
     </details>
     <details class="paper-details">
-      <summary>Sampling with the mixture</summary>
+      <summary>Sampling with the mixture: spread consensus</summary>
       <div class="details-body">
-        <p>Our default sampler reveals a fixed number of positions per step in a spread order and evaluates only the two components that the router ranks highest, scoring their proposals under the mixture and keeping the best one. Cost is counted in block passes rather than in network calls, since a mixture step reuses the shared trunk. With $D=12$ blocks and $L_{\mathrm{lat}}=4$, a step costs 12 block passes at $M=1$ and 16 with two components evaluated, so a mixture step is about a third more expensive than a factorized one and far cheaper than evaluating all $M$ components.</p>
+        <p>We sample with the analytic reverse step from the all-mask sequence, and each step makes three choices.</p>
+        <ul>
+          <li><strong>Spread order.</strong> The analytic step reveals each masked position independently, so the number revealed per step is random. We instead reveal the number expected under the schedule, taken in a fixed spread order, the bit-reversal permutation of the positions rotated by a random offset, so that positions revealed together lie far apart in the sequence.</li>
+          <li><strong>Component selection.</strong> A step evaluates only the $m$ components with the largest router weights and renormalizes the mixture over them. Components share the first stack of blocks, so a step costs $D-L_{\mathrm{lat}}+mL_{\mathrm{lat}}$ block passes, 12 for a factorized student and 16 at $m=2$.</li>
+          <li><strong>Consensus scoring.</strong> Each evaluated component proposes a joint continuation, and we score each proposal by the log-probability that the renormalized mixture assigns to it at all currently masked positions, $S(\boldsymbol{x}^{(j)})=\sum_{\ell\in\mathcal{M}(\boldsymbol{x}_t)}\log\sum_{k\in\mathcal{E}}\tilde{w}_k P^{\theta}_{\ell,k}(x^{(j),\ell})$. The chain advances with the highest-scoring proposal and can pick a different component at each step.</li>
+        </ul>
+        <p>Top-1 routing, which takes the component with the highest router weight at each step, costs the same 12 block passes per step as the factorized baselines.</p>
       </div>
     </details>
   </div>
@@ -163,13 +184,13 @@
 <section class="section is-light" id="theory">
   <div class="container is-max-desktop content reveal">
     <h2 class="title is-3 has-text-centered">Why a continuous latent collapses</h2>
-    <p>A shared continuous latent $\lambda$ gives the same coupling in principle, but its step likelihood integrates over $\lambda$ and is intractable. Prior work therefore trains on a Jensen bound estimated with a single Monte Carlo draw of the latent,</p>
+    <p>A shared continuous latent $\lambda$ provides the same coupling in principle, but its step likelihood integrates over $\lambda$ and is intractable. Di4C therefore anchors its student to the teacher through the convexity bound, which moves the average over the latent outside the divergence,</p>
     <div class="math-box">$$\mathrm{KL}\Big(q\,\Big\|\,\mathbb{E}_{\lambda}\big[p^{\theta}(\cdot\,;\lambda)\big]\Big)\;\le\;\mathbb{E}_{\lambda}\Big[\mathrm{KL}\big(q\,\big\|\,p^{\theta}(\cdot\,;\lambda)\big)\Big].$$</div>
-    <p>The bound moves the mixture outside the divergence, which leaves an objective that separates across latents. We prove that this single-sample loss sends no gradient to the mixing weights and that its optimum places every component at the same factorized solution. The latent is therefore not merely underused but unreachable, a failure we call surrogate collapse, and it is what the top row of the toy picture shows. Replacing the continuous latent by a finite index removes the integral, so the mixture stays inside the divergence and the router is trained rather than bypassed.</p>
-    <div class="takeaway">A mixture helps only if its weights can be trained. With a single-sample surrogate they cannot, so the components converge to one factorized kernel and the step is no better than a product.</div>
+    <p>Written with a finite index, the bound scores each component separately, and it equals the exact objective plus a penalty, the KL divergence from the router weights to the posterior over the component given the step. The bound is thus the evidence lower bound with its variational posterior frozen at the prior, and the penalty vanishes only when the step carries no evidence about the component. We prove that the bound depends on the target only through its per-position marginals, and that each of its minimizers is factorized, with each component at the product of the marginals and a divergence of $\mathrm{TC}(q)$ to the teacher, whether the weights are fixed or trained. The exact objective instead uses the latent. With $M\ge2$ and $\mathrm{TC}(q)&gt;0$, its minimum lies strictly below that of the bound, and its minimizers carry information in the component index. We call this failure surrogate collapse. Drawing more latent samples improves the estimate of the bound but does not move its optimum, and it is what the top row of the toy picture shows.</p>
+    <div class="takeaway">A mixture helps only if its weights can be trained. Under the convexity bound they cannot, so the components converge to one factorized kernel and the step is no better than a product.</div>
     <figure class="paper-figure is-narrow">
-      <img src="static/images/stepdep.png" alt="Teacher-side measures of dependence against the gain a mixture delivers, across six corpora" loading="lazy">
-      <figcaption><strong>Where a mixture is worth training.</strong> Both panels put a teacher-side measure of dependence against the gain the mixture delivers over its factorized control, measured before any student is trained, and the third shows how that dependence falls as the step count grows.</figcaption>
+      <img src="static/images/stepdep.png" alt="Teacher-side measures of dependence against the gain of the mixture over its control, across six datasets" loading="lazy">
+      <figcaption><strong>Predicting the benefit of a mixture from the teacher before training any student.</strong> (a) The relative dependence $\rho_4$ of the step targets of each teacher against the gain of the $M=8$ student over its control. (b) The relative reverse gap $\kappa_4$ of a factorized step against the same gain. (c) $\rho_K$ against the number of student steps $K$. The step targets of the text and molecule teachers hold 10 to 41 percent of their entropy as dependence and those of DeepSTARR and ImageNet-256 hold 1 to 4 percent, and the gain of the mixture follows the same split. On the datasets we evaluated, a $\rho_4$ of 0.10 or more came with large gains and a $\rho_4$ of 0.04 or less with gains below 10 percent, and both quantities take a few minutes to compute with the teacher on about 512 held-out sequences.</figcaption>
     </figure>
   </div>
 </section>
@@ -178,10 +199,85 @@
 <section class="section" id="results">
   <div class="container is-max-desktop content reveal">
     <h2 class="title is-3 has-text-centered">Few-step generation</h2>
-    <p>We distill MDLM teachers on WikiText-103 and LM1B, PairFlow-recipe teachers on QM9 and ZINC-250k, a masked model on DeepSTARR regulatory DNA, and a MaskGIT teacher on ImageNet-256, and we compare against Di4C under its own sampler and against the $M=1$ control trained the same way. On WikiText-103 the $M=8$ student lowers generative perplexity from 265 to 159 at 8 NFEs, a 40 percent reduction against the control, and improves on the teacher at every budget. On LM1B it lowers it from 529 to 405 at the same budget.</p>
+    <p>We evaluate MLD3 on seven datasets in four domains: OpenWebText (OWT), LM1B and WikiText-103 for text, QM9 and ZINC-250k for molecules, DeepSTARR enhancers for regulatory DNA, and ImageNet-256 for images. Each student trains with $K=4$ steps, and the $M=1$ student serves as the control, since it shares the objective, the teacher and the number of training steps with the mixtures. MLD3 samples with the spread consensus over the top-2 components, and each baseline samples with its own sampler.</p>
+
+    <h3 class="title is-4">OpenWebText against recent few-step methods</h3>
+    <p>We distill the released MDLM on OWT, with sequences of 1,024 tokens, and compare with the released checkpoints of SDTT, SDTT + Di4C, IDLM, DiDi-Instruct and the DCD students, and with the reported results of FMLM and D-MMD, which our scorer reproduces. Our $M=8$ student distilled from MDLM in a single round of 30k steps outperforms its control and Di4C at all NFEs, with 94.6 against 186 and 613 at 8 NFEs. Since any masked diffusion student can serve as the teacher for MLD3, we also distill MLD3 from IDLM and SDTT for 10k steps, starting from the student itself. The mixture then improves on both students at all NFEs by 7 to 32 percent, and MLD3 distilled from IDLM reaches the lowest generative perplexity of all models from 8 NFEs on, with 14.2 against 18.5 for IDLM at 32 NFEs. Further rounds of distillation, each of which distills the previous student under our sampler, lower it to 25.7, 16.5 and 12.8 at 8, 16 and 32 NFEs, and five further rounds on the student distilled from SDTT reach the lowest generative perplexity of all models at 4 NFEs, 62.2 against 66.1 for D-MMD. FMLM and the DCD students with a greedy last step remain ahead of all masked students only at 1 and 2 NFEs.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>gen-PPL / entropy, OWT</th><th>4 NFEs</th><th>8 NFEs</th><th>16 NFEs</th><th>32 NFEs</th></tr></thead>
+        <tbody>
+          <tr class="group-row"><td colspan="5">Released or reported few-step students</td></tr>
+          <tr><td>SDTT (7 rounds)</td><td>338 <span class="pm">/ 5.39</span></td><td>111 <span class="pm">/ 5.42</span></td><td>58.2 <span class="pm">/ 5.40</span></td><td>39.7 <span class="pm">/ 5.34</span></td></tr>
+          <tr><td>SDTT + Di4C (2 rounds)</td><td>252 <span class="pm">/ 5.37</span></td><td>83.3 <span class="pm">/ 5.38</span></td><td>44.1 <span class="pm">/ 5.34</span></td><td>30.8 <span class="pm">/ 5.27</span></td></tr>
+          <tr><td>Di4C</td><td>1704 <span class="pm">/ 5.94</span></td><td>613 <span class="pm">/ 5.85</span></td><td>238 <span class="pm">/ 5.75</span></td><td>131 <span class="pm">/ 5.67</span></td></tr>
+          <tr><td>IDLM</td><td>304 <span class="pm">/ 5.80</span></td><td>71.7 <span class="pm">/ 5.55</span></td><td>31.4 <span class="pm">/ 5.35</span></td><td>18.5 <span class="pm">/ 5.14</span></td></tr>
+          <tr><td>DiDi-Instruct (unguided)</td><td>488 <span class="pm">/ 5.56</span></td><td>139 <span class="pm">/ 5.46</span></td><td>66.7 <span class="pm">/ 5.41</span></td><td>46.2 <span class="pm">/ 5.38</span></td></tr>
+          <tr><td>IDLM-DCD (greedy last step)</td><td>76.5 <span class="pm">/ 5.23</span></td><td>54.6 <span class="pm">/ 5.35</span></td><td>45.2 <span class="pm">/ 5.38</span></td><td>40.6 <span class="pm">/ 5.37</span></td></tr>
+          <tr><td>DUO-DCD (greedy last step)</td><td>100 <span class="pm">/ 5.00</span></td><td>70 <span class="pm">/ 5.31</span></td><td>54 <span class="pm">/ 5.38</span></td><td>46 <span class="pm">/ 5.37</span></td></tr>
+          <tr><td>FMLM<sup>&dagger;</sup></td><td>111 <span class="pm">/ 5.26</span></td><td>86.5 <span class="pm">/ 5.36</span></td><td>63.6 <span class="pm">/ 5.29</span></td><td>45.1 <span class="pm">/ 5.25</span></td></tr>
+          <tr><td>D-MMD<sup>&dagger;</sup></td><td><u>66.1</u> <span class="pm">/ 5.44</span></td><td>&ndash;</td><td>67.7 <span class="pm">/ 5.57</span></td><td>72.1 <span class="pm">/ 5.57</span></td></tr>
+          <tr class="group-row"><td colspan="5">MLD3 ($M=8$)</td></tr>
+          <tr class="ours-row"><td>MLD3 from MDLM</td><td>239 <span class="pm">/ 5.80</span></td><td>94.6 <span class="pm">/ 5.69</span></td><td>64.2 <span class="pm">/ 5.63</span></td><td>51.9 <span class="pm">/ 5.57</span></td></tr>
+          <tr class="ours-row"><td>MLD3 on SDTT</td><td>74.4 <span class="pm">/ 5.42</span></td><td>40.2 <span class="pm">/ 5.38</span></td><td>30.8 <span class="pm">/ 5.34</span></td><td>26.9 <span class="pm">/ 5.29</span></td></tr>
+          <tr class="ours-row"><td>MLD3 on SDTT, 6 rounds</td><td><strong>62.2</strong> <span class="pm">/ 5.47</span></td><td>30.7 <span class="pm">/ 5.36</span></td><td>24.1 <span class="pm">/ 5.32</span></td><td>21.4 <span class="pm">/ 5.28</span></td></tr>
+          <tr class="ours-row"><td>MLD3 on IDLM</td><td>84.9 <span class="pm">/ 5.70</span></td><td><u>30.4</u> <span class="pm">/ 5.43</span></td><td><u>19.2</u> <span class="pm">/ 5.28</span></td><td><u>14.2</u> <span class="pm">/ 5.10</span></td></tr>
+          <tr class="ours-row"><td>MLD3 on IDLM, 3 rounds</td><td>73.8 <span class="pm">/ 5.62</span></td><td><strong>25.7</strong> <span class="pm">/ 5.35</span></td><td><strong>16.5</strong> <span class="pm">/ 5.20</span></td><td><strong>12.8</strong> <span class="pm">/ 5.06</span></td></tr>
+        </tbody>
+      </table>
+      <p class="table-note">Generative perplexity under GPT-2 Large with the sample entropy in small type, from 1,024 samples of 1,024 tokens (held-out text has entropy 5.46). Rows marked &dagger; are reported by their papers under the same protocol. Bold and underline mark the best and second best in each column. MLD3 costs 16 block passes per step, against 12 for the baselines. The full table, with 1 and 2 NFEs, the controls and DUO, is in the paper.</p>
+    </div>
+    <p>Generative perplexity falls steeply as the sample entropy falls, so we also compare the models at matched entropy by sweeping the sampling temperature of each student. MLD3 lowers the generative perplexity of IDLM and SDTT at all matched entropies, by 45 and 61 percent at 8 NFEs, and the curve of MLD3 distilled from IDLM lies below all baselines at 8, 16 and 32 NFEs.</p>
+    <figure class="paper-figure">
+      <img src="static/images/genppl_entropy_owt.png" alt="Generative perplexity against sample entropy on OpenWebText at 8, 16 and 32 NFEs, with temperature sweeps of MLD3 and of the released students and the other baselines as points" loading="lazy">
+      <figcaption><strong>Generative perplexity against entropy on OWT.</strong> The sampling temperature of a student is swept along each curve, solid for MLD3 and dashed for the released student it is distilled from, and the markers show the other baselines and the further rounds of MLD3 at their default temperature. The triangle is held-out text, and lower right is better.</figcaption>
+    </figure>
+
+    <h3 class="title is-4">Uniform-state teachers</h3>
+    <p>MLD3 also applies to uniform-state teachers, with a uniform-state version of our objective. Our $M=8$ student distilled from DUO lowers the generative perplexity of DUO by 37 to 55 percent from 2 NFEs at a similar entropy. At the entropy of held-out text, it reaches the lowest generative perplexity of all uniform-state models at 16 and 32 NFEs, ahead of DUO-DCD, IDLM-DUO and IDLM-DCD. Three rounds of MLD3 distilled from DUO-DCD outperform DUO-DCD from 4 NFEs on and score below IDLM-DCD, which distills the same teacher, at 16 and 32 NFEs, while IDLM-DCD remains ahead at 2 to 8 NFEs.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>gen-PPL at entropy 5.46, OWT</th><th>2 NFEs</th><th>4 NFEs</th><th>8 NFEs</th><th>16 NFEs</th><th>32 NFEs</th></tr></thead>
+        <tbody>
+          <tr><td>DUO</td><td>1168</td><td>413</td><td>147</td><td>85.2</td><td>67.9</td></tr>
+          <tr><td>DUO-DCD</td><td>816</td><td>230</td><td>94.3</td><td>61.7</td><td>52.4</td></tr>
+          <tr><td>IDLM-DUO</td><td><u>500</u></td><td>160</td><td>81.3</td><td>60.1</td><td>53.4</td></tr>
+          <tr><td>IDLM-DCD</td><td><strong>425</strong></td><td><strong>101</strong></td><td><strong>63.9</strong></td><td>52.5</td><td>48.2</td></tr>
+          <tr class="ours-row"><td>MLD3 ($M=8$, 5 rounds) from DUO</td><td>818</td><td>177</td><td><u>72.0</u></td><td><strong>47.4</strong></td><td><strong>44.0</strong></td></tr>
+          <tr class="ours-row"><td>MLD3 ($M=8$, 3 rounds) from DUO-DCD</td><td>631</td><td><u>159</u></td><td>73.5</td><td><u>49.4</u></td><td><u>47.5</u></td></tr>
+        </tbody>
+      </table>
+      <p class="table-note">Each model is interpolated in log generative perplexity along its temperature sweep to the entropy of held-out text.</p>
+    </div>
+
+    <h3 class="title is-4">LM1B in packed blocks</h3>
+    <p>Recent few-step methods evaluate LM1B on sentences packed into blocks of 128 tokens, so we also distill a publicly available MDLM in this setting. Our $M=8$ student improves on its control by 9 to 22 percent and on the teacher at all NFEs, and it achieves a lower generative perplexity than SDTT, Di4C and SDTT + Di4C distilled from the same teacher from 1 to 16 NFEs. MLD3 distilled from our SDTT student improves on SDTT + Di4C and on its $M=1$ control at all NFEs by 14 to 20 percent, and further rounds improve both MLD3 students, so that the student distilled from MDLM outperforms SDTT and SDTT + Di4C at all NFEs at a similar entropy. The continuous flow maps of FMLM and Discrete Flow Maps remain ahead only from 1 to 4 NFEs.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>gen-PPL / entropy, packed LM1B</th><th>4 NFEs</th><th>8 NFEs</th><th>16 NFEs</th><th>32 NFEs</th></tr></thead>
+        <tbody>
+          <tr><td>MDLM (teacher)</td><td>479 <span class="pm">/ 4.36</span></td><td>254 <span class="pm">/ 4.35</span></td><td>178 <span class="pm">/ 4.35</span></td><td>148 <span class="pm">/ 4.35</span></td></tr>
+          <tr class="group-row"><td colspan="5">Distilled baselines</td></tr>
+          <tr><td>SDTT (5 rounds)</td><td>284 <span class="pm">/ 4.30</span></td><td>155 <span class="pm">/ 4.30</span></td><td>108 <span class="pm">/ 4.30</span></td><td>90.8 <span class="pm">/ 4.30</span></td></tr>
+          <tr><td>Di4C</td><td>387 <span class="pm">/ 4.35</span></td><td>211 <span class="pm">/ 4.35</span></td><td>149 <span class="pm">/ 4.35</span></td><td>116 <span class="pm">/ 4.34</span></td></tr>
+          <tr><td>SDTT + Di4C</td><td>254 <span class="pm">/ 4.30</span></td><td>139 <span class="pm">/ 4.31</span></td><td>99.8 <span class="pm">/ 4.31</span></td><td>82.0 <span class="pm">/ 4.30</span></td></tr>
+          <tr><td>FMLM<sup>&dagger;</sup></td><td><u>98.8</u> <span class="pm">/ 4.21</span></td><td>86.3 <span class="pm">/ 4.21</span></td><td>78.4 <span class="pm">/ 4.21</span></td><td>69.2 <span class="pm">/ 4.21</span></td></tr>
+          <tr><td>Discrete Flow Maps (ESD)<sup>&dagger;</sup></td><td><strong>71.5</strong> <span class="pm">/ 4.13</span></td><td>&ndash;</td><td>&ndash;</td><td>&ndash;</td></tr>
+          <tr class="group-row"><td colspan="5">MLD3 ($M=8$)</td></tr>
+          <tr class="ours-row"><td>MLD3 from MDLM</td><td>172 <span class="pm">/ 4.34</span></td><td>111 <span class="pm">/ 4.33</span></td><td>99.8 <span class="pm">/ 4.33</span></td><td>95.5 <span class="pm">/ 4.32</span></td></tr>
+          <tr class="ours-row"><td>MLD3 from MDLM, 8 rounds</td><td>105 <span class="pm">/ 4.28</span></td><td><strong>72.8</strong> <span class="pm">/ 4.28</span></td><td><strong>64.8</strong> <span class="pm">/ 4.28</span></td><td><strong>65.6</strong> <span class="pm">/ 4.28</span></td></tr>
+          <tr class="ours-row"><td>MLD3 on SDTT</td><td>114 <span class="pm">/ 4.31</span></td><td>78.4 <span class="pm">/ 4.30</span></td><td>69.6 <span class="pm">/ 4.29</span></td><td>67.3 <span class="pm">/ 4.29</span></td></tr>
+          <tr class="ours-row"><td>MLD3 on SDTT, 3 rounds</td><td>107 <span class="pm">/ 4.30</span></td><td><u>75.4</u> <span class="pm">/ 4.29</span></td><td><u>67.6</u> <span class="pm">/ 4.29</span></td><td><u>65.9</u> <span class="pm">/ 4.27</span></td></tr>
+        </tbody>
+      </table>
+      <p class="table-note">Held-out text has entropy 4.34. Rows marked &dagger; are reported by their papers. SDTT, Di4C and SDTT + Di4C are distilled from our teacher with the authors' code, since no distilled LM1B checkpoint is public. Bold and underline mark the best and second best among the distilled models.</p>
+    </div>
+
+    <h3 class="title is-4">WikiText-103 and LM1B from random initialization</h3>
+    <p>With teachers of our own on WikiText-103 and LM1B, sequences of 128 tokens and students trained from random initialization, the mixture gain grows with $M$. The $M=8$ student lowers generative perplexity from 265 to 159 at 8 NFEs on WikiText-103, a 40 percent reduction against the control, improves on the teacher at all NFEs and outperforms Di4C by a factor of 3 at 8 NFEs and 2 at 32. It also carries 0.74 nats of transition information, while the factorized control has none.</p>
     <figure class="paper-figure">
       <img src="static/images/results_curves.png" alt="Generative perplexity and molecule validity against the number of function evaluations, for the teacher, Di4C and MLD3 with one, four and eight components" loading="lazy">
-      <figcaption><strong>Across budgets and corpora.</strong> Generative perplexity on LM1B and WikiText-103, where lower is better, and validity on QM9 and ZINC-250k, where higher is better, against the number of function evaluations.</figcaption>
+      <figcaption><strong>Across NFEs and datasets.</strong> Generative perplexity on LM1B and WikiText-103, where lower is better, and validity on QM9 and ZINC-250k, where higher is better, for the MDLM teacher, Di4C and MLD3 students with $M\in\{1,4,8\}$.</figcaption>
     </figure>
     <div class="table-wrap">
       <table class="results-table">
@@ -190,26 +286,73 @@
           <tr><td>MDLM teacher</td><td>1403</td><td>600</td><td>209</td></tr>
           <tr><td>Di4C</td><td>1039</td><td>473</td><td>198</td></tr>
           <tr><td>MLD3 ($M=1$, control)</td><td>481</td><td>265</td><td>177</td></tr>
-          <tr><td>MLD3 ($M=4$)</td><td>439</td><td>198</td><td>112</td></tr>
-          <tr class="ours-row"><td>MLD3 ($M=8$)</td><td>319</td><td>159</td><td>97</td></tr>
+          <tr><td>MLD3 ($M=4$)</td><td><u>439</u></td><td><u>198</u></td><td><u>112</u></td></tr>
+          <tr class="ours-row"><td>MLD3 ($M=8$)</td><td><strong>319</strong></td><td><strong>159</strong></td><td><strong>97</strong></td></tr>
         </tbody>
       </table>
-      <p class="table-note">The student rows use our sampler, and the teacher and Di4C rows use their own. The full grid, LM1B, and the decoding ablations are in the paper.</p>
+      <p class="table-note">The student rows use our sampler, and the teacher and Di4C rows use their own.</p>
     </div>
-    <figure class="paper-figure is-narrow">
+    <!-- <figure class="paper-figure is-narrow">
       <img src="static/images/wikitext_bars.png" alt="Generative perplexity on WikiText-103 at one, two, four and eight function evaluations" loading="lazy">
-      <figcaption><strong>The few-step regime.</strong> Generative perplexity on WikiText-103 at the budgets where the factorization hurts most.</figcaption>
-    </figure>
-    <p>The ordering follows the dependence in the task rather than the modality. Molecules gain most, where validity at 4 NFEs rises from 0.139 to 0.444 on ZINC-250k and from 0.257 to 0.574 on QM9 against the matched control. On DeepSTARR, where the steps carry almost no dependence between positions, the mixture improves the Fr&eacute;chet biological distance by up to 21 percent, a smaller gain that the teacher-side test predicts in advance. On ImageNet-256 the $M=8$ student improves FID over Di4C at every budget under the same sampler, mainly by recovering recall.</p>
+      <figcaption><strong>The few-step regime.</strong> Generative perplexity on WikiText-103 at the numbers of steps where the factorization hurts most.</figcaption>
+    </figure> -->
+
+    <h3 class="title is-4">Molecules</h3>
+    <p>Molecular strings couple their positions through hard chemical constraints, so that a ring that opens but does not close invalidates the whole string, which makes validity a direct measure of whether the dependence within a step is respected. On QM9 our $M=8$ student reaches 0.471 validity at 2 NFEs against 0.166 for Di4C and 0.146 for the control, and 0.903 at 32 NFEs against 0.710 and 0.825. On ZINC-250k it reaches 0.231 at 2 NFEs against 0.098 for Di4C, and 0.796 against 0.520 at 32. We also train SDTT and IDLM on our teacher with the authors' code. Our $M=8$ student has a higher validity than both from 2 NFEs on QM9 and from 2 to 4 NFEs on ZINC-250k, where SDTT leads from 8. MLD3 distilled from SDTT reaches the highest validity on both datasets from 4 NFEs on, up to 0.946 and 0.955 at 32 NFEs, but like SDTT itself it repeats molecules from 2 to 8 NFEs, a loss that its $M=1$ control shares and that therefore comes from the SDTT teacher rather than from the mixture.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th rowspan="2">validity</th><th colspan="4">QM9</th><th colspan="4">ZINC-250k</th></tr><tr><th>2</th><th>4</th><th>8</th><th>32</th><th>2</th><th>4</th><th>8</th><th>32</th></tr></thead>
+        <tbody>
+          <tr><td>MDLM teacher</td><td>0.148</td><td>0.271</td><td>0.450</td><td>0.713</td><td>0.091</td><td>0.201</td><td>0.345</td><td>0.550</td></tr>
+          <tr><td>Di4C</td><td>0.166</td><td>0.286</td><td>0.471</td><td>0.710</td><td>0.098</td><td>0.155</td><td>0.282</td><td>0.520</td></tr>
+          <tr><td>SDTT (7 rounds)</td><td>0.124</td><td>0.382</td><td>0.616</td><td>0.830</td><td>0.124</td><td>0.387</td><td><u>0.603</u></td><td><u>0.857</u></td></tr>
+          <tr><td>IDLM</td><td>0.273</td><td>0.306</td><td>0.422</td><td>0.669</td><td>0.120</td><td>0.260</td><td>0.462</td><td>0.755</td></tr>
+          <tr><td>MLD3 ($M=1$, control)</td><td>0.146</td><td>0.257</td><td>0.533</td><td>0.825</td><td>0.091</td><td>0.139</td><td>0.180</td><td>0.545</td></tr>
+          <tr class="ours-row"><td>MLD3 ($M=8$)</td><td><strong>0.471</strong></td><td><strong>0.574</strong></td><td><u>0.720</u></td><td><u>0.903</u></td><td><strong>0.231</strong></td><td><u>0.444</u></td><td>0.597</td><td>0.796</td></tr>
+          <tr class="ours-row"><td>MLD3 ($M=8$) on SDTT</td><td><u>0.449</u></td><td><u>0.457</u></td><td><strong>0.800</strong></td><td><strong>0.946</strong></td><td><u>0.217</u></td><td><strong>0.620</strong></td><td><strong>0.854</strong></td><td><strong>0.955</strong></td></tr>
+        </tbody>
+      </table>
+      <p class="table-note">Fraction of valid molecules out of 4,096 samples at each number of NFEs, averaged over trials of 1,024 as in PairFlow. The teacher row uses MDLM's own sampler. Bold and underline mark the best and second best among the distilled models. Uniqueness, novelty, top-1 routing and the students distilled from IDLM are in the paper.</p>
+    </div>
+
+    <h3 class="title is-4">Regulatory DNA and images</h3>
+    <p>The ordering follows the dependence in the task rather than the modality. On DeepSTARR, where the steps carry almost no dependence between positions, the $M=4$ mixture improves the Fr&eacute;chet biological distance over its control at all NFEs, by 21 percent at 16 NFEs and 15 percent at 32, a smaller gain that the teacher-side test above predicts in advance. On ImageNet-256, where the students distill a MaskGIT teacher, the $M=8$ student improves FID over Di4C at all NFEs, and the $M=4$ student reaches the lowest FID of any student at 32 NFEs, 96.9 against 112.0 for the control and 117.5 for Di4C. The improvement comes from coverage, as the recall of the $M=8$ student reaches 0.338 at 32 NFEs against 0.266 for the control and 0.201 for Di4C.</p>
     <figure class="paper-figure is-narrow">
-      <img src="static/images/entropy.png" alt="Positional entropy against the number of function evaluations, with held-out data as a dotted line" loading="lazy">
-      <figcaption><strong>Diversity is kept.</strong> Positional entropy against the budget, with held-out data as the dotted line. The gains do not come from a collapse onto a few safe continuations.</figcaption>
+      <img src="static/images/entropy.png" alt="Per-position entropy against the number of function evaluations, with held-out data as a dotted line" loading="lazy">
+      <figcaption><strong>Diversity is kept.</strong> Entropy of the per-position marginal over a batch of samples on LM1B, WikiText-103, QM9 and ZINC-250k, with held-out data as the dotted line. The gains do not come from a collapse onto a few safe continuations.</figcaption>
     </figure>
   </div>
 </section>
 
+<!-- ================================================================== analysis of the learned mixture -->
+<section class="section is-light" id="analysis">
+  <div class="container is-max-desktop content reveal">
+    <h2 class="title is-3 has-text-centered">What the components learn</h2>
+    <p>Di4C uses a continuous latent and has no learnable router, so we train the same MLD3 trunk with the Di4C objective, on the same teacher, for the same number of steps and with the same number of components. Under our objective, the components of a trained student lie 0.43 to 0.68 nats apart in pairwise KL divergence, and a single step carries 1.2 to 11.2 nats of dependence between positions. Under the Di4C objective the components coincide to within 0.002 nats, a step carries at most 0.004 nats of dependence, and the router stays at its uniform prior, since the objective sends it no gradient.</p>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>dataset, objective</th><th>$\exp \mathrm{H}(w)$</th><th>pairwise KL</th><th>KL to the mixture</th><th>TC per step</th></tr></thead>
+        <tbody>
+          <tr class="ours-row"><td>QM9, MLD3</td><td>7.65</td><td>0.533</td><td>0.174</td><td>1.234</td></tr>
+          <tr><td>QM9, Di4C objective</td><td>8.00</td><td>0.000</td><td>0.000</td><td>0.001</td></tr>
+          <tr class="ours-row"><td>ZINC-250k, MLD3</td><td>7.13</td><td>0.435</td><td>0.160</td><td>2.282</td></tr>
+          <tr><td>ZINC-250k, Di4C objective</td><td>8.00</td><td>0.002</td><td>0.001</td><td>0.004</td></tr>
+          <tr class="ours-row"><td>DeepSTARR, MLD3</td><td>4.30</td><td>0.681</td><td>0.242</td><td>11.208</td></tr>
+          <tr><td>DeepSTARR, Di4C objective</td><td>8.00</td><td>0.000</td><td>0.000</td><td>0.000</td></tr>
+        </tbody>
+      </table>
+      <p class="table-note">Divergences in nats between the components of a trained $M=8$ student with half of the positions masked. A collapsed mixture has 0 in the last three columns, and $\exp \mathrm{H}(w)$ is 8 for a uniform router and 1 for a router that uses one component.</p>
+    </div>
+    <figure class="paper-figure">
+      <img src="static/images/anatomy_router.png" alt="Router weights of the MLD3 and Di4C students over components and masking fraction" loading="lazy">
+      <figcaption><strong>Router weights along the denoising trajectory.</strong> Weights $w_k$ of the $M=8$ students over components and masking fraction. <strong>Left:</strong> under our objective, the router shifts weight between components along the trajectory and concentrates on one component at the all-mask state. <strong>Right:</strong> under the Di4C objective in the same trunk, the router receives no gradient and stays at the uniform prior $1/M=0.125$.</figcaption>
+    </figure>
+    <p>The components specialize to modes of the data. When we pin the router of the QM9 student to a single component and decode 1,024 molecules per component, the aromatic fraction runs from 0.008 to 0.572 across the eight components, against 0.156 for the mixture, and the ring count runs from 0.85 to 3.13 against 1.26, while the same test on the Di4C student moves the aromatic fraction over a range 6.7 times smaller. Aromaticity, ring count, heavy-atom count and sulfur content shift together, so a component selects a mode rather than a single attribute, the behaviour the toy picture shows. The trained Di4C student on DeepSTARR also ignores its latent, since sweeping the latent at the all-mask state moves its prediction by less than $10^{-8}$ nats in KL, against 0.88 nats when a single token of the state changes.</p>
+  </div>
+</section>
+
 <!-- ================================================================== samples -->
-<section class="section is-light" id="samples">
+<section class="section" id="samples">
   <div class="container is-max-desktop content reveal">
     <h2 class="title is-3 has-text-centered">Samples</h2>
     <figure class="paper-figure">
@@ -218,13 +361,13 @@
     </figure>
     <figure class="paper-figure">
       <img src="static/images/image_completion.jpg" alt="ImageNet-256 completions from a quarter of the validation tokens, for the teacher, MLD3 and Di4C" loading="lazy">
-      <figcaption><strong>ImageNet-256 completions.</strong> Every row is handed the same quarter of the validation tokens and fills the rest, which our students do without any change to the kernel and without retraining.</figcaption>
+      <figcaption><strong>ImageNet-256 completions.</strong> Each row is handed the same quarter of the validation tokens and fills the rest, which our students do without any change to the kernel and without retraining.</figcaption>
     </figure>
   </div>
 </section>
 
 <!-- ================================================================== bibtex -->
-<section class="section" id="BibTeX">
+<section class="section is-light" id="BibTeX">
   <div class="container is-max-desktop content reveal">
     <div class="bibtex-header">
       <h2 class="title is-3">BibTeX</h2>
@@ -243,7 +386,7 @@
 
 <footer class="footer">
   <div class="container is-max-desktop has-text-centered content">
-    <p>The page is built on the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noopener">Academic Project Page template</a>, which is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. The animations are the paper's own figures, with time as the animation variable.</p>
+    <p>The page is built on the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page template</a>, which is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. The animations are the paper's own figures, with time as the animation variable.</p>
   </div>
 </footer>
 </body>
