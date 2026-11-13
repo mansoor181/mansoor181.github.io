@@ -161,3 +161,11 @@ pre#bibtex-code { background: var(--panel); border: 1px solid var(--rule); borde
 
 .footer { background: #fff; border-top: 1px solid var(--rule); padding: 2rem 1.5rem 2.5rem; font-size: 0.92rem; color: var(--gray); }
 .footer a { color: var(--teal-dark); }
+
+/* example generations on OpenWebText: the released student and the MLD3 student side by side */
+.sample-card.base .card-title { background: #6b7079; }
+.sample-card.ours .card-title { background: var(--teal-dark); }
+.sample-card.base { background: #fafafa; }
+.sample-card.ours { background: #f6fbfa; }
+.sample-more { margin-top: 0.5rem; }
+.sample-more summary { cursor: pointer; color: var(--teal-dark); font-size: 0.85rem; }
